@@ -46,8 +46,8 @@ Este projeto foi criado especificamente para:
 ```
 📁 src/main/java/com/devmaster/
 ├── 📁 config/                       # Configurações centralizadas
-│   ├── � LoglgingAspect.java        # Logging automático com AOP
-│   ├── � SwaggerCoCnfig.java        # Configuração do OpenAPI
+│   ├── 📝 LoggingAspect.java        # Logging automático com AOP
+│   ├── 📖 SwaggerConfig.java        # Configuração do OpenAPI
 │   └── 🌐 WebConfig.java            # Configurações web
 ├── 📁 controller/                   # Controllers REST (em desenvolvimento)
 └── 🚀 DevmasterApplication.java     # Classe principal
@@ -233,7 +233,7 @@ SWAGGER_ENABLED=true            # Habilitar/desabilitar Swagger
 
 ## 🔗 Endpoints Disponíveis
 
-### � Document ação
+### 📖 Documentação
 | Endpoint | Descrição |
 |----------|-----------|
 | `GET /api/swagger` | Interface visual do Swagger UI |
@@ -253,7 +253,7 @@ SWAGGER_ENABLED=true            # Habilitar/desabilitar Swagger
 
 ### 📖 Nível Iniciante
 1. **Configuração do Ambiente**
-   - Instalar Java 25 e Maven
+   - Instalar Java 21 LTS e Maven
    - Configurar IDE
    - Executar o projeto pela primeira vez
 
@@ -312,15 +312,16 @@ devmaster/
 │   └── DevmasterApplication.java     # 🚀 Classe principal
 ├── 📁 src/main/resources/
 │   ├── application.yaml              # ⚙️ Configurações gerais
-│   ├── application-develop.yaml      # � CDesenvolvimento
+│   ├── application-develop.yaml      # 🟢 Desenvolvimento
 │   ├── application-staging.yaml      # 🟡 Homologação
 │   └── application-master.yaml       # 🔴 Produção
 ├── 📁 src/test/java/
 │   └── DevmasterApplicationTests.java # 🧪 Testes da aplicação
-├── docker-compose.yml                # � PPostgreSQL + PgAdmin local
+├── docker-compose.yml                # 🐳 PostgreSQL + PgAdmin local
 ├── .env.example                      # 📝 Exemplo de variáveis
-├── pom.xml                           # � Deptendências Maven
-└── README.md                         # � Estma documentação
+├── .gitmessage                       # � Teemplate para commits
+├── pom.xml                           # � Depaendências Maven
+└── README.md                         # 📚 Esta documentação
 ```
 
 ## 🛣️ Próximos Passos (Roadmap)
@@ -361,15 +362,277 @@ devmaster/
 - 🔄 CI/CD pipelines
 - 🔄 Observabilidade completa
 
+## 🔄 Fluxo de Desenvolvimento (Git Flow)
+
+### 🌿 Estrutura de Branches
+
+```
+master (produção)
+  ↑
+staging (homologação) 
+  ↑
+develop (desenvolvimento)
+  ↑
+feature/*, fix/*, hotfix/* (trabalho)
+```
+
+### 📋 Tipos de Branches
+
+#### 🚀 **feature/** - Novas funcionalidades
+```bash
+# Criar branch de feature
+git checkout master
+git pull origin master
+git checkout -b feature/user-authentication
+
+# Trabalhar na feature...
+git add .
+git commit -m "feat: add user authentication system"
+
+# Push e criar PR para develop
+git push origin feature/user-authentication
+```
+
+#### 🐛 **fix/** - Correções de bugs
+```bash
+# Criar branch de fix
+git checkout master
+git pull origin master
+git checkout -b fix/login-validation
+
+# Corrigir o bug...
+git add .
+git commit -m "fix: resolve login validation issue"
+
+# Push e criar PR para develop
+git push origin fix/login-validation
+```
+
+#### 🔥 **hotfix/** - Correções urgentes em produção
+```bash
+# Criar branch de hotfix
+git checkout master
+git pull origin master
+git checkout -b hotfix/critical-security-patch
+
+# Aplicar correção urgente...
+git add .
+git commit -m "fix: patch critical security vulnerability"
+
+# Push e criar PR para develop
+git push origin hotfix/critical-security-patch
+```
+
+### 🔀 Fluxo de Pull Requests
+
+#### 📊 Aprovações Necessárias
+| Origem | Destino | Aprovações | Descrição |
+|--------|---------|------------|-----------|
+| `feature/*`, `fix/*`, `hotfix/*` | `develop` | **0** | Desenvolvimento livre |
+| `develop` | `staging` | **≥1** | Deploy para homologação |
+| `staging` | `master` | **≥1** | Deploy para produção |
+
+#### 🔄 Sequência de Deploy
+```bash
+# 1. Desenvolvimento
+feature/nova-funcionalidade → develop (sem aprovação)
+
+# 2. Homologação  
+develop → staging (1+ aprovação)
+
+# 3. Produção
+staging → master (1+ aprovação)
+```
+
+## 📝 Padrão de Commits (Conventional Commits)
+
+### 🎯 Estrutura do Commit
+```
+<tipo>(<escopo>): <descrição>
+
+[corpo opcional]
+
+[rodapé opcional]
+```
+
+### 📋 Tipos de Commit
+
+#### 🆕 **feat** - Nova funcionalidade
+```bash
+feat: add user registration endpoint
+feat(auth): implement JWT token validation
+feat(api): add pagination to user list
+```
+> Relaciona-se com **MINOR** no versionamento semântico
+
+#### 🐛 **fix** - Correção de bug
+```bash
+fix: resolve null pointer exception in user service
+fix(database): correct connection pool configuration
+fix(api): handle empty request body properly
+```
+> Relaciona-se com **PATCH** no versionamento semântico
+
+#### 📚 **docs** - Documentação
+```bash
+docs: update API documentation
+docs(readme): add installation instructions
+docs: fix typos in contributing guide
+```
+> Não inclui alterações em código
+
+#### 🧪 **test** - Testes
+```bash
+test: add unit tests for user service
+test(integration): add database connection tests
+test: update test data for authentication
+```
+> Não inclui alterações em código de produção
+
+#### 🏗️ **build** - Build e dependências
+```bash
+build: update Spring Boot to version 3.5.9
+build(maven): add new dependency for validation
+build: configure Docker multi-stage build
+```
+
+#### ⚡ **perf** - Performance
+```bash
+perf: optimize database queries in user repository
+perf(cache): implement Redis caching for frequent queries
+perf: reduce memory usage in file processing
+```
+
+#### 🎨 **style** - Formatação
+```bash
+style: fix code formatting and indentation
+style: remove trailing whitespaces
+style(lint): apply ESLint fixes
+```
+> Não inclui alterações funcionais
+
+#### ♻️ **refactor** - Refatoração
+```bash
+refactor: extract user validation logic to separate class
+refactor(service): simplify authentication flow
+refactor: improve code readability in controller layer
+```
+> Não altera funcionalidade
+
+#### 🔧 **chore** - Tarefas de manutenção
+```bash
+chore: update .gitignore file
+chore(deps): update development dependencies
+chore: configure IDE settings
+```
+> Não inclui alterações em código
+
+#### 🔄 **ci** - Integração contínua
+```bash
+ci: add GitHub Actions workflow
+ci(docker): update container build process
+ci: configure automated testing pipeline
+```
+
+#### 📄 **raw** - Arquivos de configuração
+```bash
+raw: update application.yaml configuration
+raw(env): add new environment variables
+raw: modify database migration scripts
+```
+
+#### 🧹 **cleanup** - Limpeza de código
+```bash
+cleanup: remove commented code blocks
+cleanup(imports): remove unused import statements
+cleanup: delete obsolete configuration files
+```
+
+#### 🗑️ **remove** - Remoção de código
+```bash
+remove: delete deprecated user endpoints
+remove(feature): remove legacy authentication system
+remove: clean up unused utility classes
+```
+
+### 💡 Exemplos Práticos
+
+#### ✅ Commits Bem Formatados
+```bash
+feat(auth): add OAuth2 integration with Google
+fix(database): resolve connection timeout issues
+docs(api): update OpenAPI specification
+test(user): add comprehensive user service tests
+perf(query): optimize user search with database indexes
+refactor(controller): extract validation logic to separate layer
+```
+
+#### ❌ Commits Mal Formatados
+```bash
+# Muito vago
+fix: bug fix
+
+# Sem tipo
+add new feature for users
+
+# Descrição muito longa
+feat: add a new comprehensive user management system with full CRUD operations, validation, authentication, and authorization
+
+# Tipo incorreto
+feat: fix typo in documentation  # deveria ser 'docs'
+```
+
+### 🔍 Dicas para Bons Commits
+
+1. **📏 Tamanho**: Máximo 50 caracteres no título
+2. **🎯 Clareza**: Seja específico sobre o que foi alterado
+3. **🌍 Idioma**: Use português ou inglês consistentemente
+4. **⏰ Tempo**: Use imperativo ("add" não "added")
+5. **🔗 Contexto**: Adicione escopo quando necessário
+6. **📋 Corpo**: Use o corpo para explicar "por quê", não "o quê"
+
+### 🛠️ Configuração do Git
+
+```bash
+# Configurar template de commit (recomendado)
+git config --global commit.template .gitmessage
+
+# Configurar editor padrão
+git config --global core.editor "code --wait"
+
+# Habilitar autosquash para rebase interativo
+git config --global rebase.autosquash true
+
+# Configurar push padrão
+git config --global push.default current
+```
+
+> **💡 Dica**: O arquivo `.gitmessage` no projeto contém um template útil com todos os tipos de commit e regras.
+
 ## 🤝 Como Contribuir
 
-Este é um projeto educacional aberto! Você pode contribuir:
+Este é um projeto educacional aberto! Siga o fluxo estabelecido:
 
-1. **🐛 Reportando bugs** ou sugerindo melhorias
-2. **📝 Melhorando a documentação**
-3. **💡 Propondo novos exemplos** ou casos de uso
-4. **🧪 Adicionando testes** e validações
-5. **🔧 Implementando novas funcionalidades**
+### � PRrocesso de Contribuição
+
+1. **🍴 Fork** o repositório
+2. **🌿 Crie uma branch** seguindo o padrão:
+   - `feature/nome-da-funcionalidade`
+   - `fix/nome-do-bug`
+   - `hotfix/nome-da-correcao-urgente`
+3. **💻 Desenvolva** seguindo as boas práticas
+4. **📝 Commit** usando conventional commits
+5. **🔄 Abra um PR** para a branch `develop`
+6. **👥 Aguarde review** (se necessário)
+
+### 🎯 Áreas de Contribuição
+
+- **🐛 Reportar bugs** ou sugerir melhorias
+- **📝 Melhorar documentação** e exemplos
+- **💡 Propor novos casos de uso** educacionais
+- **🧪 Adicionar testes** e validações
+- **🔧 Implementar funcionalidades** seguindo o roadmap
+- **⚡ Otimizar performance** e qualidade do código
 
 ## 📚 Recursos de Estudo
 
