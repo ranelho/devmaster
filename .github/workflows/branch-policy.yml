@@ -1,0 +1,31 @@
+name: Branch Policy
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+jobs:
+  validate-branches:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR source and target
+        run: |
+          BASE="${{ github.event.pull_request.base.ref }}"
+          HEAD="${{ github.event.pull_request.head.ref }}"
+
+          if [[ "$BASE" == "develop" && "$HEAD" != feature/* ]]; then
+            echo "❌ Apenas feature/* pode ir para develop"
+            exit 1
+          fi
+
+          if [[ "$BASE" == "staging" && "$HEAD" != "develop" ]]; then
+            echo "❌ Apenas develop pode ir para staging"
+            exit 1
+          fi
+
+          if [[ "$BASE" == "master" && "$HEAD" != "staging" ]]; then
+            echo "❌ Apenas staging pode ir para master"
+            exit 1
+          fi
+
+          echo "✅ Branch válida"
