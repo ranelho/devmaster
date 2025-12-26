@@ -69,6 +69,8 @@ cp .env.example .env
 # Edite o arquivo .env com suas configurações
 ```
 
+> **⚠️ IMPORTANTE**: O arquivo `.env` contém informações sensíveis e está no `.gitignore`. Nunca commite credenciais reais no repositório!
+
 ### 2. Inicie o Banco de Dados (Opção Local com Docker)
 ```bash
 # Inicia PostgreSQL + PgAdmin
@@ -198,10 +200,10 @@ APP_DEBUG=true                    # Modo debug
 
 ### 🗄️ Banco de Dados
 ```bash
-# Opção 1: Supabase (Cloud) - Configuração padrão no .env.example
-DATABASE_URL=jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:5432/postgres
-DATABASE_USERNAME=postgres.xsjkjiuixzowswxwszhd
-DATABASE_PASSWORD=m9oAnUTEgnxzB54H
+# Opção 1: Supabase (Cloud) - Configure suas próprias credenciais
+DATABASE_URL=jdbc:postgresql://your-supabase-host:5432/your-database
+DATABASE_USERNAME=your-username
+DATABASE_PASSWORD=your-password
 
 # Opção 2: Local com Docker
 DATABASE_URL=jdbc:postgresql://localhost:5432/devmaster_dev
@@ -319,8 +321,8 @@ devmaster/
 │   └── DevmasterApplicationTests.java # 🧪 Testes da aplicação
 ├── docker-compose.yml                # 🐳 PostgreSQL + PgAdmin local
 ├── .env.example                      # 📝 Exemplo de variáveis
-├── .gitmessage                       # � Teemplate para commits
-├── pom.xml                           # � Depaendências Maven
+├── .gitmessage                       # 📋 Template para commits
+├── pom.xml                           # 📦 Dependências Maven
 └── README.md                         # 📚 Esta documentação
 ```
 
@@ -590,6 +592,7 @@ feat: fix typo in documentation  # deveria ser 'docs'
 4. **⏰ Tempo**: Use imperativo ("add" não "added")
 5. **🔗 Contexto**: Adicione escopo quando necessário
 6. **📋 Corpo**: Use o corpo para explicar "por quê", não "o quê"
+7. **🔒 Segurança**: Nunca inclua credenciais, senhas ou dados sensíveis
 
 ### 🛠️ Configuração do Git
 
@@ -613,7 +616,7 @@ git config --global push.default current
 
 Este é um projeto educacional aberto! Siga o fluxo estabelecido:
 
-### � PRrocesso de Contribuição
+### 📋 Processo de Contribuição
 
 1. **🍴 Fork** o repositório
 2. **🌿 Crie uma branch** seguindo o padrão:
@@ -657,10 +660,12 @@ Este é um projeto educacional aberto! Siga o fluxo estabelecido:
 ## ⚠️ Observações Importantes
 
 ### 🔒 Segurança
-- **Nunca** commite senhas ou chaves no código
-- Use variáveis de ambiente para dados sensíveis
-- O Swagger está desabilitado em produção por padrão
-- Sempre valide inputs do usuário
+- **⚠️ CRÍTICO**: Nunca commite senhas ou chaves no código
+- **📁 Arquivo .env**: Está no `.gitignore` e contém dados sensíveis
+- **🔐 Credenciais**: Use sempre variáveis de ambiente para dados sensíveis
+- **📖 Swagger**: Desabilitado em produção por padrão
+- **✅ Validação**: Sempre valide inputs do usuário
+- **🔍 Code Review**: Verifique se não há credenciais expostas antes do commit
 
 ### 🚀 Performance
 - O HikariCP está otimizado para cada ambiente
