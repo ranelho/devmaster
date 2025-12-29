@@ -1,5 +1,6 @@
 package com.devmaster.service;
 
+import com.devmaster.handler.BusinessException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
@@ -54,7 +55,7 @@ public class ExternalApiService {
                 return response;
             } catch (Exception e) {
                 log.error("❌ Erro ao chamar API externa: {}", e.getMessage());
-                throw new RuntimeException("Falha na comunicação com API externa", e);
+                throw new BusinessException("Falha na comunicação com API externa " + e.getMessage());
             }
         });
     }
@@ -95,7 +96,7 @@ public class ExternalApiService {
                 
                 // Simula falha ocasional para demonstrar circuit breaker
                 if (Math.random() < 0.3) { // 30% de chance de falha
-                    throw new RuntimeException("Timeout na conexão com banco");
+                    throw new BusinessException("Timeout na conexão com banco");
                 }
                 
                 log.info("✅ Operação no banco executada com sucesso");
@@ -103,10 +104,10 @@ public class ExternalApiService {
                 
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                throw new RuntimeException("Operação interrompida", e);
+                throw new BusinessException("Operação interrompida " + e);
             } catch (Exception e) {
                 log.error("❌ Erro na operação do banco: {}", e.getMessage());
-                throw new RuntimeException("Falha na operação do banco", e);
+                throw new BusinessException("Falha na operação do banco " + e);
             }
         });
     }
@@ -139,29 +140,24 @@ public class ExternalApiService {
         
         return CompletableFuture.supplyAsync(() -> {
             try {
-                switch (scenario.toLowerCase()) {
-                    case "success":
-                        return "✅ Cenário de sucesso executado";
-                    
-                    case "failure":
-                        throw new RuntimeException("💥 Cenário de falha simulada");
-                    
-                    case "timeout":
+                return switch (scenario.toLowerCase()) {
+                    case "success" -> "✅ Cenário de sucesso executado";
+                    case "failure" -> throw new BusinessException("💥 Cenário de falha simulada");
+                    case "timeout" -> {
                         Thread.sleep(20000); // 20 segundos - vai dar timeout
-                        return "⏰ Este cenário não deveria chegar aqui";
-                    
-                    case "intermittent":
+                        yield "⏰ Este cenário não deveria chegar aqui"; // 20 segundos - vai dar timeout
+                    }
+                    case "intermittent" -> {
                         if (Math.random() < 0.7) { // 70% de chance de falha
-                            throw new RuntimeException("🎲 Falha intermitente");
+                            throw new BusinessException("🎲 Falha intermitente");
                         }
-                        return "🎯 Sucesso intermitente";
-                    
-                    default:
-                        return "❓ Cenário desconhecido: " + scenario;
-                }
+                        yield "🎯 Sucesso intermitente";
+                    }
+                    default -> "❓ Cenário desconhecido: " + scenario;
+                };
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                throw new RuntimeException("Teste interrompido", e);
+                throw new BusinessException("Teste interrompido " + e);
             }
         });
     }

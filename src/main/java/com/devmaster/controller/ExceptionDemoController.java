@@ -1,7 +1,7 @@
 package com.devmaster.controller;
 
 import com.devmaster.handler.BusinessException;
-import com.devmaster.handler.ErrorResponse;
+import com.devmaster.handler.StandardError;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -55,7 +55,7 @@ public class ExceptionDemoController {
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "✅ Dados válidos processados"),
         @ApiResponse(responseCode = "400", description = "❌ Erro de validação", 
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+                    content = @Content(schema = @Schema(implementation = StandardError.class)))
     })
     public ResponseEntity<Map<String, Object>> testValidation(@Valid @RequestBody UserRequest request) {
         log.info("📝 Dados válidos recebidos: {}", request);
@@ -78,7 +78,7 @@ public class ExceptionDemoController {
     )
     @ApiResponses({
         @ApiResponse(responseCode = "404", description = "❌ Recurso não encontrado",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+                    content = @Content(schema = @Schema(implementation = StandardError.class)))
     })
     public ResponseEntity<Object> testNotFound(
             @Parameter(description = "ID do recurso", example = "123")
@@ -100,7 +100,7 @@ public class ExceptionDemoController {
     )
     @ApiResponses({
         @ApiResponse(responseCode = "403", description = "❌ Operação não permitida",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+                    content = @Content(schema = @Schema(implementation = StandardError.class)))
     })
     public ResponseEntity<Object> testForbidden() {
         log.info("🚫 Tentativa de operação não permitida");
@@ -118,7 +118,7 @@ public class ExceptionDemoController {
     )
     @ApiResponses({
         @ApiResponse(responseCode = "409", description = "❌ Conflito de dados",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+                    content = @Content(schema = @Schema(implementation = StandardError.class)))
     })
     public ResponseEntity<Object> testConflict() {
         log.info("⚠️ Tentativa de criar recurso duplicado");
@@ -137,7 +137,7 @@ public class ExceptionDemoController {
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "✅ Conversão bem-sucedida"),
         @ApiResponse(responseCode = "400", description = "❌ Erro de conversão de tipo",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+                    content = @Content(schema = @Schema(implementation = StandardError.class)))
     })
     public ResponseEntity<Map<String, Object>> testTypeMismatch(
             @Parameter(description = "Número inteiro", example = "123")
@@ -164,7 +164,7 @@ public class ExceptionDemoController {
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "✅ Parâmetro fornecido"),
         @ApiResponse(responseCode = "400", description = "❌ Parâmetro obrigatório ausente",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+                    content = @Content(schema = @Schema(implementation = StandardError.class)))
     })
     public ResponseEntity<Map<String, Object>> testMissingParameter(
             @Parameter(description = "Nome obrigatório", example = "João")
@@ -189,7 +189,7 @@ public class ExceptionDemoController {
     )
     @ApiResponses({
         @ApiResponse(responseCode = "500", description = "❌ Erro interno do servidor",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+                    content = @Content(schema = @Schema(implementation = StandardError.class)))
     })
     public ResponseEntity<Object> testGenericError() {
         log.info("💥 Simulando erro genérico");
@@ -208,7 +208,7 @@ public class ExceptionDemoController {
     )
     @ApiResponses({
         @ApiResponse(responseCode = "409", description = "❌ Violação de integridade",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+                    content = @Content(schema = @Schema(implementation = StandardError.class)))
     })
     public ResponseEntity<Object> testDatabaseError() {
         log.info("🗄️ Simulando erro de banco de dados");
