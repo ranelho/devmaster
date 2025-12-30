@@ -44,6 +44,65 @@ app:
   description: Dev Master Application
   timezone: ${APP_TIMEZONE:America/Sao_Paulo}
   
+# Resilience4j Circuit Breaker Configuration
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        sliding-window-size: 10                    # Janela de 10 requisições
+        minimum-number-of-calls: 5                 # Mínimo 5 calls para avaliar
+        failure-rate-threshold: 50                 # 50% de falha abre o circuito
+        wait-duration-in-open-state: 30s           # Aguarda 30s antes de tentar half-open
+        permitted-number-of-calls-in-half-open-state: 3  # 3 calls no estado half-open
+        automatic-transition-from-open-to-half-open-enabled: true
+        record-exceptions:
+          - java.net.ConnectException
+          - java.net.SocketTimeoutException
+          - org.springframework.web.client.ResourceAccessException
+        ignore-exceptions:
+          - java.lang.IllegalArgumentException
+    instances:
+      external-api:
+        base-config: default
+        failure-rate-threshold: 60                 # APIs externas mais tolerantes
+        wait-duration-in-open-state: 60s
+      database:
+        base-config: default
+        failure-rate-threshold: 30                 # Database menos tolerante
+        wait-duration-in-open-state: 15s
+        sliding-window-size: 20
+  
+  # Retry Configuration
+  retry:
+    configs:
+      default:
+        max-attempts: 3
+        wait-duration: 1s
+        exponential-backoff-multiplier: 2
+        retry-exceptions:
+          - java.net.ConnectException
+          - java.net.SocketTimeoutException
+    instances:
+      external-api:
+        base-config: default
+        max-attempts: 2
+      database:
+        base-config: default
+        max-attempts: 3
+        wait-duration: 500ms
+  
+  # Timeout Configuration  
+  timelimiter:
+    configs:
+      default:
+        timeout-duration: 10s
+        cancel-running-future: true
+    instances:
+      external-api:
+        timeout-duration: 15s
+      database:
+        timeout-duration: 5s
+
 # Logging Configuration
 logging:
   level:

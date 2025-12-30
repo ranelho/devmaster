@@ -24,6 +24,11 @@ Este projeto foi criado especificamente para:
 - **🎨 Swagger UI** - Interface visual para testar APIs
 - **📋 Spring Boot Actuator** - Monitoramento e métricas
 
+### Resilience & Reliability
+- **🔧 Resilience4j 2.2.0** - Circuit Breaker, Retry, Timeout
+- **🛡️ Fallback Methods** - Respostas alternativas em caso de falha
+- **📊 Métricas de Resiliência** - Monitoramento de saúde dos serviços
+
 ### Development Tools
 - **🔧 Lombok** - Redução de boilerplate code
 - **🎯 Spring AOP** - Programação orientada a aspectos
@@ -106,6 +111,9 @@ mvn spring-boot:run -Dspring-boot.run.profiles=develop
 - **📖 Swagger UI**: http://localhost:8081/api/swagger
 - **📋 API Docs**: http://localhost:8081/api/api-docs
 - **📊 Actuator**: http://localhost:8081/api/actuator
+- **🔧 Circuit Breaker Status**: http://localhost:8081/api/resilience/status
+- **🧪 Teste de Resiliência**: http://localhost:8081/api/resilience/test/success
+- **🛡️ Teste de Exception Handler**: http://localhost:8081/api/demo/exceptions/error-types
 
 ## 📚 Conceitos Abordados
 
@@ -114,6 +122,8 @@ mvn spring-boot:run -Dspring-boot.run.profiles=develop
 - ✅ **Variáveis de ambiente** com suporte nativo .env
 - ✅ **Properties externalizadas** para flexibilidade
 - ✅ **Docker Compose** para dependências locais (PostgreSQL + PgAdmin)
+- ✅ **Circuit Breaker** com Resilience4j para resiliência
+- ✅ **Segurança** - Vulnerabilidades corrigidas (CVE-2025-48924)
 
 ### 🗄️ Banco de Dados
 - ✅ **Spring Data JPA** configurado (temporariamente desabilitado para testes)
@@ -126,6 +136,7 @@ mvn spring-boot:run -Dspring-boot.run.profiles=develop
 - ✅ **Documentação automática** com SpringDoc OpenAPI
 - ✅ **Swagger UI** integrado e funcional
 - ✅ **Configurações web** otimizadas
+- ✅ **Global Exception Handler** - Tratamento centralizado de erros
 
 ### 📊 Monitoramento e Logging
 - ✅ **Logging estruturado** com Logback
@@ -153,6 +164,219 @@ mvn spring-boot:run -Dspring-boot.run.profiles=develop
 - ✅ **Logging automático** com emojis e performance tracking
 - ✅ **Configuração multi-ambiente** pronta para uso
 - ✅ **Suporte completo a .env** para desenvolvimento local
+- ✅ **Circuit Breaker** com Resilience4j para resiliência
+- ✅ **Endpoints de teste** para demonstrar padrões de resiliência
+- ✅ **Global Exception Handler** - Tratamento padronizado de erros
+- ✅ **Segurança** - Vulnerabilidade CVE-2025-48924 corrigida
+
+## 🛡️ Global Exception Handler
+
+### 🎯 **Tratamento Centralizado de Erros**
+
+O projeto implementa um sistema completo de tratamento de exceções que garante respostas consistentes e informativas para todos os tipos de erro.
+
+#### **📋 Tipos de Erro Tratados:**
+- **📝 Validação**: Campos obrigatórios, formatos inválidos, constraints
+- **🔄 Conversão**: Tipos de dados incorretos, formatos incompatíveis
+- **🌐 HTTP**: Endpoints não encontrados, métodos não suportados
+- **🗄️ Banco de Dados**: Violações de integridade, chaves duplicadas
+- **💼 Negócio**: Regras específicas da aplicação
+- **💥 Genéricos**: Erros internos não tratados especificamente
+
+#### **🧪 Testando o Exception Handler:**
+
+```bash
+# Lista todos os tipos de erro disponíveis
+curl http://localhost:8081/api/demo/exceptions/error-types
+
+# Teste de validação (envie dados inválidos)
+curl -X POST http://localhost:8081/api/demo/exceptions/validation \
+  -H "Content-Type: application/json" \
+  -d '{"name": "", "email": "inválido"}'
+
+# Teste de recurso não encontrado
+curl http://localhost:8081/api/demo/exceptions/not-found/123
+
+# Teste de erro de tipo (use texto onde deveria ser número)
+curl "http://localhost:8081/api/demo/exceptions/type-mismatch?number=abc"
+```
+
+#### **📊 Estrutura de Resposta Padronizada:**
+```json
+{
+  "timestamp": "2025-12-26 10:30:45",
+  "status": 400,
+  "error": "Validation Failed",
+  "message": "Dados inválidos fornecidos",
+  "path": "/api/demo/exceptions/validation",
+  "method": "POST",
+  "details": {
+    "name": "Nome é obrigatório",
+    "email": "Email deve ter formato válido"
+  }
+}
+```
+
+📋 **Guia completo**: Veja `EXCEPTION_HANDLER_GUIDE.md`
+
+## 🔒 Segurança
+
+### 🛡️ Vulnerabilidades Corrigidas
+
+#### ✅ CVE-2025-48924 - Apache Commons Lang 3
+- **Status**: **RESOLVIDO** 
+- **Componente**: commons-lang3
+- **Versão Vulnerável**: 3.17.0 ❌
+- **Versão Segura**: 3.18.0 ✅
+- **Severidade**: 5.3 (Medium)
+- **Tipo**: Uncontrolled Recursion / DoS
+
+**Solução**: Exclusão da dependência transitiva vulnerável e adição explícita da versão segura.
+
+📋 **Detalhes completos**: Veja `SECURITY_FIX.md`
+
+### 🔍 **Verificação de Segurança**
+```bash
+# Verificar versão atual do commons-lang3
+mvn dependency:tree | findstr commons-lang3
+# Deve mostrar: commons-lang3:jar:3.18.0:compile ✅
+
+# Scan de vulnerabilidades (opcional)
+mvn org.owasp:dependency-check-maven:check
+```
+
+## 🔧 Circuit Breaker e Resiliência
+
+### 🛡️ Padrões Implementados
+
+#### **Circuit Breaker**
+- **🟢 CLOSED**: Funcionando normalmente, todas as chamadas passam
+- **🔴 OPEN**: Muitas falhas detectadas, chamadas são rejeitadas imediatamente
+- **🟡 HALF_OPEN**: Testando recuperação, permite algumas chamadas
+
+#### **Retry**
+- Tenta novamente automaticamente em caso de falha temporária
+- Backoff exponencial para evitar sobrecarga
+- Configurável por tipo de serviço
+
+#### **Timeout**
+- Evita chamadas que "ficam penduradas"
+- Configuração específica por tipo de operação
+- Cancela futures em execução
+
+### 🧪 Testando o Circuit Breaker
+
+#### **Endpoints Disponíveis**
+```bash
+# Status de todos os circuit breakers
+GET /api/resilience/status
+
+# Testar API externa (use URLs reais)
+GET /api/resilience/external-api?url=https://httpbin.org/delay/2
+
+# Testar operação de banco (com falhas simuladas)
+GET /api/resilience/database?query=SELECT * FROM users
+
+# Testar cenários específicos
+GET /api/resilience/test/success     # Sempre funciona
+GET /api/resilience/test/failure     # Sempre falha
+GET /api/resilience/test/timeout     # Demora muito (timeout)
+GET /api/resilience/test/intermittent # Falha esporadicamente
+
+# Reset de circuit breaker
+POST /api/resilience/reset/external-api
+```
+
+#### **Cenários de Teste Recomendados**
+
+1. **🟢 Teste de Sucesso**
+   ```bash
+   curl "http://localhost:8081/api/resilience/test/success"
+   ```
+
+2. **🔴 Forçar Abertura do Circuito**
+   ```bash
+   # Execute várias vezes para acumular falhas
+   for i in {1..10}; do
+     curl "http://localhost:8081/api/resilience/test/failure"
+   done
+   
+   # Verifique o status - deve estar OPEN
+   curl "http://localhost:8081/api/resilience/status"
+   ```
+
+3. **🟡 Teste de Recuperação**
+   ```bash
+   # Reset o circuit breaker
+   curl -X POST "http://localhost:8081/api/resilience/reset/external-api"
+   
+   # Teste cenário intermitente
+   curl "http://localhost:8081/api/resilience/test/intermittent"
+   ```
+
+4. **⏰ Teste de Timeout**
+   ```bash
+   curl "http://localhost:8081/api/resilience/test/timeout"
+   ```
+
+### 📊 Monitoramento
+
+#### **Métricas Disponíveis**
+- Taxa de falhas por circuit breaker
+- Número de chamadas (total, sucesso, falha)
+- Chamadas rejeitadas (quando circuito aberto)
+- Estado atual de cada circuit breaker
+
+#### **Logs Estruturados**
+```
+🟢 Circuit Breaker 'external-api': OPEN → CLOSED (Circuito FECHADO - Funcionando normalmente)
+🔴 Circuit Breaker 'database': CLOSED → OPEN (Circuito ABERTO - Falhas detectadas)
+🟡 Circuit Breaker 'external-api': OPEN → HALF_OPEN (Testando recuperação)
+✅ Circuit Breaker 'external-api': Chamada bem-sucedida (duração: 245ms)
+❌ Circuit Breaker 'database': Falha detectada - RuntimeException (duração: 1205ms)
+🚫 Circuit Breaker 'external-api': Chamada rejeitada - Circuito ABERTO
+```
+
+### ⚙️ Configuração Personalizada
+
+#### **Configurações por Ambiente**
+```yaml
+# Desenvolvimento - mais tolerante para testes
+resilience4j:
+  circuitbreaker:
+    instances:
+      external-api:
+        failure-rate-threshold: 60        # 60% de falha
+        wait-duration-in-open-state: 60s  # Aguarda 1 minuto
+
+# Produção - menos tolerante
+resilience4j:
+  circuitbreaker:
+    instances:
+      external-api:
+        failure-rate-threshold: 30        # 30% de falha
+        wait-duration-in-open-state: 30s  # Aguarda 30 segundos
+```
+
+#### **Criando Novos Circuit Breakers**
+```java
+@CircuitBreaker(name = "payment-service", fallbackMethod = "fallbackPayment")
+@Retry(name = "payment-service")
+@TimeLimiter(name = "payment-service")
+public CompletableFuture<PaymentResponse> processPayment(PaymentRequest request) {
+    // Lógica de pagamento
+}
+
+public CompletableFuture<PaymentResponse> fallbackPayment(PaymentRequest request, Exception ex) {
+    // Resposta alternativa
+    return CompletableFuture.completedFuture(
+        PaymentResponse.builder()
+            .status("DEFERRED")
+            .message("Pagamento será processado posteriormente")
+            .build()
+    );
+}
+```
 
 ## ⚙️ Configurações por Ambiente
 
