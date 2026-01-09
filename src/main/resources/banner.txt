@@ -1,0 +1,13 @@
+${Ansi.BLUE}
+${Ansi.BLUE}*   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *  *
+${Ansi.BLUE}*   ____  ____ __     __   __   __        ____ _____ ____  ____    *
+${Ansi.BLUE}*  |  _ \| ____\ \   / /  |  \/  |  / \  / ___|_   _| ____|  _ \   *
+${Ansi.BLUE}*  | | | |  _|  \ \ / /   | |\/| | / _ \ \___ \ | | |  _| | |_) |  *
+${Ansi.BLUE}*  | |_| | |___  \ V /    | |  | |/ ___ \ ___) || | | |___|  _ <   *
+${Ansi.BLUE}*  |____/|_____|  \_/     |_|  |_/_/   \_\____/ |_| |_____|_| \_\  *
+${Ansi.BLUE}*   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *  *
+${Ansi.YELLOW} :: Dev Master Produção de Software 2026 ::${Ansi.DEFAULT}
+${Ansi.GREEN} :: Spring Boot${spring-boot.formatted-version} :: ${Ansi.DEFAULT}
+${Ansi.GREEN} :: Application Name: ${info.app.name} :: ${Ansi.DEFAULT}
+${Ansi.GREEN} :: Application Version: ${info.app.version} :: ${Ansi.DEFAULT}
+${Ansi.DEFAULT}
