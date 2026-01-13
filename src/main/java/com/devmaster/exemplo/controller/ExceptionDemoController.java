@@ -1,7 +1,7 @@
-package com.devmaster.controller;
+package com.devmaster.exemplo.controller;
 
-import com.devmaster.handler.BusinessException;
-import com.devmaster.handler.StandardError;
+import com.devmaster.handler.APIException;
+import com.devmaster.handler.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -16,6 +16,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,7 +57,7 @@ public class ExceptionDemoController {
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "✅ Dados válidos processados"),
         @ApiResponse(responseCode = "400", description = "❌ Erro de validação", 
-                    content = @Content(schema = @Schema(implementation = StandardError.class)))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<Map<String, Object>> testValidation(@Valid @RequestBody UserRequest request) {
         log.info("📝 Dados válidos recebidos: {}", request);
@@ -78,7 +80,7 @@ public class ExceptionDemoController {
     )
     @ApiResponses({
         @ApiResponse(responseCode = "404", description = "❌ Recurso não encontrado",
-                    content = @Content(schema = @Schema(implementation = StandardError.class)))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<Object> testNotFound(
             @Parameter(description = "ID do recurso", example = "123")
@@ -87,7 +89,7 @@ public class ExceptionDemoController {
         log.info("🔍 Buscando recurso com ID: {}", id);
         
         // Simula busca que sempre falha
-        throw BusinessException.notFound("Usuário com ID " + id);
+        throw APIException.build(HttpStatus.NOT_FOUND, "Usuário com ID " + id);
     }
 
     /**
@@ -100,12 +102,12 @@ public class ExceptionDemoController {
     )
     @ApiResponses({
         @ApiResponse(responseCode = "403", description = "❌ Operação não permitida",
-                    content = @Content(schema = @Schema(implementation = StandardError.class)))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<Object> testForbidden() {
         log.info("🚫 Tentativa de operação não permitida");
         
-        throw BusinessException.forbidden("deletar usuário administrador");
+        throw APIException.build(HttpStatus.FORBIDDEN, "deletar usuário administrador");
     }
 
     /**
@@ -118,12 +120,12 @@ public class ExceptionDemoController {
     )
     @ApiResponses({
         @ApiResponse(responseCode = "409", description = "❌ Conflito de dados",
-                    content = @Content(schema = @Schema(implementation = StandardError.class)))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<Object> testConflict() {
         log.info("⚠️ Tentativa de criar recurso duplicado");
         
-        throw BusinessException.conflict("Email já está em uso por outro usuário");
+        throw APIException.build(HttpStatus.CONFLICT,"Email já está em uso por outro usuário");
     }
 
     /**
@@ -137,7 +139,7 @@ public class ExceptionDemoController {
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "✅ Conversão bem-sucedida"),
         @ApiResponse(responseCode = "400", description = "❌ Erro de conversão de tipo",
-                    content = @Content(schema = @Schema(implementation = StandardError.class)))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<Map<String, Object>> testTypeMismatch(
             @Parameter(description = "Número inteiro", example = "123")
@@ -164,7 +166,7 @@ public class ExceptionDemoController {
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "✅ Parâmetro fornecido"),
         @ApiResponse(responseCode = "400", description = "❌ Parâmetro obrigatório ausente",
-                    content = @Content(schema = @Schema(implementation = StandardError.class)))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<Map<String, Object>> testMissingParameter(
             @Parameter(description = "Nome obrigatório", example = "João")
@@ -189,7 +191,7 @@ public class ExceptionDemoController {
     )
     @ApiResponses({
         @ApiResponse(responseCode = "500", description = "❌ Erro interno do servidor",
-                    content = @Content(schema = @Schema(implementation = StandardError.class)))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<Object> testGenericError() {
         log.info("💥 Simulando erro genérico");
@@ -208,13 +210,13 @@ public class ExceptionDemoController {
     )
     @ApiResponses({
         @ApiResponse(responseCode = "409", description = "❌ Violação de integridade",
-                    content = @Content(schema = @Schema(implementation = StandardError.class)))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<Object> testDatabaseError() {
         log.info("🗄️ Simulando erro de banco de dados");
         
         // Simula violação de constraint única
-        throw new org.springframework.dao.DataIntegrityViolationException(
+        throw new DataIntegrityViolationException(
             "Duplicate entry 'user@example.com' for key 'users.email_unique'"
         );
     }

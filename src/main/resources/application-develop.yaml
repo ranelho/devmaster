@@ -15,11 +15,11 @@ spring:
   jpa:
     hibernate:
       ddl-auto: ${JPA_DDL_AUTO:update}
-    show-sql: ${JPA_SHOW_SQL:true}
+    show-sql: ${JPA_SHOW_SQL:false}
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
+        format_sql: false
         use_sql_comments: true
         jdbc:
           batch_size: 20

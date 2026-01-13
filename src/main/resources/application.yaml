@@ -15,12 +15,6 @@ spring:
       fail-on-empty-beans: false
     time-zone: America/Sao_Paulo
     
-  # Desabilitar JPA temporariamente para teste
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
-
 # Server Configuration
 server:
   port: ${SERVER_PORT:8081}

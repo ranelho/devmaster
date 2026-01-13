@@ -1,10 +1,11 @@
-package com.devmaster.service;
+package com.devmaster.exemplo.controller.service;
 
-import com.devmaster.handler.BusinessException;
+import com.devmaster.handler.APIException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -12,10 +13,10 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * 🌐 Serviço de exemplo para demonstrar Circuit Breaker com APIs externas
- * 
+ * <p>
  * Este serviço simula chamadas para APIs externas e demonstra como aplicar
  * os padrões de resiliência (Circuit Breaker, Retry, Timeout) de forma prática.
- * 
+ *
  * @author DevMaster
  * @since 1.0.0
  */
@@ -31,12 +32,12 @@ public class ExternalApiService {
 
     /**
      * 🔄 Exemplo de chamada para API externa com Circuit Breaker
-     * 
+     * <p>
      * Aplica os padrões:
      * - Circuit Breaker: Protege contra falhas em cascata
-     * - Retry: Tenta novamente em caso de falha temporária  
+     * - Retry: Tenta novamente em caso de falha temporária
      * - Timeout: Evita chamadas que ficam "penduradas"
-     * 
+     *
      * @param url URL da API externa
      * @return Resposta da API ou fallback em caso de falha
      */
@@ -45,41 +46,41 @@ public class ExternalApiService {
     @TimeLimiter(name = "external-api")
     public CompletableFuture<String> callExternalApi(String url) {
         log.info("🌐 Chamando API externa: {}", url);
-        
+
         return CompletableFuture.supplyAsync(() -> {
             try {
                 // Simula chamada real para API externa
                 String response = restTemplate.getForObject(url, String.class);
-                log.info("✅ Resposta recebida da API externa: {} caracteres", 
-                    response != null ? response.length() : 0);
+                log.info("✅ Resposta recebida da API externa: {} caracteres",
+                        response != null ? response.length() : 0);
                 return response;
             } catch (Exception e) {
                 log.error("❌ Erro ao chamar API externa: {}", e.getMessage());
-                throw new BusinessException("Falha na comunicação com API externa " + e.getMessage());
+                throw APIException.build(HttpStatus.BAD_REQUEST, "Falha na comunicação com API externa" + e.getMessage());
             }
         });
     }
 
     /**
      * 🛡️ Método de fallback para chamadas de API externa
-     * 
+     * <p>
      * Executado quando:
      * - Circuit breaker está aberto
      * - Todas as tentativas de retry falharam
      * - Timeout foi excedido
      */
     public CompletableFuture<String> fallbackExternalApi(String url, Exception ex) {
-        log.warn("🛡️ Executando fallback para API externa. URL: {}, Erro: {}", 
-            url, ex.getMessage());
-        
+        log.warn("🛡️ Executando fallback para API externa. URL: {}, Erro: {}",
+                url, ex.getMessage());
+
         return CompletableFuture.completedFuture(
-            "{ \"status\": \"fallback\", \"message\": \"Serviço temporariamente indisponível\" }"
+                "{ \"status\": \"fallback\", \"message\": \"Serviço temporariamente indisponível\" }"
         );
     }
 
     /**
      * 🗄️ Exemplo de operação de banco com Circuit Breaker
-     * 
+     * <p>
      * Demonstra como proteger operações de banco de dados com padrões de resiliência.
      * Útil para cenários onde o banco pode estar sobrecarregado ou instável.
      */
@@ -88,26 +89,26 @@ public class ExternalApiService {
     @TimeLimiter(name = "database")
     public CompletableFuture<String> performDatabaseOperation(String query) {
         log.info("🗄️ Executando operação no banco: {}", query);
-        
+
         return CompletableFuture.supplyAsync(() -> {
             try {
                 // Simula operação no banco de dados
                 Thread.sleep(100); // Simula latência
-                
+
                 // Simula falha ocasional para demonstrar circuit breaker
                 if (Math.random() < 0.3) { // 30% de chance de falha
-                    throw new BusinessException("Timeout na conexão com banco");
+                    throw APIException.build(HttpStatus.REQUEST_TIMEOUT, "Timeout na conexão com banco");
                 }
-                
+
                 log.info("✅ Operação no banco executada com sucesso");
                 return "Operação realizada com sucesso";
-                
+
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                throw new BusinessException("Operação interrompida " + e);
+                throw APIException.build(HttpStatus.REQUEST_TIMEOUT, "Operação interrompida " + e);
             } catch (Exception e) {
                 log.error("❌ Erro na operação do banco: {}", e.getMessage());
-                throw new BusinessException("Falha na operação do banco " + e);
+                throw APIException.build(HttpStatus.REQUEST_TIMEOUT, "Falha na operação do banco" + e);
             }
         });
     }
@@ -116,20 +117,20 @@ public class ExternalApiService {
      * 🛡️ Método de fallback para operações de banco
      */
     public CompletableFuture<String> fallbackDatabase(String query, Exception ex) {
-        log.warn("🛡️ Executando fallback para banco. Query: {}, Erro: {}", 
-            query, ex.getMessage());
-        
+        log.warn("🛡️ Executando fallback para banco. Query: {}, Erro: {}",
+                query, ex.getMessage());
+
         return CompletableFuture.completedFuture(
-            "Operação adiada - banco temporariamente indisponível"
+                "Operação adiada - banco temporariamente indisponível"
         );
     }
 
     /**
      * 📊 Método para simular diferentes cenários de teste
-     * 
+     * <p>
      * Útil para testar o comportamento do circuit breaker em diferentes situações:
      * - success: Sempre funciona
-     * - failure: Sempre falha  
+     * - failure: Sempre falha
      * - timeout: Demora muito para responder
      * - intermittent: Falha esporadicamente
      */
@@ -137,19 +138,19 @@ public class ExternalApiService {
     @Retry(name = "external-api")
     public CompletableFuture<String> testScenario(String scenario) {
         log.info("🧪 Testando cenário: {}", scenario);
-        
+
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return switch (scenario.toLowerCase()) {
                     case "success" -> "✅ Cenário de sucesso executado";
-                    case "failure" -> throw new BusinessException("💥 Cenário de falha simulada");
+                    case "failure" -> throw APIException.build(HttpStatus.BAD_REQUEST, "💥 Cenário de falha simulada");
                     case "timeout" -> {
                         Thread.sleep(20000); // 20 segundos - vai dar timeout
                         yield "⏰ Este cenário não deveria chegar aqui"; // 20 segundos - vai dar timeout
                     }
                     case "intermittent" -> {
                         if (Math.random() < 0.7) { // 70% de chance de falha
-                            throw new BusinessException("🎲 Falha intermitente");
+                            throw APIException.build(HttpStatus.INTERNAL_SERVER_ERROR, "🎲 Falha intermitente");
                         }
                         yield "🎯 Sucesso intermitente";
                     }
@@ -157,7 +158,7 @@ public class ExternalApiService {
                 };
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                throw new BusinessException("Teste interrompido " + e);
+                throw APIException.build(HttpStatus.BAD_REQUEST, "Teste interrompido " + e);
             }
         });
     }
@@ -168,7 +169,7 @@ public class ExternalApiService {
     public CompletableFuture<String> fallbackTestScenario(String scenario, Exception ex) {
         log.warn("🛡️ Fallback do cenário '{}': {}", scenario, ex.getMessage());
         return CompletableFuture.completedFuture(
-            "🛡️ Fallback executado para cenário: " + scenario
+                "🛡️ Fallback executado para cenário: " + scenario
         );
     }
 }

@@ -1,6 +1,6 @@
-package com.devmaster.controller;
+package com.devmaster.exemplo.controller;
 
-import com.devmaster.service.ExternalApiService;
+import com.devmaster.exemplo.controller.service.ExternalApiService;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.swagger.v3.oas.annotations.Operation;
