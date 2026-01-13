@@ -76,8 +76,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<StandardError> handleRuntimeException(RuntimeException ex) {
+    @ExceptionHandler({BusinessException.class, IllegalArgumentException.class, IllegalStateException.class})
+    public ResponseEntity<StandardError> handleBusinessException(RuntimeException ex) {
         StandardError error = StandardError.builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.name())
                 .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
