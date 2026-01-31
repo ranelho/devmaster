@@ -11,12 +11,6 @@ public record ClienteListResponse(UUID idCliente, String cpf, String fullName) {
         this(cliente.getIdCliente(), cliente.getCpf(), cliente.getNomeCompleto());
     }
 
-    public static List<ClienteListResponse> converte(List<Cliente> clientes) {
-        return clientes.stream()
-                .map(ClienteListResponse::new)
-                .toList();
-    }
-
     public static Page<ClienteListResponse> convertePageable(Page<Cliente> clientes) {
         return clientes.map(ClienteListResponse::new);
     }

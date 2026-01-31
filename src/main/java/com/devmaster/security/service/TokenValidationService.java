@@ -53,9 +53,4 @@ public class TokenValidationService {
             throw e;
         }
     }
-
-    private boolean validateTokenFallback(String token, Exception e) {
-        log.error("Fallback ativado para validação de token. Erro: {}", e.getMessage());
-        return false;
-    }
 }
