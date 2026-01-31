@@ -1,4 +1,4 @@
-package com.devmaster.cliente.application.api;
+package com.devmaster.cliente.application.api.response;
 
 import com.devmaster.cliente.domain.Cliente;
 import org.springframework.data.domain.Page;
@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public record ClienteListResponse(UUID idCliente, String cpf, String fullName) {
     private ClienteListResponse(Cliente cliente) {
-        this(cliente.getIdCliente(), cliente.getCpf(), cliente.getFullName());
+        this(cliente.getIdCliente(), cliente.getCpf(), cliente.getNomeCompleto());
     }
 
     public static List<ClienteListResponse> converte(List<Cliente> clientes) {

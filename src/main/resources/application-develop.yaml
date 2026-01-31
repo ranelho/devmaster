@@ -64,3 +64,10 @@ management:
 app:
   environment: develop
   debug: ${APP_DEBUG:true}
+
+security:
+  auth:
+    service:
+      url: ${AUTH_SERVICE_URL:http://localhost:8080}
+  interceptor:
+    enabled: ${SECURITY_INTERCEPTOR_ENABLED:false}

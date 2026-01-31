@@ -1,4 +1,4 @@
-package com.devmaster.cliente.application.api;
+package com.devmaster.cliente.application.api.response;
 
 import com.devmaster.cliente.domain.Cliente;
 import com.devmaster.cliente.domain.enums.EstadoCivil;
@@ -24,7 +24,7 @@ public record ClienteResponse(
         this(
             cliente.getIdCliente(),
             cliente.getCpf(),
-            cliente.getFullName(),
+            cliente.getNomeCompleto(),
             cliente.getDataNascimento(),
             cliente.getNaturalidade(),
             cliente.getNacionalidade(),

@@ -1,9 +1,8 @@
-package com.devmaster.cliente.application.api;
+package com.devmaster.cliente.application.api.request;
 
 
 import com.devmaster.cliente.application.api.annotation.Adult;
 import com.devmaster.cliente.domain.enums.EstadoCivil;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -18,7 +17,7 @@ public record ClienteRequest(
         String cpf,
 
         @NotNull(message = "Campo Obrigatório!")
-        String fullName,
+        String nomeCompleto,
 
         @Adult
         LocalDate dataNascimento,

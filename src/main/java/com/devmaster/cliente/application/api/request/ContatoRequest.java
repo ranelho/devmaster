@@ -1,4 +1,4 @@
-package com.devmaster.cliente.application.api;
+package com.devmaster.cliente.application.api.request;
 
 public record ContatoRequest(
         String telefone,

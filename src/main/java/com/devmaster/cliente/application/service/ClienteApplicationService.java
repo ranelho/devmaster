@@ -1,11 +1,12 @@
 package com.devmaster.cliente.application.service;
 
-import com.devmaster.cliente.application.api.ClienteListResponse;
-import com.devmaster.cliente.application.api.ClienteRequest;
-import com.devmaster.cliente.application.api.ClienteResponse;
-import com.devmaster.cliente.application.api.EditaClienteRequest;
+import com.devmaster.cliente.application.api.response.ClienteListResponse;
+import com.devmaster.cliente.application.api.request.ClienteRequest;
+import com.devmaster.cliente.application.api.response.ClienteResponse;
+import com.devmaster.cliente.application.api.request.EditaClienteRequest;
 import com.devmaster.cliente.application.repository.ClienteRepository;
 import com.devmaster.cliente.domain.Cliente;
+import com.devmaster.cliente.util.CpfUtil;
 import com.devmaster.handler.APIException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,7 +24,8 @@ public class ClienteApplicationService implements ClienteService {
 
     @Override
     public ClienteResponse saveCliente(ClienteRequest clienteRequest) {
-        String cpfFormatado = formatCpf(clienteRequest.cpf());
+        String cpfFormatado = CpfUtil.formatCpf(clienteRequest.cpf());
+        clienteRepository.existsByCpf(cpfFormatado);
         Cliente cliente = clienteRepository.saveCliente(new Cliente(cpfFormatado, clienteRequest));
         return new ClienteResponse(cliente);
     }
@@ -41,10 +43,10 @@ public class ClienteApplicationService implements ClienteService {
     }
 
     @Override
-    public void updateCliente(UUID idCliente, EditaClienteRequest editaClienteRequest) {
+    public ClienteResponse updateCliente(UUID idCliente, EditaClienteRequest request) {
         Cliente cliente = clienteRepository.findById(idCliente);
-        cliente.altera(editaClienteRequest);
-        clienteRepository.saveCliente(cliente);
+        cliente.update(request);
+        return new ClienteResponse(clienteRepository.saveCliente(cliente));
     }
 
     @Override
@@ -52,13 +54,5 @@ public class ClienteApplicationService implements ClienteService {
         Cliente cliente = clienteRepository.findByCpf(cpf)
                 .orElseThrow(() -> APIException.build(HttpStatus.BAD_REQUEST,"Cliente não encontrado!"));
         return new ClienteResponse(cliente);
-    }
-
-    public static String formatCpf(String cpf) {
-        cpf = cpf.replaceAll("\\D", "");
-        if (cpf.length() == 11) {
-            cpf = cpf.replaceAll("(\\d{3})(\\d{3})(\\d{3})(\\d{2})", "$1.$2.$3-$4");
-        }
-        return cpf;
     }
 }

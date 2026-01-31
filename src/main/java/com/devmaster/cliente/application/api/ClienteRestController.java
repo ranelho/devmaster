@@ -1,5 +1,9 @@
 package com.devmaster.cliente.application.api;
 
+import com.devmaster.cliente.application.api.request.ClienteRequest;
+import com.devmaster.cliente.application.api.request.EditaClienteRequest;
+import com.devmaster.cliente.application.api.response.ClienteListResponse;
+import com.devmaster.cliente.application.api.response.ClienteResponse;
 import com.devmaster.cliente.application.service.ClienteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,8 +40,8 @@ public class ClienteRestController implements ClienteAPI {
     }
 
     @Override
-    public void updateCliente(UUID idCliente, @Valid  EditaClienteRequest editaClienteRequest) {
-        clienteService.updateCliente(idCliente, editaClienteRequest);
+    public ClienteResponse updateCliente(UUID idCliente, @Valid EditaClienteRequest editaClienteRequest) {
+       return clienteService.updateCliente(idCliente, editaClienteRequest);
     }
 
 }

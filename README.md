@@ -20,9 +20,16 @@ Este projeto foi criado especificamente para:
 - **📊 HikariCP** - Pool de conexões de alta performance (integrado)
 
 ### Documentation & API
-- **📖 SpringDoc OpenAPI 2.6.0** - Documentação OpenAPI nativa
+- **📖 SpringDoc OpenAPI 2.7.0** - Documentação OpenAPI nativa
 - **🎨 Swagger UI** - Interface visual para testar APIs
+- **🔒 Swagger JWT** - Autenticação integrada com cadeado
 - **📋 Spring Boot Actuator** - Monitoramento e métricas
+
+### Security
+- **🔐 Spring Security 6** - Framework de segurança enterprise
+- **🔑 JWT Authentication** - Autenticação stateless com tokens
+- **🛡️ Token Validation** - Validação via microserviço externo
+- **🚫 CSRF Protection** - Desabilitado para APIs REST (stateless)
 
 ### Resilience & Reliability
 - **🔧 Resilience4j 2.2.0** - Circuit Breaker, Retry, Timeout
@@ -109,6 +116,8 @@ mvn spring-boot:run -Dspring-boot.run.profiles=develop
 ### 4. Acesse as URLs
 - **🏠 Aplicação**: http://localhost:8081/api
 - **📖 Swagger UI**: http://localhost:8081/api/swagger
+  - **🔒 Clique em "Authorize"** para configurar seu token JWT
+  - Insira o token (sem "Bearer") e teste os endpoints protegidos
 - **📋 API Docs**: http://localhost:8081/api/api-docs
 - **📊 Actuator**: http://localhost:8081/api/actuator
 - **🔧 Circuit Breaker Status**: http://localhost:8081/api/resilience/status
@@ -124,6 +133,8 @@ mvn spring-boot:run -Dspring-boot.run.profiles=develop
 - ✅ **Docker Compose** para dependências locais (PostgreSQL + PgAdmin)
 - ✅ **Circuit Breaker** com Resilience4j para resiliência
 - ✅ **Segurança** - Vulnerabilidades corrigidas (CVE-2025-48924)
+- ✅ **Spring Security + JWT** - Autenticação com microserviços
+- ✅ **Swagger com JWT** - Cadeado de autenticação integrado
 
 ### 🗄️ Banco de Dados
 - ✅ **Spring Data JPA** configurado (temporariamente desabilitado para testes)
@@ -168,6 +179,114 @@ mvn spring-boot:run -Dspring-boot.run.profiles=develop
 - ✅ **Endpoints de teste** para demonstrar padrões de resiliência
 - ✅ **Global Exception Handler** - Tratamento padronizado de erros
 - ✅ **Segurança** - Vulnerabilidade CVE-2025-48924 corrigida
+- ✅ **Spring Security + JWT** - Autenticação com microserviços
+- ✅ **Swagger com JWT** - Cadeado de autenticação integrado
+
+## 🔒 Interceptor de Segurança
+
+### 🛡️ **Spring Security + JWT Authentication**
+
+O projeto implementa Spring Security com filtro JWT que valida tokens em todas as requisições HTTP, comunicando-se com um microserviço de autenticação externo.
+
+#### **⚠️ IMPORTANTE: Ativar Segurança**
+
+Por padrão, a segurança está **DESABILITADA** em desenvolvimento. Para ativar:
+
+1. **Editar `.env`**:
+   ```bash
+   SECURITY_INTERCEPTOR_ENABLED=true
+   ```
+
+2. **Reiniciar a aplicação**:
+   ```bash
+   # Parar: Ctrl+C
+   # Iniciar: mvn spring-boot:run
+   ```
+
+3. **Verificar logs**:
+   ```
+   ✅ Segurança HABILITADA - Endpoints protegidos requerem token JWT
+   ```
+
+📖 **Guia completo de ativação**: `ATIVAR_SEGURANCA.md`
+
+#### **🎯 Características:**
+- **🔐 Spring Security Filter**: Integração nativa com SecurityContext
+- **🔒 Swagger com Cadeado**: Botão "Authorize" para configurar JWT
+- **🌍 Multi-ambiente**: URL do serviço de auth configurável por ambiente
+- **🛡️ Circuit Breaker**: Proteção contra falhas do serviço de autenticação
+- **🔄 Retry**: Tentativas automáticas em caso de erro temporário
+- **⏱️ Timeout**: Evita requisições que demoram muito
+- **🚫 Fallback**: Nega acesso em caso de falha por segurança
+- **🔓 Stateless**: Sem sessões no servidor (JWT only)
+
+#### **⚙️ Configuração por Ambiente:**
+
+```bash
+# Desenvolvimento (desabilitado por padrão)
+AUTH_SERVICE_URL=http://localhost:8080
+SECURITY_INTERCEPTOR_ENABLED=false  # Altere para true para ativar
+
+# Staging
+AUTH_SERVICE_URL=https://auth-staging.example.com
+SECURITY_INTERCEPTOR_ENABLED=true
+
+# Produção
+AUTH_SERVICE_URL=https://auth.example.com
+SECURITY_INTERCEPTOR_ENABLED=true
+```
+
+#### **🔒 Usando o Swagger com JWT:**
+
+1. **Abra o Swagger UI**: http://localhost:8081/api/swagger
+2. **Clique no botão "Authorize" (🔒)** no topo da página
+3. **Insira seu token JWT** (sem o prefixo "Bearer")
+4. **Clique em "Authorize"** e depois em "Close"
+5. **Teste qualquer endpoint** - o token será incluído automaticamente
+
+#### **🧪 Testando via cURL:**
+
+```bash
+# Opção 1: Apenas o token (mais simples)
+curl -X GET http://localhost:8081/api/v1/clientes/all \
+  -H "Authorization: seu-token-aqui"
+
+# Opção 2: Com prefixo Bearer (padrão OAuth2)
+curl -X GET http://localhost:8081/api/v1/clientes/all \
+  -H "Authorization: Bearer seu-token-aqui"
+
+# Ambos os formatos funcionam!
+
+# Requisição sem token (retorna 401 se segurança habilitada)
+curl -X GET http://localhost:8081/api/v1/clientes/all
+
+# Requisição com token inválido (retorna 401)
+curl -X GET http://localhost:8081/api/v1/clientes/all \
+  -H "Authorization: token-invalido"
+```
+
+**💡 Dica**: O cliente pode enviar apenas o token sem "Bearer". O sistema aceita ambos os formatos!
+
+📋 **Formatos aceitos**: Veja `TOKEN_FORMATS.md` para todos os exemplos
+
+#### **📋 Endpoints Públicos (Não Requerem Token):**
+- `/api/swagger/**` - Swagger UI
+- `/api/api-docs/**` - Documentação OpenAPI
+- `/api/actuator/**` - Monitoramento
+- `/api/health/**` - Health checks
+
+#### **🧪 Script de Teste:**
+```bash
+# Windows
+test-security.bat
+
+# Linux/Mac
+./test-security.sh
+```
+
+📋 **Guia completo**: Veja `SECURITY_INTERCEPTOR_GUIDE.md`
+📖 **Tutorial Swagger**: Veja `SWAGGER_JWT_TUTORIAL.md` para passo a passo visual
+🔧 **Troubleshooting**: Veja `SECURITY_TROUBLESHOOTING.md` se tiver problemas
 
 ## 🛡️ Global Exception Handler
 
@@ -411,6 +530,15 @@ public CompletableFuture<PaymentResponse> fallbackPayment(PaymentRequest request
 ```
 
 ## 🔐 Variáveis de Ambiente
+
+### 🔒 Segurança
+```bash
+# URL do serviço de autenticação (obrigatório em produção)
+AUTH_SERVICE_URL=http://localhost:8080
+
+# Habilitar/desabilitar interceptor de segurança
+SECURITY_INTERCEPTOR_ENABLED=true
+```
 
 ### 🌍 Configurações Gerais
 ```bash

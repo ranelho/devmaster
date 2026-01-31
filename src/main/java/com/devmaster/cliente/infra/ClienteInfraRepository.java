@@ -38,7 +38,7 @@ public class ClienteInfraRepository implements ClienteRepository {
 
     @Override
     public Page<Cliente> getAllClientes(Pageable pageable) {
-        Sort fixedSort = Sort.by(Sort.Direction.ASC, "fullName");
+        Sort fixedSort = Sort.by(Sort.Direction.ASC, "nomeCompleto");
         Pageable pageableWithFixedSort = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), fixedSort);
         return jpaRepository.findAll(pageableWithFixedSort);
     }
@@ -48,4 +48,10 @@ public class ClienteInfraRepository implements ClienteRepository {
         return jpaRepository.findByCpf(cpf);
     }
 
+    @Override
+    public void existsByCpf(String cpfFormatado) {
+        if (jpaRepository.existsByCpf(cpfFormatado)) {
+            throw APIException.build(HttpStatus.BAD_REQUEST,"Cliente já cadastrado, CPF: " + cpfFormatado);
+        }
+    }
 }

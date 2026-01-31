@@ -8,4 +8,6 @@ import java.util.UUID;
 
 public interface ClienteSpringDataJPARepository extends JpaRepository<Cliente, UUID>{
     Optional<Cliente> findByCpf(String cpf);
+
+    boolean existsByCpf(String cpfFormatado);
 }

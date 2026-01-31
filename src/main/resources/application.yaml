@@ -65,6 +65,11 @@ resilience4j:
         failure-rate-threshold: 30                 # Database menos tolerante
         wait-duration-in-open-state: 15s
         sliding-window-size: 20
+      auth-service:
+        base-config: default
+        failure-rate-threshold: 40
+        wait-duration-in-open-state: 20s
+        sliding-window-size: 15
   
   # Retry Configuration
   retry:
@@ -84,6 +89,10 @@ resilience4j:
         base-config: default
         max-attempts: 3
         wait-duration: 500ms
+      auth-service:
+        base-config: default
+        max-attempts: 2
+        wait-duration: 500ms
   
   # Timeout Configuration  
   timelimiter:
@@ -95,6 +104,8 @@ resilience4j:
       external-api:
         timeout-duration: 15s
       database:
+        timeout-duration: 5s
+      auth-service:
         timeout-duration: 5s
 
 # Logging Configuration

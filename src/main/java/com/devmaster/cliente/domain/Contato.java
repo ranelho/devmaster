@@ -1,6 +1,6 @@
 package com.devmaster.cliente.domain;
 
-import com.devmaster.cliente.application.api.ContatoRequest;
+import com.devmaster.cliente.application.api.request.ContatoRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

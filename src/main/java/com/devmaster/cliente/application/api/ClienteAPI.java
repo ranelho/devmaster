@@ -1,5 +1,9 @@
 package com.devmaster.cliente.application.api;
 
+import com.devmaster.cliente.application.api.request.ClienteRequest;
+import com.devmaster.cliente.application.api.request.EditaClienteRequest;
+import com.devmaster.cliente.application.api.response.ClienteListResponse;
+import com.devmaster.cliente.application.api.response.ClienteResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -32,5 +36,5 @@ public interface ClienteAPI {
 
     @PatchMapping("/{idCliente}")
     @ResponseStatus(code = NO_CONTENT)
-    void updateCliente(@PathVariable UUID idCliente, @Valid @RequestBody EditaClienteRequest editaClienteRequest);
+    ClienteResponse updateCliente(@PathVariable UUID idCliente, @Valid @RequestBody EditaClienteRequest editaClienteRequest);
 }

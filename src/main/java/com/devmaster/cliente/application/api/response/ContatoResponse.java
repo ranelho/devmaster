@@ -1,4 +1,4 @@
-package com.devmaster.cliente.application.api;
+package com.devmaster.cliente.application.api.response;
 
 import com.devmaster.cliente.domain.Contato;
 

@@ -12,4 +12,5 @@ public interface ClienteRepository {
     Cliente findById(UUID idCliente);
     Page<Cliente> getAllClientes(Pageable pageable);
     Optional<Cliente> findByCpf(String cpf);
+    void existsByCpf(String cpfFormatado);
 }

@@ -64,3 +64,10 @@ management:
 app:
   environment: staging
   debug: ${APP_DEBUG:false}
+
+security:
+  auth:
+    service:
+      url: ${AUTH_SERVICE_URL:http://localhost:8080}
+  interceptor:
+    enabled: ${SECURITY_INTERCEPTOR_ENABLED:false}
