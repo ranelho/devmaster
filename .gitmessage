@@ -1,0 +1,27 @@
+# <tipo>(<escopo>): <descrição>
+#
+# [corpo opcional]
+#
+# [rodapé opcional]
+
+# Tipos disponíveis:
+# feat:     Nova funcionalidade
+# fix:      Correção de bug
+# docs:     Documentação
+# test:     Testes
+# build:    Build e dependências
+# perf:     Performance
+# style:    Formatação
+# refactor: Refatoração
+# chore:    Tarefas de manutenção
+# ci:       Integração contínua
+# raw:      Arquivos de configuração
+# cleanup:  Limpeza de código
+# remove:   Remoção de código
+
+# Regras:
+# - Máximo 50 caracteres no título
+# - Use imperativo ("add" não "added")
+# - Seja específico sobre o que foi alterado
+# - Use escopo quando necessário: feat(auth): add login
+# - Corpo opcional para explicar "por quê"

@@ -4,6 +4,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,6 +24,28 @@ public class RestResponseEntityExceptionHandler {
 	@ExceptionHandler(APIException.class)
 	public ResponseEntity<ErrorApiResponse> handlerGenericException(APIException ex) {
 		return ex.buildErrorResponseEntity();
+	}
+
+	// Handler genérico para exceções de autenticação do Spring Security
+	@ExceptionHandler(AuthenticationException.class)
+	public ResponseEntity<ErrorApiResponse> handleAuthenticationException(AuthenticationException ex) {
+		log.warn("Erro de autenticação: {}", ex.getMessage());
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+				.body(ErrorApiResponse.builder()
+						.description("AUTHENTICATION_ERROR")
+						.message("Falha na autenticação: " + ex.getMessage())
+						.build());
+	}
+
+	// Handler para exceções de acesso negado
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<ErrorApiResponse> handleAccessDeniedException(AccessDeniedException ex) {
+		log.warn("Acesso negado: {}", ex.getMessage());
+		return ResponseEntity.status(HttpStatus.FORBIDDEN)
+				.body(ErrorApiResponse.builder()
+						.description("ACCESS_DENIED")
+						.message("Acesso negado: você não tem permissão para acessar este recurso")
+						.build());
 	}
 
 	@ExceptionHandler(Exception.class)

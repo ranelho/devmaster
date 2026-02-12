@@ -57,12 +57,39 @@ Este projeto foi criado especificamente para:
 ### Estrutura de Código Organizada
 ```
 📁 src/main/java/com/devmaster/
-├── 📁 config/                       # Configurações centralizadas
-│   ├── 📝 LoggingAspect.java        # Logging automático com AOP
-│   ├── 📖 SwaggerConfig.java        # Configuração do OpenAPI
-│   └── 🌐 WebConfig.java            # Configurações web
-├── 📁 controller/                   # Controllers REST (em desenvolvimento)
-└── 🚀 DevmasterApplication.java     # Classe principal
+├── 📁 application/                  # Camada de aplicação
+│   ├── � api/                      # Controllers REST
+│   │   ├── � annCotation/           # Anotações customizadas
+│   │   ├── 📁 request/              # DTOs de requisição
+│   │   ├── 📁 response/             # DTOs de resposta
+│   │   ├── ProtectedController.java # Endpoints protegidos (JWT)
+│   │   └── PublicController.java    # Endpoints públicos
+│   ├── 📁 repository/               # Repositórios JPA
+│   └── 📁 service/                  # Lógica de negócio
+├── � config/                       # Configurações centralizadas
+│   ├── LoggingAspect.java           # Logging automático com AOP
+│   ├── ResilienceConfig.java        # Circuit Breaker e Resilience4j
+│   ├── RestTemplateConfig.java      # Cliente HTTP
+│   ├── SecurityConfig.java          # Spring Security + JWT
+│   ├── SwaggerConfig.java           # Documentação OpenAPI
+│   └── WebConfig.java               # Configurações web
+├── 📁 domain/                       # Entidades de domínio
+│   └── 📁 enums/                    # Enumerações
+├── 📁 handler/                      # Tratamento de exceções
+│   ├── 📁 validator/                # Validadores customizados
+│   │   ├── TrimString.java          # Anotação para trim
+│   │   └── TrimStringValidator.java # Validador de trim
+│   ├── APIException.java            # Exceção customizada
+│   ├── ErrorApiResponse.java        # Resposta de erro da API
+│   ├── ErrorResponse.java           # Resposta de erro genérica
+│   └── RestResponseEntityExceptionHandler.java # Handler global
+├── 📁 infra/                        # Infraestrutura
+├── 📁 security/                     # Segurança e autenticação
+│   ├── 📁 exception/                # Exceções de segurança
+│   ├── JwtAuthenticationFilter.java # Filtro de autenticação JWT
+│   └── JwtTokenValidator.java       # Validador de tokens JWT
+├── 📁 util/                         # Utilitários
+└── DevmasterApplication.java        # Classe principal
 ```
 
 ## 🚀 Quick Start
@@ -274,15 +301,6 @@ curl -X GET http://localhost:8081/api/v1/clientes/all \
 - `/api/api-docs/**` - Documentação OpenAPI
 - `/api/actuator/**` - Monitoramento
 - `/api/health/**` - Health checks
-
-#### **🧪 Script de Teste:**
-```bash
-# Windows
-test-security.bat
-
-# Linux/Mac
-./test-security.sh
-```
 
 📋 **Guia completo**: Veja `SECURITY_INTERCEPTOR_GUIDE.md`
 📖 **Tutorial Swagger**: Veja `SWAGGER_JWT_TUTORIAL.md` para passo a passo visual
@@ -658,24 +676,64 @@ SWAGGER_ENABLED=true            # Habilitar/desabilitar Swagger
 ```
 devmaster/
 ├── 📁 src/main/java/com/devmaster/
-│   ├── 📁 config/                    # 🔧 Configurações centralizadas
+│   ├── 📁 application/               # 🎯 Camada de aplicação
+│   │   ├── 📁 api/                   # 🌐 Controllers REST
+│   │   │   ├── 📁 annotation/        # Anotações customizadas
+│   │   │   ├── 📁 request/           # DTOs de requisição
+│   │   │   ├── 📁 response/          # DTOs de resposta
+│   │   │   ├── ProtectedController.java # Endpoints protegidos
+│   │   │   └── PublicController.java    # Endpoints públicos
+│   │   ├── 📁 repository/            # 🗄️ Repositórios JPA
+│   │   └── 📁 service/               # � Lógica de negócio
+│   ├── 📁 config/                    # � Configurações centralizadas
 │   │   ├── LoggingAspect.java        # Monitoramento automático com AOP
+│   │   ├── ResilienceConfig.java     # Circuit Breaker e Resilience4j
+│   │   ├── RestTemplateConfig.java   # Cliente HTTP
+│   │   ├── SecurityConfig.java       # Spring Security + JWT
 │   │   ├── SwaggerConfig.java        # Documentação OpenAPI
 │   │   └── WebConfig.java            # Configurações web
-│   ├── 📁 controller/                # 🌐 Controllers REST (em desenvolvimento)
+│   ├── 📁 domain/                    # 🏛️ Entidades de domínio
+│   │   └── 📁 enums/                 # Enumerações
+│   ├── 📁 handler/                   # � Tratamento de exceções
+│   │   ├── 📁 validator/             # Validadores customizados
+│   │   │   ├── TrimString.java       # Anotação para trim
+│   │   │   └── TrimStringValidator.java # Validador de trim
+│   │   ├── APIException.java         # Exceção customizada
+│   │   ├── ErrorApiResponse.java     # Resposta de erro da API
+│   │   ├── ErrorResponse.java        # Resposta de erro genérica
+│   │   └── RestResponseEntityExceptionHandler.java # Handler global
+│   ├── 📁 infra/                     # 🏗️ Infraestrutura
+│   ├── 📁 security/                  # 🔒 Segurança e autenticação
+│   │   ├── 📁 exception/             # Exceções de segurança
+│   │   ├── JwtAuthenticationFilter.java # Filtro de autenticação JWT
+│   │   └── JwtTokenValidator.java    # Validador de tokens JWT
+│   ├── 📁 util/                      # 🛠️ Utilitários
 │   └── DevmasterApplication.java     # 🚀 Classe principal
 ├── 📁 src/main/resources/
+│   ├── 📁 db/migration/              # 📊 Migrations do banco
 │   ├── application.yaml              # ⚙️ Configurações gerais
 │   ├── application-develop.yaml      # 🟢 Desenvolvimento
 │   ├── application-staging.yaml      # 🟡 Homologação
-│   └── application-master.yaml       # 🔴 Produção
+│   ├── application-master.yaml       # 🔴 Produção
+│   └── banner.txt                    # 🎨 Banner da aplicação
 ├── 📁 src/test/java/
 │   └── DevmasterApplicationTests.java # 🧪 Testes da aplicação
+├── 📁 .github/                       # 🔄 GitHub Actions e workflows
 ├── docker-compose.yml                # 🐳 PostgreSQL + PgAdmin local
 ├── .env.example                      # 📝 Exemplo de variáveis
 ├── .gitmessage                       # 📋 Template para commits
 ├── pom.xml                           # 📦 Dependências Maven
-└── README.md                         # 📚 Esta documentação
+├── README.md                         # 📚 Esta documentação
+└── 📄 Documentação adicional:
+    ├── CIRCUIT_BREAKER_GUIDE.md      # Guia de Circuit Breaker
+    ├── COMMANDS.md                   # Comandos úteis do projeto
+    ├── EXCEPTION_HANDLER_GUIDE.md    # Guia de tratamento de exceções
+    ├── SECURITY_FIX.md               # Correções de segurança (CVE)
+    ├── SECURITY_INTERCEPTOR_GUIDE.md # Guia de segurança JWT
+    ├── SECURITY_TROUBLESHOOTING.md   # Troubleshooting de segurança
+    ├── SPRING_SECURITY_JWT_GUIDE.md  # Guia completo Spring Security + JWT
+    ├── SWAGGER_JWT_TUTORIAL.md       # Tutorial Swagger com JWT
+    └── TOKEN_FORMATS.md              # Formatos de token aceitos
 ```
 
 ## 🛣️ Próximos Passos (Roadmap)
