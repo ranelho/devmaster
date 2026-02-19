@@ -52,11 +52,17 @@
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 
+		<!-- Spring Security -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
 		<!-- SpringDoc OpenAPI - Versão compatível com Spring Boot 3.5.x -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>2.6.0</version>
+			<version>2.7.0</version>
 			<exclusions>
 				<!-- Exclude vulnerable commons-lang3 version -->
 				<exclusion>

@@ -1,294 +1,447 @@
-# 🛠️ Comandos e Scripts Úteis
+# 📋 Comandos Úteis do Projeto
 
-Este documento contém comandos essenciais para trabalhar com o projeto Devamaster.
+## 🚀 Execução da Aplicação
 
-## 🚀 Comandos Maven
-
-### Compilação e Build
+### Desenvolvimento
 ```bash
-# Compilação básica
-mvn clean compile
-
-# Build completo com testes
-mvn clean package
-
-# Build sem testes (desenvolvimento rápido)
-mvn clean package -DskipTests
-
-# Build com profile específico
-mvn clean package -Pstaging
-
-# Verificar dependências
-mvn dependency:tree
-```
-
-### Execução da Aplicação
-```bash
-# Desenvolvimento (profile padrão)
+# Executar com profile develop (padrão)
 mvn spring-boot:run
 
-# Com profile específico
+# Executar com profile específico
 mvn spring-boot:run -Dspring-boot.run.profiles=develop
 mvn spring-boot:run -Dspring-boot.run.profiles=staging
 mvn spring-boot:run -Dspring-boot.run.profiles=master
-
-# Com JVM arguments otimizados para Java 25
-mvn spring-boot:run -Dspring-boot.run.jvmArguments="-XX:+UseZGC -XX:+UnlockExperimentalVMOptions --enable-preview"
-
-# Com variáveis de ambiente
-mvn spring-boot:run -Dspring-boot.run.arguments="--server.port=8081 --logging.level.com.devamaster=DEBUG"
 ```
 
-### Testes
+### Build
+```bash
+# Build completo com testes
+mvn clean package
+
+# Build sem testes
+mvn clean package -DskipTests
+
+# Apenas compilar
+mvn clean compile
+```
+
+## 🐳 Docker
+
+### PostgreSQL + PgAdmin
+```bash
+# Iniciar todos os serviços
+docker-compose up -d
+
+# Apenas PostgreSQL
+docker-compose up -d postgres
+
+# Parar serviços
+docker-compose down
+
+# Ver logs
+docker-compose logs -f
+
+# Verificar status
+docker-compose ps
+```
+
+## 🧪 Testes
+
+### Executar Testes
 ```bash
 # Todos os testes
 mvn test
 
 # Testes específicos
-mvn test -Dtest=HealthControllerTest
+mvn test -Dtest=DevmasterApplicationTests
 
-# Testes de integração
-mvn verify
-
-# Testes com coverage
+# Com cobertura
 mvn clean test jacoco:report
 ```
 
-## 🐳 Comandos Docker
+## 🔒 Segurança - Spring Security + JWT
 
-### Banco de Dados
+### Formatos de Token Aceitos
+
+O sistema aceita o token em **dois formatos**:
+
 ```bash
-# Iniciar PostgreSQL
-docker-compose up -d postgres
+# Opção 1: Apenas o token (mais simples)
+curl -X GET http://localhost:8081/api/v1/clientes/all \
+  -H "Authorization: seu-token-aqui"
 
-# Iniciar PostgreSQL + PgAdmin
-docker-compose up -d
+# Opção 2: Com Bearer (padrão OAuth2)
+curl -X GET http://localhost:8081/api/v1/clientes/all \
+  -H "Authorization: Bearer seu-token-aqui"
+```
 
-# Ver logs do banco
-docker-compose logs -f postgres
+**💡 Ambos funcionam!** O cliente pode enviar apenas o token.
 
-# Parar serviços
+### Swagger UI com Cadeado
+
+```bash
+# 1. Abrir Swagger UI no navegador
+start http://localhost:8081/api/swagger
+
+# 2. Clicar no botão "Authorize" (🔒) no topo
+# 3. Inserir o token JWT (sem "Bearer")
+# 4. Clicar em "Authorize" e depois "Close"
+# 5. Testar qualquer endpoint - o token será incluído automaticamente
+```
+
+### Testar Validação de Token via cURL
+
+```bash
+# Opção 1: Apenas o token (mais simples)
+curl -X GET http://localhost:8081/api/v1/clientes/all \
+  -H "Authorization: seu-token-aqui"
+
+# Opção 2: Com Bearer (padrão OAuth2)
+curl -X GET http://localhost:8081/api/v1/clientes/all \
+  -H "Authorization: Bearer seu-token-aqui"
+
+# Requisição sem token (retorna 401)
+curl -X GET http://localhost:8081/api/v1/clientes/all
+
+# Requisição com token inválido (retorna 401)
+curl -X GET http://localhost:8081/api/v1/clientes/all \
+  -H "Authorization: token-invalido"
+
+# Testar endpoint público (não requer token)
+curl -X GET http://localhost:8081/api/actuator/health
+```
+
+**💡 Dica**: O sistema aceita o token com ou sem "Bearer". Escolha o formato mais conveniente!
+
+### Obter Token do Serviço de Autenticação
+
+```bash
+# Fazer login e obter token
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"user","password":"pass"}'
+
+# Salvar token em variável (Linux/Mac)
+TOKEN=$(curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"user","password":"pass"}' | jq -r '.token')
+
+# Usar token
+curl -X GET http://localhost:8081/api/clientes \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+### Configurar Serviço de Autenticação
+
+```bash
+# No arquivo .env
+AUTH_SERVICE_URL=http://localhost:8080
+SECURITY_INTERCEPTOR_ENABLED=true
+
+# Desabilitar segurança para desenvolvimento
+SECURITY_INTERCEPTOR_ENABLED=false
+```
+
+### Testar Conectividade com Auth Service
+
+```bash
+# Verificar se o serviço de auth está acessível
+curl -X POST http://localhost:8080/api/auth/validate-token \
+  -H "Authorization: Bearer test-token"
+
+# Verificar variável de ambiente
+echo %AUTH_SERVICE_URL%
+```
+
+## 🛡️ Exception Handler
+
+### Testar Tipos de Erro
+```bash
+# Listar todos os tipos de erro
+curl http://localhost:8081/api/demo/exceptions/error-types
+
+# Teste de validação
+curl -X POST http://localhost:8081/api/demo/exceptions/validation \
+  -H "Content-Type: application/json" \
+  -d '{"name": "", "email": "inválido"}'
+
+# Teste de recurso não encontrado
+curl http://localhost:8081/api/demo/exceptions/not-found/123
+
+# Teste de erro de tipo
+curl "http://localhost:8081/api/demo/exceptions/type-mismatch?number=abc"
+```
+
+## 🔧 Circuit Breaker
+
+### Testar Resiliência
+```bash
+# Status de todos os circuit breakers
+curl http://localhost:8081/api/resilience/status
+
+# Teste de sucesso
+curl http://localhost:8081/api/resilience/test/success
+
+# Teste de falha (execute várias vezes para abrir o circuito)
+for i in {1..10}; do
+  curl http://localhost:8081/api/resilience/test/failure
+done
+
+# Verificar status após falhas
+curl http://localhost:8081/api/resilience/status
+
+# Reset do circuit breaker
+curl -X POST http://localhost:8081/api/resilience/reset/external-api
+
+# Teste de timeout
+curl http://localhost:8081/api/resilience/test/timeout
+
+# Teste intermitente
+curl http://localhost:8081/api/resilience/test/intermittent
+```
+
+## 📊 Monitoramento
+
+### Actuator Endpoints
+```bash
+# Health check
+curl http://localhost:8081/api/actuator/health
+
+# Informações da aplicação
+curl http://localhost:8081/api/actuator/info
+
+# Métricas
+curl http://localhost:8081/api/actuator/metrics
+
+# Métricas específicas
+curl http://localhost:8081/api/actuator/metrics/jvm.memory.used
+curl http://localhost:8081/api/actuator/metrics/http.server.requests
+```
+
+## 📖 Documentação
+
+### Swagger/OpenAPI
+```bash
+# Abrir Swagger UI no navegador
+start http://localhost:8081/api/swagger
+
+# API Docs JSON
+curl http://localhost:8081/api/api-docs
+
+# API Docs YAML
+curl http://localhost:8081/api/api-docs.yaml
+```
+
+## 🔍 Análise de Código
+
+### Dependências
+```bash
+# Árvore de dependências
+mvn dependency:tree
+
+# Verificar versão específica
+mvn dependency:tree | findstr commons-lang3
+
+# Dependências desatualizadas
+mvn versions:display-dependency-updates
+```
+
+### Segurança
+```bash
+# Scan de vulnerabilidades
+mvn org.owasp:dependency-check-maven:check
+
+# Verificar CVE específico
+mvn dependency:tree | findstr commons-lang3
+```
+
+## 🗄️ Banco de Dados
+
+### PostgreSQL Local
+```bash
+# Conectar via psql
+docker exec -it devmaster-postgres psql -U devmaster -d devmaster_dev
+
+# Backup
+docker exec devmaster-postgres pg_dump -U devmaster devmaster_dev > backup.sql
+
+# Restore
+docker exec -i devmaster-postgres psql -U devmaster devmaster_dev < backup.sql
+```
+
+### PgAdmin
+```bash
+# Acessar PgAdmin
+start http://localhost:5050
+
+# Credenciais:
+# Email: admin@devmaster.com
+# Password: admin123
+```
+
+## 🔄 Git
+
+### Workflow
+```bash
+# Criar branch de feature
+git checkout master
+git pull origin master
+git checkout -b feature/nova-funcionalidade
+
+# Commit seguindo conventional commits
+git add .
+git commit -m "feat: add nova funcionalidade"
+
+# Push e criar PR
+git push origin feature/nova-funcionalidade
+```
+
+### Conventional Commits
+```bash
+# Nova funcionalidade
+git commit -m "feat: add user authentication"
+
+# Correção de bug
+git commit -m "fix: resolve login validation issue"
+
+# Documentação
+git commit -m "docs: update API documentation"
+
+# Refatoração
+git commit -m "refactor: improve code structure"
+
+# Performance
+git commit -m "perf: optimize database queries"
+
+# Testes
+git commit -m "test: add unit tests for user service"
+```
+
+## 🧹 Limpeza
+
+### Maven
+```bash
+# Limpar target
+mvn clean
+
+# Limpar e reinstalar dependências
+mvn clean install -U
+
+# Limpar cache local
+mvn dependency:purge-local-repository
+```
+
+### Docker
+```bash
+# Remover containers parados
 docker-compose down
 
-# Limpar volumes (CUIDADO: apaga dados)
+# Remover volumes
 docker-compose down -v
+
+# Limpar tudo
+docker system prune -a
 ```
 
-### Aplicação
+## 🔧 Troubleshooting
+
+### Porta em Uso
 ```bash
-# Build da imagem Docker (futuro)
-docker build -t devamaster:latest .
+# Windows - Verificar porta 8081
+netstat -ano | findstr :8081
 
-# Executar com Docker
-docker run -p 8080:8080 --env-file .env devamaster:latest
+# Matar processo
+taskkill /PID <PID> /F
 ```
 
-## 🔧 Comandos de Desenvolvimento
-
-### Análise de Código
+### Problemas de Compilação
 ```bash
-# SpotBugs (análise estática)
-mvn spotbugs:check
+# Limpar e recompilar
+mvn clean compile
 
-# Checkstyle (estilo de código)
-mvn checkstyle:check
+# Atualizar dependências
+mvn clean install -U
 
-# PMD (análise de código)
-mvn pmd:check
-
-# Dependency check (vulnerabilidades)
-mvn org.owasp:dependency-check-maven:check
+# Verificar versão do Java
+java -version
+mvn -version
 ```
 
-### Documentação
+### Problemas com Banco de Dados
 ```bash
-# Gerar documentação JavaDoc
-mvn javadoc:javadoc
+# Verificar se PostgreSQL está rodando
+docker-compose ps
 
-# Site do projeto
-mvn site
+# Reiniciar PostgreSQL
+docker-compose restart postgres
 
-# OpenAPI spec generation
-curl http://localhost:8080/api/api-docs > openapi.json
-curl http://localhost:8080/api/api-docs.yaml > openapi.yaml
+# Ver logs do PostgreSQL
+docker-compose logs -f postgres
 ```
 
-## 🎯 Scripts de Automação
-
-### setup.sh (Linux/Mac)
+### Problemas com Spring Security
 ```bash
-#!/bin/bash
-echo "🚀 Configurando ambiente Devamaster..."
+# Desabilitar temporariamente
+# No arquivo .env:
+SECURITY_INTERCEPTOR_ENABLED=false
 
-# Verificar Java 25
-java -version | grep "25" || {
-    echo "❌ Java 25 não encontrado!"
-    exit 1
-}
+# Verificar URL do serviço de auth
+echo %AUTH_SERVICE_URL%
 
-# Copiar arquivo de ambiente
-cp .env.example .env
-echo "📝 Arquivo .env criado"
+# Testar conectividade com serviço de auth
+curl -X POST http://localhost:8080/api/auth/validate-token \
+  -H "Authorization: Bearer test-token"
 
-# Iniciar banco de dados
-docker-compose up -d postgres
-echo "🐘 PostgreSQL iniciado"
-
-# Aguardar banco ficar pronto
-sleep 10
-
-# Executar aplicação
-mvn spring-boot:run
+# Verificar logs de segurança
+# Adicionar no application.yaml:
+# logging:
+#   level:
+#     com.devmaster.security: DEBUG
+#     org.springframework.security: DEBUG
 ```
 
-### setup.bat (Windows)
-```batch
-@echo off
-echo 🚀 Configurando ambiente Devamaster...
+## 📝 Variáveis de Ambiente
 
-REM Verificar Java 25
-java -version | findstr "25" >nul
-if errorlevel 1 (
-    echo ❌ Java 25 não encontrado!
-    exit /b 1
-)
-
-REM Copiar arquivo de ambiente
-copy .env.example .env
-echo 📝 Arquivo .env criado
-
-REM Iniciar banco de dados
-docker-compose up -d postgres
-echo 🐘 PostgreSQL iniciado
-
-REM Aguardar banco ficar pronto
-timeout /t 10 /nobreak >nul
-
-REM Executar aplicação
-mvn spring-boot:run
-```
-
-## 📊 Comandos de Monitoramento
-
-### Health Checks
+### Listar Variáveis Atuais
 ```bash
-# Status básico
-curl http://localhost:8080/api/health
+# Windows
+set | findstr SPRING
+set | findstr DATABASE
+set | findstr AUTH
 
-# Informações detalhadas
-curl http://localhost:8080/api/health/info
-
-# Métricas do Actuator
-curl http://localhost:8080/api/actuator/metrics
-
-# Health check do Actuator
-curl http://localhost:8080/api/actuator/health
+# Ver todas as variáveis do .env
+type .env
 ```
 
-### Logs
+### Configurar Variáveis
 ```bash
-# Seguir logs em tempo real
-tail -f logs/application.log
+# Temporário (sessão atual)
+set SPRING_PROFILES_ACTIVE=staging
+set AUTH_SERVICE_URL=http://localhost:8080
 
-# Filtrar logs por nível
-grep "ERROR" logs/application.log
-
-# Logs do último minuto
-find logs/ -name "*.log" -newermt "1 minute ago" -exec tail -f {} +
+# Permanente (editar .env)
+notepad .env
 ```
 
-## 🔍 Comandos de Debug
-
-### JVM Debugging
-```bash
-# Executar com debug remoto
-mvn spring-boot:run -Dspring-boot.run.jvmArguments="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
-
-# Profiling com JFR
-mvn spring-boot:run -Dspring-boot.run.jvmArguments="-XX:+FlightRecorder -XX:StartFlightRecording=duration=60s,filename=app-profile.jfr"
-
-# Memory dump
-jcmd <PID> GC.run_finalization
-jcmd <PID> VM.memory_dump heap.hprof
-```
-
-### Database
-```bash
-# Conectar ao PostgreSQL
-docker exec -it devamaster-postgres psql -U devamaster -d devamaster_dev
-
-# Backup do banco
-docker exec devamaster-postgres pg_dump -U devamaster devamaster_dev > backup.sql
-
-# Restore do banco
-docker exec -i devamaster-postgres psql -U devamaster devamaster_dev < backup.sql
-```
-
-## 🚀 Comandos de Deploy
+## 🚀 Deploy
 
 ### Build para Produção
 ```bash
-# Build otimizado
-mvn clean package -Pproduction -DskipTests
+# Build com profile de produção
+mvn clean package -Dspring.profiles.active=master -DskipTests
 
-# Build com profile específico
-mvn clean package -Dspring.profiles.active=master
-
-# Criar JAR executável
-mvn clean package spring-boot:repackage
+# Executar JAR
+java -jar target/devmaster-0.0.1-SNAPSHOT.jar --spring.profiles.active=master
 ```
 
-### Variáveis de Ambiente para Deploy
+### Docker Build (futuro)
 ```bash
-# Staging
-export SPRING_PROFILES_ACTIVE=staging
-export DATABASE_URL=jdbc:postgresql://staging-db:5432/devamaster_staging
-export DATABASE_USERNAME=devamaster_staging
-export DATABASE_PASSWORD=${STAGING_DB_PASSWORD}
+# Build da imagem
+docker build -t devmaster:latest .
 
-# Produção
-export SPRING_PROFILES_ACTIVE=master
-export DATABASE_URL=jdbc:postgresql://prod-db:5432/devamaster_prod
-export DATABASE_USERNAME=devamaster_prod
-export DATABASE_PASSWORD=${PROD_DB_PASSWORD}
-export SWAGGER_ENABLED=false
+# Executar container
+docker run -p 8081:8081 \
+  -e SPRING_PROFILES_ACTIVE=master \
+  -e AUTH_SERVICE_URL=https://auth.example.com \
+  devmaster:latest
 ```
-
-## 🧪 Comandos de Teste
-
-### Testes de Carga
-```bash
-# Apache Bench
-ab -n 1000 -c 10 http://localhost:8080/api/health
-
-# curl em loop
-for i in {1..100}; do curl -s http://localhost:8080/api/health > /dev/null; done
-```
-
-### Testes de API
-```bash
-# Swagger UI
-open http://localhost:8080/api/swagger-ui.html
-
-# Postman collection export
-curl http://localhost:8080/api/api-docs | jq . > postman-collection.json
-```
-
-## 📋 Checklist de Deploy
-
-### Pré-Deploy
-- [ ] Testes passando: `mvn test`
-- [ ] Build sem erros: `mvn clean package`
-- [ ] Variáveis de ambiente configuradas
-- [ ] Banco de dados acessível
-- [ ] Swagger desabilitado em produção
-
-### Pós-Deploy
-- [ ] Health check: `curl /api/health`
-- [ ] Logs sem erros
-- [ ] Métricas funcionando
-- [ ] Performance aceitável
-
----
-
-**Use estes comandos para maximizar sua produtividade com o projeto Devamaster!** 🚀

@@ -1,11 +1,8 @@
 HELP.md
 target/
-.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-
-### Environment Variables ###
-.env
 
 ### STS ###
 .apt_generated
@@ -17,10 +14,25 @@ target/
 .sts4-cache
 
 ### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+.idea/**/aws.xml
+.idea/**/contentModel.xml
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+.idea/**/dbnavigator.xml
+.idea/**/httpRequests/
 
 ### NetBeans ###
 /nbproject/private/
@@ -34,3 +46,39 @@ build/
 
 ### VS Code ###
 .vscode/
+*.code-workspace
+
+### Environment Variables ###
+.env
+*.env.local
+*.env.production
+*.env.staging
+
+### Logs ###
+*.log
+logs/
+
+### OS ###
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+### Maven ###
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+### Temporary Files ###
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.#*
+
+### Test Results ###
+temp_response.txt
