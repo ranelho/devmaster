@@ -17,7 +17,7 @@ spring:
     
 # Server Configuration
 server:
-  port: ${SERVER_PORT:8081}
+  port: ${SERVER_PORT:8080}
   servlet:
     context-path: ${CONTEXT_PATH:/api}
 
@@ -123,3 +123,14 @@ info:
     name: ${spring.application.name}
     description: ${app.description}
     version: ${app.version}
+
+# Google Maps API Configuration
+google:
+  maps:
+    api:
+      key: ${GOOGLE_MAPS_API_KEY:}  # Deixe vazio para usar coordenadas padrão
+
+# Auth Service Integration
+auth:
+  service:
+    url: ${AUTH_SERVICE_URL:http://localhost:8082}

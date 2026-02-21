@@ -3,6 +3,7 @@ package com.devmaster.security;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -50,11 +50,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (claims != null) {
                     // Extrai informações do token
                     String username = (String) claims.get("sub");
+                    String userId = (String) claims.get("userId");
                     @SuppressWarnings("unchecked")
                     List<String> roles = (List<String>) claims.getOrDefault("roles", List.of());
                     
-                    // Cria authorities
+                    log.info("Claims extraídos do token - username: {}, userId: {}, roles: {}", username, userId, roles);
+                    
+                    // Cria authorities com prefixo ROLE_ se não existir
                     List<SimpleGrantedAuthority> authorities = roles.stream()
+                            .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role)
                             .map(SimpleGrantedAuthority::new)
                             .toList();
                     
@@ -66,7 +70,45 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     // Define no contexto de segurança
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     
-                    log.debug("Token validado com sucesso para usuário: {}", username);
+                    log.info("Token validado com sucesso para usuário: {} (ID: {})", username, userId);
+                    
+                    // Se temos userId e não existe header X-User-Id, adiciona via wrapper
+                    if (userId != null && request.getHeader("X-User-Id") == null) {
+                        log.info("Adicionando X-User-Id via wrapper: {}", userId);
+                        HttpServletRequest wrappedRequest = new HttpServletRequestWrapper(request) {
+                            @Override
+                            public String getHeader(String name) {
+                                if ("X-User-Id".equals(name)) {
+                                    return userId;
+                                }
+                                return super.getHeader(name);
+                            }
+                            
+                            @Override
+                            public Enumeration<String> getHeaders(String name) {
+                                if ("X-User-Id".equals(name)) {
+                                    return Collections.enumeration(Collections.singletonList(userId));
+                                }
+                                return super.getHeaders(name);
+                            }
+                            
+                            @Override
+                            public Enumeration<String> getHeaderNames() {
+                                Set<String> names = new HashSet<>();
+                                Enumeration<String> originalNames = super.getHeaderNames();
+                                while (originalNames.hasMoreElements()) {
+                                    names.add(originalNames.nextElement());
+                                }
+                                names.add("X-User-Id");
+                                return Collections.enumeration(names);
+                            }
+                        };
+                        
+                        filterChain.doFilter(wrappedRequest, response);
+                        return;
+                    } else if (userId == null) {
+                        log.warn("Token não contém userId. Você precisa fazer logout e login novamente após reiniciar o Auth Service.");
+                    }
                 }
             }
             
@@ -81,8 +123,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String extractToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
+        if (bearerToken != null) {
+            // Aceita "Bearer token" ou apenas "token"
+            if (bearerToken.startsWith("Bearer ")) {
+                return bearerToken.substring(7);
+            }
+            return bearerToken;
         }
         return null;
     }

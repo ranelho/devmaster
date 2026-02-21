@@ -36,11 +36,11 @@ public class JwtTokenValidator {
         }
 
         try {
-            String validationUrl = authServiceUrl + "/auth/validate";
+            String validationUrl = authServiceUrl + "/api/auth/validate-token";
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.setBearerAuth(token);
+            headers.set("Authorization", "Bearer " + token);  // Usar set em vez de setBearerAuth
             
             HttpEntity<Void> request = new HttpEntity<>(headers);
             
@@ -49,7 +49,7 @@ public class JwtTokenValidator {
             @SuppressWarnings("rawtypes")
             ResponseEntity<Map> response = restTemplate.exchange(
                     validationUrl,
-                    HttpMethod.GET,
+                    HttpMethod.POST,  // Mudado de GET para POST
                     request,
                     Map.class
             );

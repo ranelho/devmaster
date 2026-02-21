@@ -19,16 +19,15 @@ public class LoggingAspect {
     private static final String CONTROLLER_EXECUTION_MESSAGE = "Controller method: {} executed in {} ms";
     private static final String SERVICE_EXECUTION_MESSAGE = "Service method: {} executed in {} ms";
 
-    @Pointcut("execution(* com.devmaster.exemplo..*(..))")
-    public void exemploMethods() {
+    @Pointcut("execution(* com.devmaster.application.api..*(..))")
+    public void controllerMethods() {
     }
 
-    @Pointcut("execution(* com.devmaster.cliente..*(..))")
-    public void clienteMethods() {
+    @Pointcut("execution(* com.devmaster.application.service.impl..*(..))")
+    public void serviceMethods() {
     }
 
-
-    @Before("exemploMethods()")
+    @Before("controllerMethods()")
     public void logControllerEntry(JoinPoint joinPoint) {
         var methodName = joinPoint.getSignature().toShortString();
         var args = Arrays.toString(joinPoint.getArgs());
@@ -36,7 +35,7 @@ public class LoggingAspect {
         log.info("🎯 Entering controller method: {} with arguments: {}", methodName, args);
     }
 
-    @Around("exemploMethods()")
+    @Around("controllerMethods()")
     public Object logControllerExecution(ProceedingJoinPoint joinPoint) throws Throwable {
         var startTime = Instant.now();
         var methodName = joinPoint.getSignature().toShortString();
@@ -56,7 +55,7 @@ public class LoggingAspect {
         }
     }
 
-    @Before("clienteMethods()")
+    @Before("serviceMethods()")
     public void logServiceEntry(JoinPoint joinPoint) {
         var methodName = joinPoint.getSignature().toShortString();
         var args = Arrays.toString(joinPoint.getArgs());
@@ -64,7 +63,7 @@ public class LoggingAspect {
         log.debug("🔧 Entering service method: {} with arguments: {}", methodName, args);
     }
 
-    @Around("clienteMethods()")
+    @Around("serviceMethods()")
     public Object logServiceExecution(ProceedingJoinPoint joinPoint) throws Throwable {
         var stopWatch = new StopWatch(joinPoint.getSignature().toShortString());
         stopWatch.start();
@@ -88,7 +87,7 @@ public class LoggingAspect {
         }
     }
 
-    @AfterThrowing(pointcut = "exemploMethods() || clienteMethods()", throwing = "exception")
+    @AfterThrowing(pointcut = "controllerMethods() || serviceMethods()", throwing = "exception")
     public void logException(JoinPoint joinPoint, Throwable exception) {
         var methodName = joinPoint.getSignature().toShortString();
         var exceptionType = exception.getClass().getSimpleName();
