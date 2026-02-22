@@ -3,6 +3,8 @@ package com.devmaster.application.api.response;
 import com.devmaster.domain.Produto;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Response resumido para Produto (listagens).
@@ -23,9 +25,17 @@ public record ProdutoResumoResponse(
     Integer tempoPreparo,
     Boolean disponivel,
     Boolean destaque,
-    String imagemPrincipalUrl
+    Integer ordemExibicao,
+    LocalDateTime criadoEm,
+    LocalDateTime atualizadoEm,
+    List<ImagemProdutoResponse> imagens,
+    List<GrupoOpcaoResponse> gruposOpcoes
 ) {
-    public static ProdutoResumoResponse from(Produto produto, String imagemPrincipalUrl) {
+    public static ProdutoResumoResponse from(
+        Produto produto,
+        List<ImagemProdutoResponse> imagens,
+        List<GrupoOpcaoResponse> gruposOpcoes
+    ) {
         return new ProdutoResumoResponse(
             produto.getId(),
             produto.getRestaurante().getId(),
@@ -39,7 +49,11 @@ public record ProdutoResumoResponse(
             produto.getTempoPreparo(),
             produto.getDisponivel(),
             produto.getDestaque(),
-            imagemPrincipalUrl
+            produto.getOrdemExibicao(),
+            produto.getCriadoEm(),
+            produto.getAtualizadoEm(),
+            imagens,
+            gruposOpcoes
         );
     }
 }

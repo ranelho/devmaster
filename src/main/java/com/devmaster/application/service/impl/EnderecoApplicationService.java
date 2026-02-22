@@ -1,7 +1,10 @@
 package com.devmaster.application.service.impl;
 
+import com.devmaster.application.api.request.CalcularEntregaRequest;
+import com.devmaster.application.api.response.CalcularEntregaResponse;
 import com.devmaster.application.api.response.EnderecoViaCepResponse;
 import com.devmaster.application.service.EnderecoService;
+import com.devmaster.application.service.EntregaIntegrationService;
 import com.devmaster.handler.APIException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 public class EnderecoApplicationService implements EnderecoService {
 
     private final RestTemplate restTemplate;
+    private final EntregaIntegrationService entregaIntegrationService;
     
     @Value("${google.maps.api.key:}")
     private String googleMapsApiKey;
@@ -52,6 +56,12 @@ public class EnderecoApplicationService implements EnderecoService {
         } catch (Exception e) {
             throw APIException.build(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao buscar endereço", e);
         }
+    }
+
+    @Override
+    public CalcularEntregaResponse calcularEntrega(CalcularEntregaRequest request) {
+        // Delega para o serviço de integração que decide se usa API de Entrega ou cálculo local
+        return entregaIntegrationService.calcularEntrega(request);
     }
     
     private Double[] buscarCoordenadas(EnderecoViaCepResponse.ViaCepData viaCepData) {

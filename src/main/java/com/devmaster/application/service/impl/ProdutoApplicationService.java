@@ -114,11 +114,26 @@ public class ProdutoApplicationService implements ProdutoService {
         
         return produtos.stream()
             .map(produto -> {
-                String imagemUrl = imagemProdutoRepository
-                    .findByProdutoIdAndPrincipal(produto.getId(), true)
-                    .map(img -> img.getUrlBucket() != null ? img.getUrlBucket() : img.getImagemBase64())
-                    .orElse(null);
-                return ProdutoResumoResponse.from(produto, imagemUrl);
+                List<ImagemProdutoResponse> imagens = imagemProdutoRepository
+                    .findByProdutoIdOrderByOrdemExibicao(produto.getId())
+                    .stream()
+                    .map(ImagemProdutoResponse::from)
+                    .collect(Collectors.toList());
+                
+                List<GrupoOpcaoResponse> grupos = grupoOpcaoRepository
+                    .findByProdutoIdOrderByOrdemExibicao(produto.getId())
+                    .stream()
+                    .map(grupo -> {
+                        List<OpcaoResponse> opcoes = opcaoRepository
+                            .findByGrupoOpcaoIdOrderByOrdemExibicao(grupo.getId())
+                            .stream()
+                            .map(OpcaoResponse::from)
+                            .collect(Collectors.toList());
+                        return GrupoOpcaoResponse.from(grupo, opcoes);
+                    })
+                    .collect(Collectors.toList());
+                
+                return ProdutoResumoResponse.from(produto, imagens, grupos);
             })
             .collect(Collectors.toList());
     }
@@ -138,11 +153,26 @@ public class ProdutoApplicationService implements ProdutoService {
             : produtoRepository.findByRestauranteId(restauranteId, pageable);
         
         return produtos.map(produto -> {
-            String imagemUrl = imagemProdutoRepository
-                .findByProdutoIdAndPrincipal(produto.getId(), true)
-                .map(img -> img.getUrlBucket() != null ? img.getUrlBucket() : img.getImagemBase64())
-                .orElse(null);
-            return ProdutoResumoResponse.from(produto, imagemUrl);
+            List<ImagemProdutoResponse> imagens = imagemProdutoRepository
+                .findByProdutoIdOrderByOrdemExibicao(produto.getId())
+                .stream()
+                .map(ImagemProdutoResponse::from)
+                .collect(Collectors.toList());
+            
+            List<GrupoOpcaoResponse> grupos = grupoOpcaoRepository
+                .findByProdutoIdOrderByOrdemExibicao(produto.getId())
+                .stream()
+                .map(grupo -> {
+                    List<OpcaoResponse> opcoes = opcaoRepository
+                        .findByGrupoOpcaoIdOrderByOrdemExibicao(grupo.getId())
+                        .stream()
+                        .map(OpcaoResponse::from)
+                        .collect(Collectors.toList());
+                    return GrupoOpcaoResponse.from(grupo, opcoes);
+                })
+                .collect(Collectors.toList());
+            
+            return ProdutoResumoResponse.from(produto, imagens, grupos);
         });
     }
     
@@ -658,11 +688,26 @@ public class ProdutoApplicationService implements ProdutoService {
         
         return produtos.stream()
             .map(produto -> {
-                String imagemUrl = imagemProdutoRepository
-                    .findByProdutoIdAndPrincipal(produto.getId(), true)
-                    .map(img -> img.getUrlBucket() != null ? img.getUrlBucket() : img.getImagemBase64())
-                    .orElse(null);
-                return ProdutoResumoResponse.from(produto, imagemUrl);
+                List<ImagemProdutoResponse> imagens = imagemProdutoRepository
+                    .findByProdutoIdOrderByOrdemExibicao(produto.getId())
+                    .stream()
+                    .map(ImagemProdutoResponse::from)
+                    .collect(Collectors.toList());
+                
+                List<GrupoOpcaoResponse> grupos = grupoOpcaoRepository
+                    .findByProdutoIdOrderByOrdemExibicao(produto.getId())
+                    .stream()
+                    .map(grupo -> {
+                        List<OpcaoResponse> opcoes = opcaoRepository
+                            .findByGrupoOpcaoIdOrderByOrdemExibicao(grupo.getId())
+                            .stream()
+                            .map(OpcaoResponse::from)
+                            .collect(Collectors.toList());
+                        return GrupoOpcaoResponse.from(grupo, opcoes);
+                    })
+                    .collect(Collectors.toList());
+                
+                return ProdutoResumoResponse.from(produto, imagens, grupos);
             })
             .collect(Collectors.toList());
     }
@@ -708,11 +753,26 @@ public class ProdutoApplicationService implements ProdutoService {
                 restauranteId, pageable)
             .stream()
             .map(produto -> {
-                String imagemUrl = imagemProdutoRepository
-                    .findByProdutoIdAndPrincipal(produto.getId(), true)
-                    .map(img -> img.getUrlBucket() != null ? img.getUrlBucket() : img.getImagemBase64())
-                    .orElse(null);
-                return ProdutoResumoResponse.from(produto, imagemUrl);
+                List<ImagemProdutoResponse> imagens = imagemProdutoRepository
+                    .findByProdutoIdOrderByOrdemExibicao(produto.getId())
+                    .stream()
+                    .map(ImagemProdutoResponse::from)
+                    .collect(Collectors.toList());
+                
+                List<GrupoOpcaoResponse> grupos = grupoOpcaoRepository
+                    .findByProdutoIdOrderByOrdemExibicao(produto.getId())
+                    .stream()
+                    .map(grupo -> {
+                        List<OpcaoResponse> opcoes = opcaoRepository
+                            .findByGrupoOpcaoIdOrderByOrdemExibicao(grupo.getId())
+                            .stream()
+                            .map(OpcaoResponse::from)
+                            .collect(Collectors.toList());
+                        return GrupoOpcaoResponse.from(grupo, opcoes);
+                    })
+                    .collect(Collectors.toList());
+                
+                return ProdutoResumoResponse.from(produto, imagens, grupos);
             })
             .collect(Collectors.toList());
     }

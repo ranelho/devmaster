@@ -22,7 +22,7 @@ import java.util.List;
  * @since 1.0.0
  */
 @Tag(name = "Endereços", description = "Gestão de endereços dos clientes")
-@RequestMapping("/clientes/{clienteId}/enderecos")
+@RequestMapping("/public/v1/clientes/{clienteId}/enderecos")
 public interface EnderecoClienteAPI {
     
     @PostMapping
