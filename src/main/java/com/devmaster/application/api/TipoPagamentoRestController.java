@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Implementação da API de Tipos de Pagamento.
@@ -22,37 +21,37 @@ public class TipoPagamentoRestController implements TipoPagamentoAPI {
     private final TipoPagamentoService tipoPagamentoService;
     
     @Override
-    public TipoPagamentoResponse criarTipoPagamento(UUID usuarioId, TipoPagamentoRequest request) {
-        return tipoPagamentoService.criarTipoPagamento(usuarioId, request);
+    public TipoPagamentoResponse criarTipoPagamento(TipoPagamentoRequest request) {
+        return tipoPagamentoService.criarTipoPagamento(null, request);
     }
     
     @Override
-    public TipoPagamentoResponse buscarTipoPagamento(UUID usuarioId, Long id) {
-        return tipoPagamentoService.buscarTipoPagamento(usuarioId, id);
+    public TipoPagamentoResponse buscarTipoPagamento(Long id) {
+        return tipoPagamentoService.buscarTipoPagamento(null, id);
     }
     
     @Override
-    public List<TipoPagamentoResponse> listarTiposPagamento(UUID usuarioId, Boolean ativo) {
-        return tipoPagamentoService.listarTiposPagamento(usuarioId, ativo);
+    public List<TipoPagamentoResponse> listarTiposPagamento(Boolean ativo) {
+        return tipoPagamentoService.listarTiposPagamento(null, ativo);
     }
     
     @Override
-    public TipoPagamentoResponse atualizarTipoPagamento(UUID usuarioId, Long id, TipoPagamentoRequest request) {
-        return tipoPagamentoService.atualizarTipoPagamento(usuarioId, id, request);
+    public TipoPagamentoResponse atualizarTipoPagamento(Long id, TipoPagamentoRequest request) {
+        return tipoPagamentoService.atualizarTipoPagamento(null, id, request);
     }
     
     @Override
-    public void ativarTipoPagamento(UUID usuarioId, Long id) {
-        tipoPagamentoService.ativarTipoPagamento(usuarioId, id);
+    public void ativarTipoPagamento(Long id) {
+        tipoPagamentoService.ativarTipoPagamento(null, id);
     }
     
     @Override
-    public void desativarTipoPagamento(UUID usuarioId, Long id) {
-        tipoPagamentoService.desativarTipoPagamento(usuarioId, id);
+    public void desativarTipoPagamento(Long id) {
+        tipoPagamentoService.desativarTipoPagamento(null, id);
     }
     
     @Override
-    public void removerTipoPagamento(UUID usuarioId, Long id) {
-        tipoPagamentoService.removerTipoPagamento(usuarioId, id);
+    public void removerTipoPagamento(Long id) {
+        tipoPagamentoService.removerTipoPagamento(null, id);
     }
 }

@@ -9,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Implementação da API de Produtos.
@@ -24,185 +23,175 @@ public class ProdutoRestController implements ProdutoAPI {
     private final ProdutoService produtoService;
     
     @Override
-    public ProdutoResponse criarProduto(UUID usuarioId, Long restauranteId, ProdutoRequest request) {
-        return produtoService.criarProduto(usuarioId, restauranteId, request);
+    public ProdutoResponse criarProduto(Long restauranteId, ProdutoRequest request) {
+        return produtoService.criarProduto(null, restauranteId, request);
     }
     
     @Override
-    public ProdutoResponse buscarProduto(UUID usuarioId, Long restauranteId, Long produtoId) {
-        return produtoService.buscarProduto(usuarioId, restauranteId, produtoId);
+    public ProdutoResponse buscarProduto(Long restauranteId, Long produtoId) {
+        return produtoService.buscarProduto(null, restauranteId, produtoId);
     }
     
     @Override
     public List<ProdutoResumoResponse> listarProdutos(
-        UUID usuarioId,
         Long restauranteId,
         Long categoriaId,
         Boolean disponivel,
         Boolean destaque
     ) {
-        return produtoService.listarProdutos(usuarioId, restauranteId, categoriaId, disponivel, destaque);
+        return produtoService.listarProdutos(null, restauranteId, categoriaId, disponivel, destaque);
     }
     
     @Override
     public Page<ProdutoResumoResponse> listarProdutosComPaginacao(
-        UUID usuarioId,
         Long restauranteId,
         Long categoriaId,
         Pageable pageable
     ) {
-        return produtoService.listarProdutosComPaginacao(usuarioId, restauranteId, categoriaId, pageable);
+        return produtoService.listarProdutosComPaginacao(null, restauranteId, categoriaId, pageable);
     }
     
     @Override
     public ProdutoResponse atualizarProduto(
-        UUID usuarioId,
         Long restauranteId,
         Long produtoId,
         AtualizarProdutoRequest request
     ) {
-        return produtoService.atualizarProduto(usuarioId, restauranteId, produtoId, request);
+        return produtoService.atualizarProduto(null, restauranteId, produtoId, request);
     }
     
     @Override
-    public void disponibilizarProduto(UUID usuarioId, Long restauranteId, Long produtoId) {
-        produtoService.disponibilizarProduto(usuarioId, restauranteId, produtoId);
+    public void disponibilizarProduto(Long restauranteId, Long produtoId) {
+        produtoService.disponibilizarProduto(null, restauranteId, produtoId);
     }
     
     @Override
-    public void indisponibilizarProduto(UUID usuarioId, Long restauranteId, Long produtoId) {
-        produtoService.indisponibilizarProduto(usuarioId, restauranteId, produtoId);
+    public void indisponibilizarProduto(Long restauranteId, Long produtoId) {
+        produtoService.indisponibilizarProduto(null, restauranteId, produtoId);
     }
     
     @Override
-    public void destacarProduto(UUID usuarioId, Long restauranteId, Long produtoId) {
-        produtoService.destacarProduto(usuarioId, restauranteId, produtoId);
+    public void destacarProduto(Long restauranteId, Long produtoId) {
+        produtoService.destacarProduto(null, restauranteId, produtoId);
     }
     
     @Override
-    public void removerDestaqueProduto(UUID usuarioId, Long restauranteId, Long produtoId) {
-        produtoService.removerDestaqueProduto(usuarioId, restauranteId, produtoId);
+    public void removerDestaqueProduto(Long restauranteId, Long produtoId) {
+        produtoService.removerDestaqueProduto(null, restauranteId, produtoId);
     }
     
     @Override
-    public void removerProduto(UUID usuarioId, Long restauranteId, Long produtoId) {
-        produtoService.removerProduto(usuarioId, restauranteId, produtoId);
+    public void removerProduto(Long restauranteId, Long produtoId) {
+        produtoService.removerProduto(null, restauranteId, produtoId);
     }
     
     @Override
     public ImagemProdutoResponse adicionarImagem(
-        UUID usuarioId,
         Long restauranteId,
         Long produtoId,
         ImagemProdutoRequest request
     ) {
-        return produtoService.adicionarImagem(usuarioId, restauranteId, produtoId, request);
+        return produtoService.adicionarImagem(null, restauranteId, produtoId, request);
     }
     
     @Override
     public ImagemProdutoResponse uploadImagem(
-        UUID usuarioId,
         Long restauranteId,
         Long produtoId,
         org.springframework.web.multipart.MultipartFile arquivo,
         Boolean principal,
         Integer ordemExibicao
     ) {
-        return produtoService.uploadImagem(usuarioId, restauranteId, produtoId, arquivo, principal, ordemExibicao);
+        return produtoService.uploadImagem(null, restauranteId, produtoId, arquivo, principal, ordemExibicao);
     }
     
     @Override
-    public List<ImagemProdutoResponse> listarImagens(UUID usuarioId, Long restauranteId, Long produtoId) {
-        return produtoService.listarImagens(usuarioId, restauranteId, produtoId);
+    public List<ImagemProdutoResponse> listarImagens(Long restauranteId, Long produtoId) {
+        return produtoService.listarImagens(null, restauranteId, produtoId);
     }
     
     @Override
-    public void definirImagemPrincipal(UUID usuarioId, Long restauranteId, Long produtoId, Long imagemId) {
-        produtoService.definirImagemPrincipal(usuarioId, restauranteId, produtoId, imagemId);
+    public void definirImagemPrincipal(Long restauranteId, Long produtoId, Long imagemId) {
+        produtoService.definirImagemPrincipal(null, restauranteId, produtoId, imagemId);
     }
     
     @Override
-    public void removerImagem(UUID usuarioId, Long restauranteId, Long produtoId, Long imagemId) {
-        produtoService.removerImagem(usuarioId, restauranteId, produtoId, imagemId);
+    public void removerImagem(Long restauranteId, Long produtoId, Long imagemId) {
+        produtoService.removerImagem(null, restauranteId, produtoId, imagemId);
     }
     
     @Override
     public GrupoOpcaoResponse adicionarGrupoOpcao(
-        UUID usuarioId,
         Long restauranteId,
         Long produtoId,
         GrupoOpcaoRequest request
     ) {
-        return produtoService.adicionarGrupoOpcao(usuarioId, restauranteId, produtoId, request);
+        return produtoService.adicionarGrupoOpcao(null, restauranteId, produtoId, request);
     }
     
     @Override
-    public List<GrupoOpcaoResponse> listarGruposOpcoes(UUID usuarioId, Long restauranteId, Long produtoId) {
-        return produtoService.listarGruposOpcoes(usuarioId, restauranteId, produtoId);
+    public List<GrupoOpcaoResponse> listarGruposOpcoes(Long restauranteId, Long produtoId) {
+        return produtoService.listarGruposOpcoes(null, restauranteId, produtoId);
     }
     
     @Override
     public GrupoOpcaoResponse atualizarGrupoOpcao(
-        UUID usuarioId,
         Long restauranteId,
         Long produtoId,
         Long grupoId,
         GrupoOpcaoRequest request
     ) {
-        return produtoService.atualizarGrupoOpcao(usuarioId, restauranteId, produtoId, grupoId, request);
+        return produtoService.atualizarGrupoOpcao(null, restauranteId, produtoId, grupoId, request);
     }
     
     @Override
-    public void removerGrupoOpcao(UUID usuarioId, Long restauranteId, Long produtoId, Long grupoId) {
-        produtoService.removerGrupoOpcao(usuarioId, restauranteId, produtoId, grupoId);
+    public void removerGrupoOpcao(Long restauranteId, Long produtoId, Long grupoId) {
+        produtoService.removerGrupoOpcao(null, restauranteId, produtoId, grupoId);
     }
     
     @Override
     public OpcaoResponse adicionarOpcao(
-        UUID usuarioId,
         Long restauranteId,
         Long produtoId,
         Long grupoId,
         OpcaoRequest request
     ) {
-        return produtoService.adicionarOpcao(usuarioId, restauranteId, produtoId, grupoId, request);
+        return produtoService.adicionarOpcao(null, restauranteId, produtoId, grupoId, request);
     }
     
     @Override
     public List<OpcaoResponse> listarOpcoes(
-        UUID usuarioId,
         Long restauranteId,
         Long produtoId,
         Long grupoId,
         Boolean disponivel
     ) {
-        return produtoService.listarOpcoes(usuarioId, restauranteId, produtoId, grupoId, disponivel);
+        return produtoService.listarOpcoes(null, restauranteId, produtoId, grupoId, disponivel);
     }
     
     @Override
     public OpcaoResponse atualizarOpcao(
-        UUID usuarioId,
         Long restauranteId,
         Long produtoId,
         Long grupoId,
         Long opcaoId,
         OpcaoRequest request
     ) {
-        return produtoService.atualizarOpcao(usuarioId, restauranteId, produtoId, grupoId, opcaoId, request);
+        return produtoService.atualizarOpcao(null, restauranteId, produtoId, grupoId, opcaoId, request);
     }
     
     @Override
-    public void disponibilizarOpcao(UUID usuarioId, Long restauranteId, Long produtoId, Long grupoId, Long opcaoId) {
-        produtoService.disponibilizarOpcao(usuarioId, restauranteId, produtoId, grupoId, opcaoId);
+    public void disponibilizarOpcao(Long restauranteId, Long produtoId, Long grupoId, Long opcaoId) {
+        produtoService.disponibilizarOpcao(null, restauranteId, produtoId, grupoId, opcaoId);
     }
     
     @Override
-    public void indisponibilizarOpcao(UUID usuarioId, Long restauranteId, Long produtoId, Long grupoId, Long opcaoId) {
-        produtoService.indisponibilizarOpcao(usuarioId, restauranteId, produtoId, grupoId, opcaoId);
+    public void indisponibilizarOpcao(Long restauranteId, Long produtoId, Long grupoId, Long opcaoId) {
+        produtoService.indisponibilizarOpcao(null, restauranteId, produtoId, grupoId, opcaoId);
     }
     
     @Override
-    public void removerOpcao(UUID usuarioId, Long restauranteId, Long produtoId, Long grupoId, Long opcaoId) {
-        produtoService.removerOpcao(usuarioId, restauranteId, produtoId, grupoId, opcaoId);
+    public void removerOpcao(Long restauranteId, Long produtoId, Long grupoId, Long opcaoId) {
+        produtoService.removerOpcao(null, restauranteId, produtoId, grupoId, opcaoId);
     }
 }

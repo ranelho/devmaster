@@ -43,7 +43,7 @@ public class EntregadorApplicationService implements EntregadorService {
     
     @Override
     @Transactional
-    public EntregadorResponse criarEntregador(UUID usuarioId, EntregadorRequest request) {
+    public EntregadorResponse criarEntregador(EntregadorRequest request) {
         // Validar duplicação de CPF
         if (entregadorRepository.existsByCpf(request.getCpf())) {
             throw APIException.build(HttpStatus.CONFLICT, "CPF já cadastrado");
@@ -92,7 +92,7 @@ public class EntregadorApplicationService implements EntregadorService {
     
     @Override
     @Transactional(readOnly = true)
-    public EntregadorResponse buscarEntregador(UUID usuarioId, Long entregadorId) {
+    public EntregadorResponse buscarEntregador(Long entregadorId) {
         Entregador entregador = entregadorRepository.findById(entregadorId)
             .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Entregador não encontrado"));
         
@@ -102,7 +102,6 @@ public class EntregadorApplicationService implements EntregadorService {
     @Override
     @Transactional(readOnly = true)
     public Page<EntregadorResumoResponse> listarEntregadores(
-        UUID usuarioId,
         Boolean ativo,
         Boolean disponivel,
         TipoVeiculo tipoVeiculo,
@@ -132,7 +131,6 @@ public class EntregadorApplicationService implements EntregadorService {
     @Override
     @Transactional
     public EntregadorResponse atualizarEntregador(
-        UUID usuarioId,
         Long entregadorId,
         AtualizarEntregadorRequest request
     ) {
@@ -210,7 +208,7 @@ public class EntregadorApplicationService implements EntregadorService {
     
     @Override
     @Transactional
-    public void desativarEntregador(UUID usuarioId, Long entregadorId) {
+    public void desativarEntregador(Long entregadorId) {
         Entregador entregador = entregadorRepository.findById(entregadorId)
             .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Entregador não encontrado"));
         
@@ -223,7 +221,7 @@ public class EntregadorApplicationService implements EntregadorService {
     
     @Override
     @Transactional
-    public void reativarEntregador(UUID usuarioId, Long entregadorId) {
+    public void reativarEntregador(Long entregadorId) {
         Entregador entregador = entregadorRepository.findById(entregadorId)
             .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Entregador não encontrado"));
         
@@ -234,7 +232,6 @@ public class EntregadorApplicationService implements EntregadorService {
     @Override
     @Transactional
     public void alterarDisponibilidade(
-        UUID usuarioId,
         Long entregadorId,
         AlterarDisponibilidadeRequest request
     ) {
@@ -260,7 +257,6 @@ public class EntregadorApplicationService implements EntregadorService {
     @Override
     @Transactional(readOnly = true)
     public List<EntregadorResumoResponse> buscarEntregadoresDisponiveisProximos(
-        UUID usuarioId,
         Double latitude,
         Double longitude,
         Double raioKm
@@ -276,7 +272,7 @@ public class EntregadorApplicationService implements EntregadorService {
     
     @Override
     @Transactional(readOnly = true)
-    public EstatisticasEntregadorResponse obterEstatisticas(UUID usuarioId, Long entregadorId) {
+    public EstatisticasEntregadorResponse obterEstatisticas(Long entregadorId) {
         Entregador entregador = entregadorRepository.findById(entregadorId)
             .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Entregador não encontrado"));
         

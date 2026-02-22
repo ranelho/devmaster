@@ -2,7 +2,6 @@ package com.devmaster.application.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
 
-@Slf4j
 @RestController
 @RequestMapping("/public/menu")
 @Tag(name = "Menu Público", description = "Endpoints públicos de menu - não requerem autenticação")
@@ -21,8 +19,6 @@ public class MenuController {
     @GetMapping
     @Operation(summary = "Listar todos os itens do menu", description = "Retorna todos os itens disponíveis no menu")
     public ResponseEntity<Map<String, Object>> getAllItems() {
-        log.info("📋 Listando todos os itens do menu (público)");
-        
         return ResponseEntity.ok(Map.of(
             "message", "Menu público - sem autenticação",
             "items", List.of(
@@ -37,8 +33,6 @@ public class MenuController {
     @GetMapping("/{id}")
     @Operation(summary = "Buscar item por ID", description = "Retorna detalhes de um item específico do menu")
     public ResponseEntity<Map<String, Object>> getItemById(@PathVariable Long id) {
-        log.info("🔍 Buscando item {} do menu (público)", id);
-        
         return ResponseEntity.ok(Map.of(
             "id", id,
             "name", "Pizza Margherita",
@@ -52,8 +46,6 @@ public class MenuController {
     @GetMapping("/categories")
     @Operation(summary = "Listar categorias", description = "Retorna todas as categorias do menu")
     public ResponseEntity<Map<String, Object>> getCategories() {
-        log.info("📂 Listando categorias do menu (público)");
-        
         return ResponseEntity.ok(Map.of(
             "categories", List.of("Pizzas", "Hambúrgueres", "Saladas", "Bebidas", "Sobremesas")
         ));

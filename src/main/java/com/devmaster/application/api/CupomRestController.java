@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Controller REST para Cupom.
@@ -27,52 +26,52 @@ public class CupomRestController implements CupomAPI {
     private final CupomService cupomService;
     
     @Override
-    public CupomResponse criarCupom(UUID usuarioId, CupomRequest request) {
-        return cupomService.criarCupom(usuarioId, request);
+    public CupomResponse criarCupom(CupomRequest request) {
+        return cupomService.criarCupom(null, request);
     }
     
     @Override
-    public CupomResponse buscarCupom(UUID usuarioId, Long cupomId) {
-        return cupomService.buscarCupom(usuarioId, cupomId);
+    public CupomResponse buscarCupom(Long cupomId) {
+        return cupomService.buscarCupom(null, cupomId);
     }
     
     @Override
-    public CupomResponse buscarCupomPorCodigo(UUID usuarioId, String codigo) {
-        return cupomService.buscarCupomPorCodigo(usuarioId, codigo);
+    public CupomResponse buscarCupomPorCodigo(String codigo) {
+        return cupomService.buscarCupomPorCodigo(null, codigo);
     }
     
     @Override
-    public Page<CupomResponse> listarCupons(UUID usuarioId, Boolean ativo, Boolean validos, Pageable pageable) {
-        return cupomService.listarCupons(usuarioId, ativo, validos, pageable);
+    public Page<CupomResponse> listarCupons(Boolean ativo, Boolean validos, Pageable pageable) {
+        return cupomService.listarCupons(null, ativo, validos, pageable);
     }
     
     @Override
-    public List<CupomResponse> listarCuponsValidos(UUID usuarioId) {
-        return cupomService.listarCuponsValidos(usuarioId);
+    public List<CupomResponse> listarCuponsValidos() {
+        return cupomService.listarCuponsValidos(null);
     }
     
     @Override
-    public CupomResponse atualizarCupom(UUID usuarioId, Long cupomId, AtualizarCupomRequest request) {
-        return cupomService.atualizarCupom(usuarioId, cupomId, request);
+    public CupomResponse atualizarCupom(Long cupomId, AtualizarCupomRequest request) {
+        return cupomService.atualizarCupom(null, cupomId, request);
     }
     
     @Override
-    public void ativarCupom(UUID usuarioId, Long cupomId) {
-        cupomService.ativarCupom(usuarioId, cupomId);
+    public void ativarCupom(Long cupomId) {
+        cupomService.ativarCupom(null, cupomId);
     }
     
     @Override
-    public void desativarCupom(UUID usuarioId, Long cupomId) {
-        cupomService.desativarCupom(usuarioId, cupomId);
+    public void desativarCupom(Long cupomId) {
+        cupomService.desativarCupom(null, cupomId);
     }
     
     @Override
-    public void removerCupom(UUID usuarioId, Long cupomId) {
-        cupomService.removerCupom(usuarioId, cupomId);
+    public void removerCupom(Long cupomId) {
+        cupomService.removerCupom(null, cupomId);
     }
     
     @Override
-    public ValidacaoCupomResponse validarCupom(UUID usuarioId, ValidarCupomRequest request) {
-        return cupomService.validarCupom(usuarioId, request);
+    public ValidacaoCupomResponse validarCupom(ValidarCupomRequest request) {
+        return cupomService.validarCupom(null, request);
     }
 }

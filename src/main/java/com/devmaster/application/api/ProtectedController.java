@@ -3,7 +3,6 @@ package com.devmaster.application.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-@Slf4j
 @RestController
 @RequestMapping("/protected")
 @Tag(name = "Protected", description = "Endpoints protegidos que requerem autenticação JWT")
@@ -25,8 +23,6 @@ public class ProtectedController {
     @Operation(summary = "Informações do usuário autenticado", description = "Retorna informações do usuário logado")
     public ResponseEntity<Map<String, Object>> userInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        
-        log.info("Usuário autenticado: {}", authentication.getName());
         
         return ResponseEntity.ok(Map.of(
             "username", authentication.getName(),
@@ -40,8 +36,6 @@ public class ProtectedController {
     @Operation(summary = "Dados protegidos", description = "Retorna dados que requerem autenticação")
     public ResponseEntity<Map<String, Object>> protectedData() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        
-        log.info("Dados protegidos acessados por: {}", authentication.getName());
         
         return ResponseEntity.ok(Map.of(
             "message", "Estes são dados protegidos",

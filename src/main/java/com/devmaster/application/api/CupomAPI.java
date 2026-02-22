@@ -39,9 +39,6 @@ public interface CupomAPI {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     CupomResponse criarCupom(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "Dados do cupom", required = true)
         @Valid @RequestBody CupomRequest request
     );
@@ -53,9 +50,6 @@ public interface CupomAPI {
     })
     @GetMapping("/{cupomId}")
     CupomResponse buscarCupom(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "ID do cupom", required = true)
         @PathVariable Long cupomId
     );
@@ -67,9 +61,6 @@ public interface CupomAPI {
     })
     @GetMapping("/codigo/{codigo}")
     CupomResponse buscarCupomPorCodigo(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "Código do cupom", required = true)
         @PathVariable String codigo
     );
@@ -80,9 +71,6 @@ public interface CupomAPI {
     })
     @GetMapping
     Page<CupomResponse> listarCupons(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "Filtrar por status ativo")
         @RequestParam(required = false) Boolean ativo,
         
@@ -97,10 +85,7 @@ public interface CupomAPI {
         @ApiResponse(responseCode = "200", description = "Lista de cupons retornada com sucesso")
     })
     @GetMapping("/validos")
-    List<CupomResponse> listarCuponsValidos(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId
-    );
+    List<CupomResponse> listarCuponsValidos();
     
     @Operation(summary = "Atualizar cupom", description = "Atualiza os dados de um cupom")
     @ApiResponses(value = {
@@ -109,9 +94,6 @@ public interface CupomAPI {
     })
     @PutMapping("/{cupomId}")
     CupomResponse atualizarCupom(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "ID do cupom", required = true)
         @PathVariable Long cupomId,
         
@@ -127,9 +109,6 @@ public interface CupomAPI {
     @PatchMapping("/{cupomId}/ativar")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void ativarCupom(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "ID do cupom", required = true)
         @PathVariable Long cupomId
     );
@@ -142,9 +121,6 @@ public interface CupomAPI {
     @PatchMapping("/{cupomId}/desativar")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void desativarCupom(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "ID do cupom", required = true)
         @PathVariable Long cupomId
     );
@@ -158,9 +134,6 @@ public interface CupomAPI {
     @DeleteMapping("/{cupomId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void removerCupom(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "ID do cupom", required = true)
         @PathVariable Long cupomId
     );
@@ -171,9 +144,6 @@ public interface CupomAPI {
     })
     @PostMapping("/validar")
     ValidacaoCupomResponse validarCupom(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "Dados para validação", required = true)
         @Valid @RequestBody ValidarCupomRequest request
     );

@@ -14,7 +14,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * API REST para gerenciamento de Categorias.
@@ -37,9 +36,6 @@ public interface CategoriaAPI {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'GERENTE')")
     CategoriaResponse criarCategoria(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId,
         
@@ -54,9 +50,6 @@ public interface CategoriaAPI {
     })
     @GetMapping("/{categoriaId}")
     CategoriaResponse buscarCategoria(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId,
         
@@ -70,9 +63,6 @@ public interface CategoriaAPI {
     })
     @GetMapping
     List<CategoriaResponse> listarCategorias(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId,
         
@@ -90,9 +80,6 @@ public interface CategoriaAPI {
     @PutMapping("/{categoriaId}")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'GERENTE')")
     CategoriaResponse atualizarCategoria(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId,
         
@@ -111,9 +98,6 @@ public interface CategoriaAPI {
     @PatchMapping("/{categoriaId}/ativar")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void ativarCategoria(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId,
         
@@ -129,9 +113,6 @@ public interface CategoriaAPI {
     @PatchMapping("/{categoriaId}/desativar")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void desativarCategoria(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId,
         
@@ -149,9 +130,6 @@ public interface CategoriaAPI {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'GERENTE')")
     void removerCategoria(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId,
         

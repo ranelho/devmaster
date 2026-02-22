@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
+
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -86,7 +86,6 @@ public interface ClienteAPI {
             @ApiResponse(responseCode = "403", description = "Sem permissão")
     })
     Page<ClienteResponse> listarClientes(
-            Authentication authentication,
             @Parameter(description = "Filtrar por status ativo") @RequestParam(required = false) Boolean ativo,
             @Parameter(description = "Filtrar por nome") @RequestParam(required = false) String nome,
             @Parameter(description = "Número da página") @RequestParam(defaultValue = "0") int page,
@@ -121,10 +120,7 @@ public interface ClienteAPI {
             @ApiResponse(responseCode = "403", description = "Sem permissão"),
             @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
     })
-    MessageResponse desativarCliente(
-            Authentication authentication,
-            @Parameter(description = "ID do cliente") @PathVariable Long id
-    );
+    MessageResponse desativarCliente(@Parameter(description = "ID do cliente") @PathVariable Long id);
 
     @PatchMapping("/{id}/reativar")
     @SecurityRequirement(name = "bearerAuth")
@@ -138,8 +134,5 @@ public interface ClienteAPI {
             @ApiResponse(responseCode = "403", description = "Sem permissão"),
             @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
     })
-    MessageResponse reativarCliente(
-            Authentication authentication,
-            @Parameter(description = "ID do cliente") @PathVariable Long id
-    );
+    MessageResponse reativarCliente(@Parameter(description = "ID do cliente") @PathVariable Long id);
 }

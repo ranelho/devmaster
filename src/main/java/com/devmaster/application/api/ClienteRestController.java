@@ -5,13 +5,10 @@ import com.devmaster.application.api.request.ClienteRequest;
 import com.devmaster.application.api.response.ClienteResponse;
 import com.devmaster.application.api.response.MessageResponse;
 import com.devmaster.application.service.ClienteService;
-import com.devmaster.handler.APIException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -44,13 +41,11 @@ public class ClienteRestController implements ClienteAPI {
     @Override
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'GERENTE', 'ATENDENTE')")
     public Page<ClienteResponse> listarClientes(
-        Authentication authentication,
         Boolean ativo,
         String nome,
         int page,
         int size
     ) {
-        validarAutenticacao(authentication);
         return clienteService.listarClientes(ativo, nome, PageRequest.of(page, size));
     }
     
@@ -61,23 +56,15 @@ public class ClienteRestController implements ClienteAPI {
     
     @Override
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
-    public MessageResponse desativarCliente(Authentication authentication, Long id) {
-        validarAutenticacao(authentication);
+    public MessageResponse desativarCliente(Long id) {
         clienteService.desativarCliente(id);
         return new MessageResponse("Cliente desativado com sucesso");
     }
     
     @Override
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
-    public MessageResponse reativarCliente(Authentication authentication, Long id) {
-        validarAutenticacao(authentication);
+    public MessageResponse reativarCliente(Long id) {
         clienteService.reativarCliente(id);
         return new MessageResponse("Cliente reativado com sucesso");
-    }
-    
-    private void validarAutenticacao(Authentication authentication) {
-        if (authentication == null || authentication.getName() == null) {
-            throw APIException.build(HttpStatus.UNAUTHORIZED, "Usuário não autenticado");
-        }
     }
 }

@@ -3,7 +3,6 @@ package com.devmaster.application.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-@Slf4j
 @RestController
 @RequestMapping("/admin/menu")
 @Tag(name = "Menu Admin", description = "Endpoints administrativos de menu - requerem autenticação JWT")
@@ -23,7 +21,6 @@ public class AdminMenuController {
     @Operation(summary = "Criar novo item no menu", description = "Adiciona um novo item ao menu (requer autenticação)")
     public ResponseEntity<Map<String, Object>> createItem(@RequestBody Map<String, Object> item) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        log.info("➕ Criando novo item no menu por: {}", auth.getName());
         
         return ResponseEntity.ok(Map.of(
             "message", "Item criado com sucesso",
@@ -39,7 +36,6 @@ public class AdminMenuController {
             @PathVariable Long id,
             @RequestBody Map<String, Object> item) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        log.info("✏️ Atualizando item {} por: {}", id, auth.getName());
         
         return ResponseEntity.ok(Map.of(
             "message", "Item atualizado com sucesso",
@@ -54,7 +50,6 @@ public class AdminMenuController {
     @Operation(summary = "Deletar item do menu", description = "Remove um item do menu (requer autenticação)")
     public ResponseEntity<Map<String, Object>> deleteItem(@PathVariable Long id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        log.info("🗑️ Deletando item {} por: {}", id, auth.getName());
         
         return ResponseEntity.ok(Map.of(
             "message", "Item deletado com sucesso",
@@ -68,7 +63,6 @@ public class AdminMenuController {
     @Operation(summary = "Estatísticas do menu", description = "Retorna estatísticas administrativas (requer autenticação)")
     public ResponseEntity<Map<String, Object>> getStats() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        log.info("📊 Consultando estatísticas por: {}", auth.getName());
         
         return ResponseEntity.ok(Map.of(
             "totalItems", 42,

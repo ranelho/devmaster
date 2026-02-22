@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Controller REST para Categoria.
@@ -23,42 +22,41 @@ public class CategoriaRestController implements CategoriaAPI {
     private final CategoriaService categoriaService;
     
     @Override
-    public CategoriaResponse criarCategoria(UUID usuarioId, Long restauranteId, CategoriaRequest request) {
-        return categoriaService.criarCategoria(usuarioId, restauranteId, request);
+    public CategoriaResponse criarCategoria(Long restauranteId, CategoriaRequest request) {
+        return categoriaService.criarCategoria(null, restauranteId, request);
     }
     
     @Override
-    public CategoriaResponse buscarCategoria(UUID usuarioId, Long restauranteId, Long categoriaId) {
-        return categoriaService.buscarCategoria(usuarioId, restauranteId, categoriaId);
+    public CategoriaResponse buscarCategoria(Long restauranteId, Long categoriaId) {
+        return categoriaService.buscarCategoria(null, restauranteId, categoriaId);
     }
     
     @Override
-    public List<CategoriaResponse> listarCategorias(UUID usuarioId, Long restauranteId, Boolean ativo) {
-        return categoriaService.listarCategorias(usuarioId, restauranteId, ativo);
+    public List<CategoriaResponse> listarCategorias(Long restauranteId, Boolean ativo) {
+        return categoriaService.listarCategorias(null, restauranteId, ativo);
     }
     
     @Override
     public CategoriaResponse atualizarCategoria(
-        UUID usuarioId,
         Long restauranteId,
         Long categoriaId,
         AtualizarCategoriaRequest request
     ) {
-        return categoriaService.atualizarCategoria(usuarioId, restauranteId, categoriaId, request);
+        return categoriaService.atualizarCategoria(null, restauranteId, categoriaId, request);
     }
     
     @Override
-    public void ativarCategoria(UUID usuarioId, Long restauranteId, Long categoriaId) {
-        categoriaService.ativarCategoria(usuarioId, restauranteId, categoriaId);
+    public void ativarCategoria(Long restauranteId, Long categoriaId) {
+        categoriaService.ativarCategoria(null, restauranteId, categoriaId);
     }
     
     @Override
-    public void desativarCategoria(UUID usuarioId, Long restauranteId, Long categoriaId) {
-        categoriaService.desativarCategoria(usuarioId, restauranteId, categoriaId);
+    public void desativarCategoria(Long restauranteId, Long categoriaId) {
+        categoriaService.desativarCategoria(null, restauranteId, categoriaId);
     }
     
     @Override
-    public void removerCategoria(UUID usuarioId, Long restauranteId, Long categoriaId) {
-        categoriaService.removerCategoria(usuarioId, restauranteId, categoriaId);
+    public void removerCategoria(Long restauranteId, Long categoriaId) {
+        categoriaService.removerCategoria(null, restauranteId, categoriaId);
     }
 }

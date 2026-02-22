@@ -9,24 +9,14 @@ import com.devmaster.application.api.response.EstatisticasEntregadorResponse;
 import com.devmaster.application.api.response.MessageResponse;
 import com.devmaster.application.service.EntregadorService;
 import com.devmaster.domain.enums.TipoVeiculo;
-import com.devmaster.handler.APIException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.UUID;
 
-/**
- * Controller REST para gestão de entregadores.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 @RestController
 @RequiredArgsConstructor
 public class EntregadorRestController implements EntregadorAPI {
@@ -35,112 +25,77 @@ public class EntregadorRestController implements EntregadorAPI {
     
     @Override
     @PreAuthorize("hasRole('SUPER_ADMIN')")
-    public EntregadorResponse criarEntregador(Authentication authentication, EntregadorRequest request) {
-        validarAutenticacao(authentication);
-        UUID usuarioId = UUID.fromString(authentication.getName());
-        return entregadorService.criarEntregador(usuarioId, request);
+    public EntregadorResponse criarEntregador(EntregadorRequest request) {
+        return entregadorService.criarEntregador(request);
     }
     
     @Override
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'GERENTE', 'ATENDENTE')")
     public Page<EntregadorResumoResponse> listarEntregadores(
-        Authentication authentication,
         Boolean ativo,
         Boolean disponivel,
         TipoVeiculo tipoVeiculo,
         int page,
         int size
     ) {
-        validarAutenticacao(authentication);
-        UUID usuarioId = UUID.fromString(authentication.getName());
         return entregadorService.listarEntregadores(
-            usuarioId, ativo, disponivel, tipoVeiculo, PageRequest.of(page, size)
+            ativo, disponivel, tipoVeiculo, PageRequest.of(page, size)
         );
     }
     
     @Override
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'GERENTE', 'ATENDENTE')")
-    public EntregadorResponse buscarEntregador(Authentication authentication, Long id) {
-        validarAutenticacao(authentication);
-        UUID usuarioId = UUID.fromString(authentication.getName());
-        return entregadorService.buscarEntregador(usuarioId, id);
+    public EntregadorResponse buscarEntregador(Long id) {
+        return entregadorService.buscarEntregador(id);
     }
     
     @Override
     @PreAuthorize("hasRole('SUPER_ADMIN')")
-    public EntregadorResponse atualizarEntregador(
-        Authentication authentication,
-        Long id,
-        AtualizarEntregadorRequest request
-    ) {
-        validarAutenticacao(authentication);
-        UUID usuarioId = UUID.fromString(authentication.getName());
-        return entregadorService.atualizarEntregador(usuarioId, id, request);
+    public EntregadorResponse atualizarEntregador(Long id, AtualizarEntregadorRequest request) {
+        return entregadorService.atualizarEntregador(id, request);
     }
     
     @Override
     @PreAuthorize("hasRole('SUPER_ADMIN')")
-    public MessageResponse desativarEntregador(Authentication authentication, Long id) {
-        validarAutenticacao(authentication);
-        UUID usuarioId = UUID.fromString(authentication.getName());
-        entregadorService.desativarEntregador(usuarioId, id);
+    public MessageResponse desativarEntregador(Long id) {
+        entregadorService.desativarEntregador(id);
         return new MessageResponse("Entregador desativado com sucesso");
     }
     
     @Override
     @PreAuthorize("hasRole('SUPER_ADMIN')")
-    public MessageResponse reativarEntregador(Authentication authentication, Long id) {
-        validarAutenticacao(authentication);
-        UUID usuarioId = UUID.fromString(authentication.getName());
-        entregadorService.reativarEntregador(usuarioId, id);
+    public MessageResponse reativarEntregador(Long id) {
+        entregadorService.reativarEntregador(id);
         return new MessageResponse("Entregador reativado com sucesso");
     }
     
     @Override
     @PreAuthorize("hasRole('SUPER_ADMIN')")
-    public MessageResponse alterarDisponibilidade(
-        Authentication authentication,
-        Long id,
-        AlterarDisponibilidadeRequest request
-    ) {
-        validarAutenticacao(authentication);
-        UUID usuarioId = UUID.fromString(authentication.getName());
-        entregadorService.alterarDisponibilidade(usuarioId, id, request);
+    public MessageResponse alterarDisponibilidade(Long id, AlterarDisponibilidadeRequest request) {
+        entregadorService.alterarDisponibilidade(id, request);
         return new MessageResponse("Disponibilidade alterada com sucesso");
     }
     
     @Override
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'GERENTE')")
     public List<EntregadorResumoResponse> buscarEntregadoresDisponiveisProximos(
-        Authentication authentication,
         Double latitude,
         Double longitude,
         Double raioKm
     ) {
-        validarAutenticacao(authentication);
-        UUID usuarioId = UUID.fromString(authentication.getName());
         return entregadorService.buscarEntregadoresDisponiveisProximos(
-            usuarioId, latitude, longitude, raioKm
+            latitude, longitude, raioKm
         );
     }
     
     @Override
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'GERENTE')")
-    public EstatisticasEntregadorResponse obterEstatisticas(Authentication authentication, Long id) {
-        validarAutenticacao(authentication);
-        UUID usuarioId = UUID.fromString(authentication.getName());
-        return entregadorService.obterEstatisticas(usuarioId, id);
+    public EstatisticasEntregadorResponse obterEstatisticas(Long id) {
+        return entregadorService.obterEstatisticas(id);
     }
     
     @Override
     public EntregadorResumoResponse validarEntregador(Long id) {
-        // Endpoint público para integração com módulo ENTREGA
         return entregadorService.validarEntregador(id);
-    }
-    
-    private void validarAutenticacao(Authentication authentication) {
-        if (authentication == null || authentication.getName() == null) {
-            throw APIException.build(HttpStatus.UNAUTHORIZED, "Usuário não autenticado");
-        }
     }
 }

@@ -20,7 +20,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * API REST para gerenciamento de Restaurantes.
@@ -43,9 +42,6 @@ public interface RestauranteAPI {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     RestauranteResponse criarRestaurante(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "Dados do restaurante", required = true)
         @Valid @RequestBody RestauranteRequest request
     );
@@ -57,9 +53,6 @@ public interface RestauranteAPI {
     })
     @GetMapping("/{restauranteId}")
     RestauranteResponse buscarRestaurante(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId
     );
@@ -71,9 +64,6 @@ public interface RestauranteAPI {
     })
     @GetMapping("/slug/{slug}")
     RestauranteResponse buscarRestaurantePorSlug(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "Slug do restaurante", required = true)
         @PathVariable String slug
     );
@@ -84,9 +74,6 @@ public interface RestauranteAPI {
     })
     @GetMapping
     Page<RestauranteResumoResponse> listarRestaurantes(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "Filtrar por status ativo")
         @RequestParam(required = false) Boolean ativo,
         
@@ -105,9 +92,6 @@ public interface RestauranteAPI {
     })
     @GetMapping("/abertos")
     List<RestauranteResumoResponse> listarRestaurantesAbertos(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "Limite de resultados")
         @RequestParam(defaultValue = "10") int limite
     );
@@ -122,9 +106,6 @@ public interface RestauranteAPI {
     @PutMapping("/{restauranteId}")
     @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     RestauranteResponse atualizarRestaurante(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId,
         
@@ -140,9 +121,6 @@ public interface RestauranteAPI {
     @PatchMapping("/{restauranteId}/ativar")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void ativarRestaurante(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId
     );
@@ -155,9 +133,6 @@ public interface RestauranteAPI {
     @PatchMapping("/{restauranteId}/desativar")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void desativarRestaurante(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId
     );
@@ -171,9 +146,6 @@ public interface RestauranteAPI {
     @PatchMapping("/{restauranteId}/abrir")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void abrirRestaurante(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId
     );
@@ -186,9 +158,6 @@ public interface RestauranteAPI {
     @PatchMapping("/{restauranteId}/fechar")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void fecharRestaurante(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId
     );
@@ -202,9 +171,6 @@ public interface RestauranteAPI {
     @PostMapping("/{restauranteId}/endereco")
     @ResponseStatus(HttpStatus.CREATED)
     EnderecoRestauranteResponse adicionarEndereco(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId,
         
@@ -219,9 +185,6 @@ public interface RestauranteAPI {
     })
     @PutMapping("/{restauranteId}/endereco")
     EnderecoRestauranteResponse atualizarEndereco(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId,
         
@@ -236,9 +199,6 @@ public interface RestauranteAPI {
     })
     @GetMapping("/{restauranteId}/endereco")
     EnderecoRestauranteResponse buscarEndereco(
-        @Parameter(description = "ID do usuário autenticado", required = true)
-        @RequestHeader("X-User-Id") UUID usuarioId,
-        
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId
     );

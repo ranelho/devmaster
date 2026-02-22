@@ -11,14 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
-/**
- * Implementação da API de Pedidos.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 @RestController
 @RequiredArgsConstructor
 public class PedidoRestController implements PedidoAPI {
@@ -26,107 +19,105 @@ public class PedidoRestController implements PedidoAPI {
     private final PedidoService pedidoService;
     
     @Override
-    public PedidoResponse criarPedido(UUID usuarioId, PedidoRequest request) {
-        return pedidoService.criarPedido(usuarioId, request);
+    public PedidoResponse criarPedido(PedidoRequest request) {
+        return pedidoService.criarPedido(null, request);
     }
     
     @Override
-    public PedidoResponse buscarPedido(UUID usuarioId, Long pedidoId) {
-        return pedidoService.buscarPedido(usuarioId, pedidoId);
+    public PedidoResponse buscarPedido(Long pedidoId) {
+        return pedidoService.buscarPedido(null, pedidoId);
     }
     
     @Override
-    public PedidoResponse buscarPedidoPorNumero(UUID usuarioId, String numeroPedido) {
-        return pedidoService.buscarPedidoPorNumero(usuarioId, numeroPedido);
+    public PedidoResponse buscarPedidoPorNumero(String numeroPedido) {
+        return pedidoService.buscarPedidoPorNumero(null, numeroPedido);
     }
     
     @Override
-    public List<PedidoResumoResponse> listarPedidosRestaurante(UUID usuarioId, Long restauranteId, StatusPedido status) {
-        return pedidoService.listarPedidosRestaurante(usuarioId, restauranteId, status);
+    public List<PedidoResumoResponse> listarPedidosRestaurante(Long restauranteId, StatusPedido status) {
+        return pedidoService.listarPedidosRestaurante(null, restauranteId, status);
     }
     
     @Override
-    public List<PedidoResumoResponse> listarPedidosCliente(UUID usuarioId, Long clienteId, StatusPedido status) {
-        return pedidoService.listarPedidosCliente(usuarioId, clienteId, status);
+    public List<PedidoResumoResponse> listarPedidosCliente(Long clienteId, StatusPedido status) {
+        return pedidoService.listarPedidosCliente(null, clienteId, status);
     }
     
     @Override
     public Page<PedidoResumoResponse> listarPedidosRestauranteComPaginacao(
-        UUID usuarioId,
         Long restauranteId,
         StatusPedido status,
         Pageable pageable
     ) {
-        return pedidoService.listarPedidosRestauranteComPaginacao(usuarioId, restauranteId, status, pageable);
+        return pedidoService.listarPedidosRestauranteComPaginacao(null, restauranteId, status, pageable);
     }
     
     @Override
-    public Page<PedidoResumoResponse> listarPedidosClienteComPaginacao(UUID usuarioId, Long clienteId, Pageable pageable) {
-        return pedidoService.listarPedidosClienteComPaginacao(usuarioId, clienteId, pageable);
+    public Page<PedidoResumoResponse> listarPedidosClienteComPaginacao(Long clienteId, Pageable pageable) {
+        return pedidoService.listarPedidosClienteComPaginacao(null, clienteId, pageable);
     }
     
     @Override
-    public PedidoResponse atualizarStatus(UUID usuarioId, Long pedidoId, AtualizarStatusPedidoRequest request) {
-        return pedidoService.atualizarStatus(usuarioId, pedidoId, request);
+    public PedidoResponse atualizarStatus(Long pedidoId, AtualizarStatusPedidoRequest request) {
+        return pedidoService.atualizarStatus(null, pedidoId, request);
     }
     
     @Override
-    public void confirmarPedido(UUID usuarioId, Long pedidoId) {
-        pedidoService.confirmarPedido(usuarioId, pedidoId);
+    public void confirmarPedido(Long pedidoId) {
+        pedidoService.confirmarPedido(null, pedidoId);
     }
     
     @Override
-    public void iniciarPreparo(UUID usuarioId, Long pedidoId) {
-        pedidoService.iniciarPreparo(usuarioId, pedidoId);
+    public void iniciarPreparo(Long pedidoId) {
+        pedidoService.iniciarPreparo(null, pedidoId);
     }
     
     @Override
-    public void marcarComoPronto(UUID usuarioId, Long pedidoId) {
-        pedidoService.marcarComoPronto(usuarioId, pedidoId);
+    public void marcarComoPronto(Long pedidoId) {
+        pedidoService.marcarComoPronto(null, pedidoId);
     }
     
     @Override
-    public void despacharPedido(UUID usuarioId, Long pedidoId) {
-        pedidoService.despacharPedido(usuarioId, pedidoId);
+    public void despacharPedido(Long pedidoId) {
+        pedidoService.despacharPedido(null, pedidoId);
     }
     
     @Override
-    public void entregarPedido(UUID usuarioId, Long pedidoId) {
-        pedidoService.entregarPedido(usuarioId, pedidoId);
+    public void entregarPedido(Long pedidoId) {
+        pedidoService.entregarPedido(null, pedidoId);
     }
     
     @Override
-    public void cancelarPedido(UUID usuarioId, Long pedidoId, CancelarPedidoRequest request) {
-        pedidoService.cancelarPedido(usuarioId, pedidoId, request);
+    public void cancelarPedido(Long pedidoId, CancelarPedidoRequest request) {
+        pedidoService.cancelarPedido(null, pedidoId, request);
     }
     
     @Override
-    public void aprovarPagamento(UUID usuarioId, Long pedidoId) {
-        pedidoService.aprovarPagamento(usuarioId, pedidoId);
+    public void aprovarPagamento(Long pedidoId) {
+        pedidoService.aprovarPagamento(null, pedidoId);
     }
     
     @Override
-    public void recusarPagamento(UUID usuarioId, Long pedidoId) {
-        pedidoService.recusarPagamento(usuarioId, pedidoId);
+    public void recusarPagamento(Long pedidoId) {
+        pedidoService.recusarPagamento(null, pedidoId);
     }
     
     @Override
-    public List<HistoricoStatusPedidoResponse> buscarHistorico(UUID usuarioId, Long pedidoId) {
-        return pedidoService.buscarHistorico(usuarioId, pedidoId);
+    public List<HistoricoStatusPedidoResponse> buscarHistorico(Long pedidoId) {
+        return pedidoService.buscarHistorico(null, pedidoId);
     }
     
     @Override
     public List<PedidoResumoResponse> buscarPedidosPorPeriodo(
-        UUID usuarioId,
         Long restauranteId,
         LocalDateTime inicio,
         LocalDateTime fim
     ) {
-        return pedidoService.buscarPedidosPorPeriodo(usuarioId, restauranteId, inicio, fim);
+        return pedidoService.buscarPedidosPorPeriodo(null, restauranteId, inicio, fim);
     }
     
     @Override
-    public List<PedidoResumoResponse> buscarPedidosAtivos(UUID usuarioId, Long restauranteId) {
-        return pedidoService.buscarPedidosAtivos(usuarioId, restauranteId);
+    public List<PedidoResumoResponse> buscarPedidosAtivos(Long restauranteId) {
+        return pedidoService.buscarPedidosAtivos(null, restauranteId);
     }
 }

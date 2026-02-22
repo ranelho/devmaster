@@ -13,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Controller REST para Restaurante.
@@ -28,85 +27,81 @@ public class RestauranteRestController implements RestauranteAPI {
     private final RestauranteService restauranteService;
     
     @Override
-    public RestauranteResponse criarRestaurante(UUID usuarioId, RestauranteRequest request) {
-        return restauranteService.criarRestaurante(usuarioId, request);
+    public RestauranteResponse criarRestaurante(RestauranteRequest request) {
+        return restauranteService.criarRestaurante(null, request);
     }
     
     @Override
-    public RestauranteResponse buscarRestaurante(UUID usuarioId, Long restauranteId) {
-        return restauranteService.buscarRestaurante(usuarioId, restauranteId);
+    public RestauranteResponse buscarRestaurante(Long restauranteId) {
+        return restauranteService.buscarRestaurante(null, restauranteId);
     }
     
     @Override
-    public RestauranteResponse buscarRestaurantePorSlug(UUID usuarioId, String slug) {
-        return restauranteService.buscarRestaurantePorSlug(usuarioId, slug);
+    public RestauranteResponse buscarRestaurantePorSlug(String slug) {
+        return restauranteService.buscarRestaurantePorSlug(null, slug);
     }
     
     @Override
     public Page<RestauranteResumoResponse> listarRestaurantes(
-        UUID usuarioId,
         Boolean ativo,
         Boolean aberto,
         String nome,
         Pageable pageable
     ) {
-        return restauranteService.listarRestaurantes(usuarioId, ativo, aberto, nome, pageable);
+        return restauranteService.listarRestaurantes(null, ativo, aberto, nome, pageable);
     }
     
     @Override
-    public List<RestauranteResumoResponse> listarRestaurantesAbertos(UUID usuarioId, int limite) {
-        return restauranteService.listarRestaurantesAbertosOrdenadosPorAvaliacao(usuarioId, limite);
+    public List<RestauranteResumoResponse> listarRestaurantesAbertos(int limite) {
+        return restauranteService.listarRestaurantesAbertosOrdenadosPorAvaliacao(null, limite);
     }
     
     @Override
     public RestauranteResponse atualizarRestaurante(
-        UUID usuarioId,
         Long restauranteId,
         AtualizarRestauranteRequest request
     ) {
-        return restauranteService.atualizarRestaurante(usuarioId, restauranteId, request);
+        return restauranteService.atualizarRestaurante(null, restauranteId, request);
     }
     
     @Override
-    public void ativarRestaurante(UUID usuarioId, Long restauranteId) {
-        restauranteService.ativarRestaurante(usuarioId, restauranteId);
+    public void ativarRestaurante(Long restauranteId) {
+        restauranteService.ativarRestaurante(null, restauranteId);
     }
     
     @Override
-    public void desativarRestaurante(UUID usuarioId, Long restauranteId) {
-        restauranteService.desativarRestaurante(usuarioId, restauranteId);
+    public void desativarRestaurante(Long restauranteId) {
+        restauranteService.desativarRestaurante(null, restauranteId);
     }
     
     @Override
-    public void abrirRestaurante(UUID usuarioId, Long restauranteId) {
-        restauranteService.abrirRestaurante(usuarioId, restauranteId);
+    public void abrirRestaurante(Long restauranteId) {
+        restauranteService.abrirRestaurante(null, restauranteId);
     }
     
     @Override
-    public void fecharRestaurante(UUID usuarioId, Long restauranteId) {
-        restauranteService.fecharRestaurante(usuarioId, restauranteId);
+    public void fecharRestaurante(Long restauranteId) {
+        restauranteService.fecharRestaurante(null, restauranteId);
     }
     
     @Override
     public EnderecoRestauranteResponse adicionarEndereco(
-        UUID usuarioId,
         Long restauranteId,
         EnderecoRestauranteRequest request
     ) {
-        return restauranteService.adicionarEndereco(usuarioId, restauranteId, request);
+        return restauranteService.adicionarEndereco(null, restauranteId, request);
     }
     
     @Override
     public EnderecoRestauranteResponse atualizarEndereco(
-        UUID usuarioId,
         Long restauranteId,
         EnderecoRestauranteRequest request
     ) {
-        return restauranteService.atualizarEndereco(usuarioId, restauranteId, request);
+        return restauranteService.atualizarEndereco(null, restauranteId, request);
     }
     
     @Override
-    public EnderecoRestauranteResponse buscarEndereco(UUID usuarioId, Long restauranteId) {
-        return restauranteService.buscarEndereco(usuarioId, restauranteId);
+    public EnderecoRestauranteResponse buscarEndereco(Long restauranteId) {
+        return restauranteService.buscarEndereco(null, restauranteId);
     }
 }
