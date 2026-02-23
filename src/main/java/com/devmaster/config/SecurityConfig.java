@@ -30,6 +30,7 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth -> auth
                 // Endpoints públicos - não requerem autenticação
+                // Inclui: /public/auth/login, /public/auth/logout, /public/health, etc.
                 .requestMatchers("/public/**").permitAll()
                 
                 // Swagger e documentação

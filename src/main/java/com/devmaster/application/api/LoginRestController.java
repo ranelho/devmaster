@@ -2,7 +2,9 @@ package com.devmaster.application.api;
 
 import com.devmaster.application.api.request.LoginRequest;
 import com.devmaster.application.api.response.LoginResponse;
+import com.devmaster.application.api.response.LogoutResponse;
 import com.devmaster.application.service.UsuarioRestauranteService;
+import com.devmaster.handler.APIException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,7 +13,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -29,7 +34,7 @@ public class LoginRestController implements LoginAPI {
     
     @Override
     public ResponseEntity<LoginResponse> login(LoginRequest request) {
-        log.info("[LOGIN] Email: {}", request.email());
+        log.info("🔐 [LOGIN] Tentativa de login - Email: {}", request.email());
         
         try {
             // 1. Fazer login no Auth Service
@@ -37,11 +42,12 @@ public class LoginRestController implements LoginAPI {
                 .baseUrl(authServiceUrl)
                 .build();
             
-            Map<String, Object> authRequest = Map.of(
+            Map<String, String> authRequest = Map.of(
                 "email", request.email(),
                 "password", request.password()
             );
             
+            @SuppressWarnings("unchecked")
             Map<String, Object> authResponse = webClient.post()
                 .uri("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -51,18 +57,35 @@ public class LoginRestController implements LoginAPI {
                 .block();
             
             if (authResponse == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+                log.warn("⚠️ [LOGIN] Resposta vazia do Auth Service");
+                throw APIException.build(HttpStatus.UNAUTHORIZED, "Credenciais inválidas");
             }
             
             // 2. Extrair dados do usuário
+            @SuppressWarnings("unchecked")
             Map<String, Object> userMap = (Map<String, Object>) authResponse.get("user");
+            
+            if (userMap == null) {
+                log.error("❌ [LOGIN] Dados do usuário não encontrados na resposta");
+                throw APIException.build(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao processar dados do usuário");
+            }
+            
             String userId = (String) userMap.get("id");
             String username = (String) userMap.get("username");
             String email = (String) userMap.get("email");
-            Set<String> roles = Set.copyOf((java.util.List<String>) userMap.get("roles"));
             
-            // 3. Buscar restauranteId do usuário
-            Long restauranteId = usuarioRestauranteService.buscarRestauranteIdDoUsuario(UUID.fromString(userId));
+            @SuppressWarnings("unchecked")
+            List<String> rolesList = (List<String>) userMap.get("roles");
+            Set<String> roles = rolesList != null ? Set.copyOf(rolesList) : Set.of();
+            
+            // 3. Buscar restauranteId do usuário (pode ser null)
+            Long restauranteId = null;
+            try {
+                restauranteId = usuarioRestauranteService.buscarRestauranteIdDoUsuario(UUID.fromString(userId));
+                log.info("🏪 [LOGIN] RestauranteId encontrado: {}", restauranteId);
+            } catch (Exception e) {
+                log.warn("⚠️ [LOGIN] Usuário sem restaurante vinculado: {}", userId);
+            }
             
             // 4. Montar resposta
             LoginResponse response = LoginResponse.builder()
@@ -79,13 +102,58 @@ public class LoginRestController implements LoginAPI {
                     .build())
                 .build();
             
-            log.info("[LOGIN] Sucesso - Usuario: {}, RestauranteId: {}", userId, restauranteId);
+            log.info("✅ [LOGIN] Sucesso - Usuario: {}, RestauranteId: {}", userId, restauranteId);
             
             return ResponseEntity.ok(response);
             
+        } catch (WebClientResponseException.Unauthorized e) {
+            log.warn("🚫 [LOGIN] Credenciais inválidas - Email: {}", request.email());
+            throw APIException.build(HttpStatus.UNAUTHORIZED, "Email ou senha inválidos");
+        } catch (WebClientResponseException e) {
+            log.error("❌ [LOGIN] Erro na comunicação com Auth Service - Status: {}", e.getStatusCode());
+            throw APIException.build(HttpStatus.BAD_GATEWAY, "Erro ao comunicar com serviço de autenticação");
+        } catch (APIException e) {
+            throw e;
         } catch (Exception e) {
-            log.error("[LOGIN] Erro ao fazer login", e);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            log.error("💥 [LOGIN] Erro inesperado ao fazer login", e);
+            throw APIException.build(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao processar login");
+        }
+    }
+    
+    @Override
+    public ResponseEntity<LogoutResponse> logout(String authorization) {
+        log.info("🚪 [LOGOUT] Iniciando logout");
+        
+        try {
+            WebClient webClient = webClientBuilder
+                .baseUrl(authServiceUrl)
+                .build();
+            
+            webClient.post()
+                .uri("/api/auth/logout")
+                .header("Authorization", authorization)
+                .retrieve()
+                .bodyToMono(Void.class)
+                .block();
+            
+            log.info("✅ [LOGOUT] Logout realizado com sucesso");
+            
+            return ResponseEntity.ok(
+                LogoutResponse.builder()
+                    .message("Logout realizado com sucesso")
+                    .logoutAt(LocalDateTime.now())
+                    .build()
+            );
+            
+        } catch (WebClientResponseException.Unauthorized e) {
+            log.warn("🚫 [LOGOUT] Token inválido ou expirado");
+            throw APIException.build(HttpStatus.UNAUTHORIZED, "Token inválido ou expirado");
+        } catch (WebClientResponseException e) {
+            log.error("❌ [LOGOUT] Erro na comunicação com Auth Service - Status: {}", e.getStatusCode());
+            throw APIException.build(HttpStatus.BAD_GATEWAY, "Erro ao comunicar com serviço de autenticação");
+        } catch (Exception e) {
+            log.error("💥 [LOGOUT] Erro inesperado ao fazer logout", e);
+            throw APIException.build(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao processar logout");
         }
     }
 }
