@@ -1,6 +1,7 @@
 package com.devmaster.application.api;
 
 import com.devmaster.application.api.response.DashboardMetricasResponse;
+import com.devmaster.application.api.response.DashboardResponse;
 import com.devmaster.application.api.response.PedidoResumoResponse;
 import com.devmaster.application.api.response.ResumoStatusResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +19,13 @@ import java.util.List;
 @Tag(name = "Dashboard", description = "Endpoints para dashboard de gerenciamento de pedidos")
 @RequestMapping("/v1/dashboard")
 public interface DashboardAPI {
+    
+    @GetMapping("/restaurante/{restauranteId}")
+    @Operation(summary = "Dashboard completo", description = "Retorna todos os dados do dashboard em uma única requisição")
+    DashboardResponse buscarDashboardCompleto(
+        @PathVariable Long restauranteId,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data
+    );
     
     @GetMapping("/restaurante/{restauranteId}/pedidos-novos")
     @Operation(summary = "Pedidos novos", description = "Lista pedidos aguardando confirmação em tempo real")

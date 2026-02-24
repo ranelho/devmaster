@@ -24,7 +24,6 @@ public class EntregadorRestController implements EntregadorAPI {
     private final EntregadorService entregadorService;
     
     @Override
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public EntregadorResponse criarEntregador(EntregadorRequest request) {
         return entregadorService.criarEntregador(request);
     }

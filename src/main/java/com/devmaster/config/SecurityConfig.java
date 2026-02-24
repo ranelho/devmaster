@@ -50,6 +50,10 @@ public class SecurityConfig {
                 // Actuator
                 .requestMatchers("/actuator/**").permitAll()
                 
+                // Entregadores - qualquer usuário autenticado pode criar
+                .requestMatchers("/v1/entregadores").authenticated()
+                .requestMatchers("/v1/entregador-restaurante/**").authenticated()
+                
                 // Todos os outros endpoints requerem autenticação
                 .anyRequest().authenticated()
             )

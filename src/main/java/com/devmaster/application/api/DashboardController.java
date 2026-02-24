@@ -1,6 +1,7 @@
 package com.devmaster.application.api;
 
 import com.devmaster.application.api.response.DashboardMetricasResponse;
+import com.devmaster.application.api.response.DashboardResponse;
 import com.devmaster.application.api.response.PedidoResumoResponse;
 import com.devmaster.application.api.response.ResumoStatusResponse;
 import com.devmaster.application.service.DashboardService;
@@ -17,6 +18,11 @@ import java.util.List;
 public class DashboardController implements DashboardAPI {
     
     private final DashboardService service;
+    
+    @Override
+    public DashboardResponse buscarDashboardCompleto(Long restauranteId, LocalDate data) {
+        return service.buscarDashboardCompleto(restauranteId, data);
+    }
     
     @Override
     public List<PedidoResumoResponse> buscarPedidosNovos(Long restauranteId) {

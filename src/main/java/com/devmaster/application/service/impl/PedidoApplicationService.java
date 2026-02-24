@@ -79,7 +79,7 @@ public class PedidoApplicationService implements PedidoService {
                 .restaurante(restaurante)
                 .enderecoEntrega(endereco)
                 .tipoPagamento(tipoPagamento)
-                .status(StatusPedido.PENDENTE)
+                .status(StatusPedido.AGUARDANDO_CONFIRMACAO)
                 .statusPagamento(StatusPagamento.PENDENTE)
                 .valorTroco(request.valorTroco())
                 .subtotal(subtotal)
@@ -112,7 +112,7 @@ public class PedidoApplicationService implements PedidoService {
         pedido.setTotal(total);
         pedido = pedidoRepository.save(pedido);
 
-        registrarHistorico(pedido, StatusPedido.PENDENTE, "Pedido criado", toStringOrSystem(usuarioId));
+        registrarHistorico(pedido, StatusPedido.AGUARDANDO_CONFIRMACAO, "Pedido criado", toStringOrSystem(usuarioId));
 
         return montarPedidoResponse(pedido);
     }
@@ -323,7 +323,7 @@ public class PedidoApplicationService implements PedidoService {
         buscarRestauranteOuFalhar(restauranteId);
 
         List<StatusPedido> statusAtivos = List.of(
-                StatusPedido.PENDENTE,
+                StatusPedido.AGUARDANDO_CONFIRMACAO,
                 StatusPedido.CONFIRMADO,
                 StatusPedido.PREPARANDO,
                 StatusPedido.PRONTO,

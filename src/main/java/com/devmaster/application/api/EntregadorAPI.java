@@ -36,7 +36,7 @@ public interface EntregadorAPI {
     @SecurityRequirement(name = "bearerAuth")
     @Operation(
         summary = "Criar novo entregador",
-        description = "Cria um novo entregador no sistema. Requer role SUPER_ADMIN."
+        description = "Cria um novo entregador no sistema. Qualquer usuário autenticado pode criar."
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Entregador criado com sucesso"),

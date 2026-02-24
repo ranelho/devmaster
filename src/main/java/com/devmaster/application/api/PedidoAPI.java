@@ -61,7 +61,7 @@ public interface PedidoAPI {
         Pageable pageable
     );
     
-    @PutMapping("/{pedidoId}/status")
+    @PatchMapping("/{pedidoId}/status")
     @Operation(summary = "Atualizar status", description = "Atualiza o status do pedido")
     PedidoResponse atualizarStatus(
         @PathVariable Long pedidoId,
