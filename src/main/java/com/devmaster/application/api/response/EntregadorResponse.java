@@ -7,12 +7,6 @@ import com.devmaster.domain.enums.TipoVeiculo;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * DTO de resposta com dados completos do entregador.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record EntregadorResponse(
     Long id,
     String nomeCompleto,

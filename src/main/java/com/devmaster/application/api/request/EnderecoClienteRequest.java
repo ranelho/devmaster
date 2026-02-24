@@ -4,12 +4,6 @@ import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 
-/**
- * DTO de requisição para adicionar endereço do cliente.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record EnderecoClienteRequest(
     
     @Size(max = 50, message = "Rótulo não pode exceder 50 caracteres")

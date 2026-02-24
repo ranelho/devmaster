@@ -8,12 +8,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * Response completo para Pedido.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record PedidoResponse(
     Long id,
     String numeroPedido,
@@ -50,6 +44,12 @@ public record PedidoResponse(
 ) {
     public static PedidoResponse from(
         Pedido pedido,
+        Long clienteId,
+        String clienteTelefone,
+        String restauranteNome,
+        EnderecoClienteResponse enderecoEntrega,
+        String tipoPagamento,
+        Boolean tipoPagamentoRequerTroco,
         String codigoCupom,
         List<ItemPedidoResponse> itens,
         List<HistoricoStatusPedidoResponse> historico
@@ -57,14 +57,14 @@ public record PedidoResponse(
         return new PedidoResponse(
             pedido.getId(),
             pedido.getNumeroPedido(),
-            pedido.getCliente().getId(),
-            pedido.getCliente().getNomeCompleto(),
-            pedido.getCliente().getTelefone(),
-            pedido.getRestaurante().getId(),
-            pedido.getRestaurante().getNome(),
-            EnderecoClienteResponse.from(pedido.getEnderecoEntrega()),
-            pedido.getTipoPagamento().getNome(),
-            pedido.getTipoPagamento().getRequerTroco(),
+            clienteId,
+            pedido.getClienteNome(),
+            clienteTelefone,
+            pedido.getRestauranteId(),
+            restauranteNome,
+            enderecoEntrega,
+            tipoPagamento,
+            tipoPagamentoRequerTroco,
             pedido.getValorTroco(),
             pedido.getStatus(),
             pedido.getStatus().getDescricao(),
@@ -73,7 +73,7 @@ public record PedidoResponse(
             pedido.getSubtotal(),
             pedido.getTaxaEntrega(),
             pedido.getDesconto(),
-            pedido.getTotal(),
+            pedido.getValorTotal(),
             pedido.getObservacoes(),
             pedido.getPrevisaoEntrega(),
             pedido.getCriadoEm(),

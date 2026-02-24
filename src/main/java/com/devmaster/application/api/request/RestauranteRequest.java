@@ -2,15 +2,10 @@ package com.devmaster.application.api.request;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
+import org.hibernate.validator.constraints.br.CNPJ;
 
 import java.math.BigDecimal;
 
-/**
- * DTO de requisição para criar restaurante.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record RestauranteRequest(
     @NotBlank(message = "Nome é obrigatório")
     @Size(max = 255, message = "Nome deve ter no máximo 255 caracteres")
@@ -31,6 +26,7 @@ public record RestauranteRequest(
     String email,
     
     @Pattern(regexp = "^\\d{2}\\.\\d{3}\\.\\d{3}/\\d{4}-\\d{2}$", message = "CNPJ inválido. Formato: 00.000.000/0000-00")
+    @CNPJ
     String cnpj,
     
     String logoUrl,

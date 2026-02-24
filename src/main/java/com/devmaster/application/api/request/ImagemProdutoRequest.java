@@ -2,12 +2,6 @@ package com.devmaster.application.api.request;
 
 import jakarta.validation.constraints.*;
 
-/**
- * Request para criação de ImagemProduto.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record ImagemProdutoRequest(
     @NotBlank(message = "Nome do arquivo é obrigatório")
     @Size(max = 255, message = "Nome do arquivo deve ter no máximo 255 caracteres")

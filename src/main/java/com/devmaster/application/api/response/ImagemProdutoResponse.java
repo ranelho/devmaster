@@ -4,12 +4,6 @@ import com.devmaster.domain.ImagemProduto;
 
 import java.time.LocalDateTime;
 
-/**
- * Response para ImagemProduto.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record ImagemProdutoResponse(
     Long id,
     Long produtoId,

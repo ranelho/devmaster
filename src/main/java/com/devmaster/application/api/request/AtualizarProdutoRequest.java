@@ -4,12 +4,6 @@ import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 
-/**
- * Request para atualização de Produto.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record AtualizarProdutoRequest(
     Long categoriaId,
     

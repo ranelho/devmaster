@@ -4,13 +4,6 @@ import com.devmaster.domain.Restaurante;
 
 import java.math.BigDecimal;
 
-/**
- * DTO de resposta com resumo do restaurante.
- * Usado em listagens.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record RestauranteResumoResponse(
     Long id,
     String nome,

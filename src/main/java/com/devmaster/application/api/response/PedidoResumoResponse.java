@@ -1,48 +1,44 @@
 package com.devmaster.application.api.response;
 
 import com.devmaster.domain.Pedido;
-import com.devmaster.domain.enums.StatusPagamento;
 import com.devmaster.domain.enums.StatusPedido;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * Response resumido para Pedido (listagens).
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
-public record PedidoResumoResponse(
-    Long id,
-    String numeroPedido,
-    Long clienteId,
-    String clienteNome,
-    Long restauranteId,
-    String restauranteNome,
-    StatusPedido status,
-    String statusDescricao,
-    StatusPagamento statusPagamento,
-    String statusPagamentoDescricao,
-    BigDecimal total,
-    LocalDateTime criadoEm,
-    LocalDateTime previsaoEntrega
-) {
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class PedidoResumoResponse {
+    
+    private Long id;
+    private String numeroPedido;
+    private String clienteNome;
+    private String restauranteNome;
+    private BigDecimal valorTotal;
+    private StatusPedido status;
+    private String statusDescricao;
+    private LocalDateTime dataPedido;
+    private LocalDateTime criadoEm;
+    private LocalDateTime previsaoEntrega;
+    
     public static PedidoResumoResponse from(Pedido pedido) {
-        return new PedidoResumoResponse(
-            pedido.getId(),
-            pedido.getNumeroPedido(),
-            pedido.getCliente().getId(),
-            pedido.getCliente().getNomeCompleto(),
-            pedido.getRestaurante().getId(),
-            pedido.getRestaurante().getNome(),
-            pedido.getStatus(),
-            pedido.getStatus().getDescricao(),
-            pedido.getStatusPagamento(),
-            pedido.getStatusPagamento().getDescricao(),
-            pedido.getTotal(),
-            pedido.getCriadoEm(),
-            pedido.getPrevisaoEntrega()
-        );
+        return PedidoResumoResponse.builder()
+            .id(pedido.getId())
+            .numeroPedido(pedido.getNumeroPedido())
+            .clienteNome(pedido.getClienteNome())
+            .restauranteNome(pedido.getRestaurante() != null ? pedido.getRestaurante().getNome() : null)
+            .valorTotal(pedido.getValorTotal())
+            .status(pedido.getStatus())
+            .statusDescricao(pedido.getStatus().getDescricao())
+            .dataPedido(pedido.getDataPedido())
+            .criadoEm(pedido.getCriadoEm())
+            .previsaoEntrega(pedido.getPrevisaoEntrega())
+            .build();
     }
 }

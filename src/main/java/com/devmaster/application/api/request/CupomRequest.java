@@ -6,12 +6,6 @@ import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * DTO de requisição para criar cupom.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record CupomRequest(
     @NotBlank(message = "Código é obrigatório")
     @Size(max = 50, message = "Código deve ter no máximo 50 caracteres")

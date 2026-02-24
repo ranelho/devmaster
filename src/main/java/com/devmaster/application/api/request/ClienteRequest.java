@@ -2,6 +2,7 @@ package com.devmaster.application.api.request;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
+import org.hibernate.validator.constraints.br.CPF;
 
 import java.time.LocalDate;
 
@@ -32,6 +33,7 @@ public record ClienteRequest(
         regexp = "^\\d{3}\\.?\\d{3}\\.?\\d{3}-?\\d{2}$",
         message = "CPF deve estar no formato XXX.XXX.XXX-XX"
     )
+    @CPF
     String cpf,
     
     @Past(message = "Data de nascimento deve ser no passado")

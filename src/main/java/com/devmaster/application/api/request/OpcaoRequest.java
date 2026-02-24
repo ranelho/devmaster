@@ -4,12 +4,6 @@ import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 
-/**
- * Request para criação de Opcao.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record OpcaoRequest(
     @NotBlank(message = "Nome é obrigatório")
     @Size(max = 100, message = "Nome deve ter no máximo 100 caracteres")

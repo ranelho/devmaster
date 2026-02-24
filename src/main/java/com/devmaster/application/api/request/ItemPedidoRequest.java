@@ -5,12 +5,6 @@ import jakarta.validation.constraints.*;
 
 import java.util.List;
 
-/**
- * Request para item do pedido.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record ItemPedidoRequest(
     @NotNull(message = "Produto é obrigatório")
     Long produtoId,

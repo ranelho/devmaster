@@ -2,12 +2,6 @@ package com.devmaster.application.api.response;
 
 import com.devmaster.domain.TipoPagamento;
 
-/**
- * Response para TipoPagamento.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record TipoPagamentoResponse(
     Long id,
     String nome,

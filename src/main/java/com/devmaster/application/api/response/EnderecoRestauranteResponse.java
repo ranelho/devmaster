@@ -4,12 +4,6 @@ import com.devmaster.domain.EnderecoRestaurante;
 
 import java.math.BigDecimal;
 
-/**
- * DTO de resposta com dados do endereço do restaurante.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record EnderecoRestauranteResponse(
     Long id,
     Long restauranteId,

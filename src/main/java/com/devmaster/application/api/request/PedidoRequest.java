@@ -6,12 +6,6 @@ import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.util.List;
 
-/**
- * Request para criação de pedido.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record PedidoRequest(
     @NotNull(message = "Cliente é obrigatório")
     Long clienteId,

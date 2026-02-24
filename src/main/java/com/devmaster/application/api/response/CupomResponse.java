@@ -6,12 +6,6 @@ import com.devmaster.domain.enums.TipoDesconto;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * DTO de resposta com dados do cupom.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record CupomResponse(
     Long id,
     String codigo,

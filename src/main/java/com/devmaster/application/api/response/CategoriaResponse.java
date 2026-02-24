@@ -4,12 +4,6 @@ import com.devmaster.domain.Categoria;
 
 import java.time.LocalDateTime;
 
-/**
- * DTO de resposta com dados da categoria.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record CategoriaResponse(
     Long id,
     Long restauranteId,

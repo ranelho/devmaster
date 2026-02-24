@@ -7,12 +7,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-/**
- * Response com dados do vínculo usuário-restaurante.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record UsuarioRestauranteResponse(
     Long id,
     UUID usuarioId,

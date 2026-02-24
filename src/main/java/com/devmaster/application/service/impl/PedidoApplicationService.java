@@ -85,7 +85,7 @@ public class PedidoApplicationService implements PedidoService {
                 .subtotal(subtotal)
                 .taxaEntrega(taxaEntrega)
                 .desconto(desconto)
-                .total(BigDecimal.ZERO)
+                .valorTotal(BigDecimal.ZERO)
                 .observacoes(request.observacoes())
                 .previsaoEntrega(calcularPrevisaoEntrega(restaurante))
                 .build();
@@ -504,7 +504,18 @@ public class PedidoApplicationService implements PedidoService {
                 .map(cp -> cp.getCupom().getCodigo())
                 .orElse(null);
 
-        return PedidoResponse.from(pedido, codigoCupom, itens, historico);
+        return PedidoResponse.from(
+            pedido,
+            pedido.getCliente().getId(),
+            pedido.getCliente().getTelefone(),
+            pedido.getRestaurante().getNome(),
+            EnderecoClienteResponse.from(pedido.getEnderecoEntrega()),
+            pedido.getTipoPagamento().getNome(),
+            pedido.getTipoPagamento().getRequerTroco(),
+            codigoCupom,
+            itens,
+            historico
+        );
     }
 
     private String gerarNumeroPedido() {

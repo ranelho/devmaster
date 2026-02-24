@@ -5,12 +5,6 @@ import com.devmaster.domain.enums.StatusPedido;
 
 import java.time.LocalDateTime;
 
-/**
- * Response para HistoricoStatusPedido.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record HistoricoStatusPedidoResponse(
     Long id,
     Long pedidoId,

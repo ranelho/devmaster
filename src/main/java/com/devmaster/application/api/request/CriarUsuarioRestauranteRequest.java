@@ -6,12 +6,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-/**
- * Request para criar usuário no Auth Service e vincular ao restaurante.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record CriarUsuarioRestauranteRequest(
     @NotBlank(message = "Nome é obrigatório")
     @Size(min = 3, max = 100, message = "Nome deve ter entre 3 e 100 caracteres")

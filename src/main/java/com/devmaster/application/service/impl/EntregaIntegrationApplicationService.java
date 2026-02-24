@@ -45,15 +45,15 @@ public class EntregaIntegrationApplicationService implements EntregaIntegrationS
     @Override
     public CalcularEntregaResponse calcularEntrega(CalcularEntregaRequest request) {
         log.info("Calculando entrega para restaurante {} - lat: {}, lng: {}", 
-            request.getRestauranteId(), request.getLatitude(), request.getLongitude());
+            request.restauranteId(), request.latitude(), request.longitude());
 
         // Buscar restaurante
-        Restaurante restaurante = restauranteRepository.findById(request.getRestauranteId())
+        Restaurante restaurante = restauranteRepository.findById(request.restauranteId())
             .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Restaurante não encontrado"));
 
         // Buscar endereço do restaurante
         EnderecoRestaurante enderecoRestaurante = enderecoRestauranteRepository
-            .findByRestauranteId(request.getRestauranteId())
+            .findByRestauranteId(request.restauranteId())
             .orElseThrow(() -> APIException.build(
                 HttpStatus.BAD_REQUEST,
                 "Restaurante sem endereço cadastrado"
@@ -113,8 +113,8 @@ public class EntregaIntegrationApplicationService implements EntregaIntegrationS
         Map<String, Object> apiRequest = Map.of(
             "origemLatitude", enderecoRestaurante.getLatitude(),
             "origemLongitude", enderecoRestaurante.getLongitude(),
-            "destinoLatitude", request.getLatitude(),
-            "destinoLongitude", request.getLongitude()
+            "destinoLatitude", request.latitude(),
+            "destinoLongitude", request.longitude()
         );
 
         try {
@@ -136,13 +136,13 @@ public class EntregaIntegrationApplicationService implements EntregaIntegrationS
                     restaurante.getTempoMedioEntrega() : 30;
                 int tempoTotal = tempoPreparo + tempoMinutos;
 
-                return CalcularEntregaResponse.builder()
-                    .distanciaKm(Math.round(distanciaKm * 100.0) / 100.0)
-                    .tempoEstimadoMinutos(tempoTotal)
-                    .taxaEntrega(taxaEntrega)
-                    .enderecoOrigem(formatarEnderecoRestaurante(enderecoRestaurante))
-                    .enderecoDestino("Endereço de entrega")
-                    .build();
+                return new CalcularEntregaResponse(
+                    Math.round(distanciaKm * 100.0) / 100.0,
+                    tempoTotal,
+                    taxaEntrega,
+                    formatarEnderecoRestaurante(enderecoRestaurante),
+                    "Endereço de entrega"
+                );
             }
 
             throw APIException.build(HttpStatus.BAD_GATEWAY, "Resposta inválida da API de Entrega");
@@ -167,8 +167,8 @@ public class EntregaIntegrationApplicationService implements EntregaIntegrationS
         Double distanciaKm = calcularDistancia(
             enderecoRestaurante.getLatitude().doubleValue(),
             enderecoRestaurante.getLongitude().doubleValue(),
-            request.getLatitude(),
-            request.getLongitude()
+            request.latitude(),
+            request.longitude()
         );
 
         // Calcula tempo estimado
@@ -180,13 +180,13 @@ public class EntregaIntegrationApplicationService implements EntregaIntegrationS
         // Calcula taxa de entrega
         BigDecimal taxaEntrega = calcularTaxaEntrega(distanciaKm);
 
-        return CalcularEntregaResponse.builder()
-            .distanciaKm(Math.round(distanciaKm * 100.0) / 100.0)
-            .tempoEstimadoMinutos(tempoTotal)
-            .taxaEntrega(taxaEntrega)
-            .enderecoOrigem(formatarEnderecoRestaurante(enderecoRestaurante))
-            .enderecoDestino("Endereço de entrega")
-            .build();
+        return new CalcularEntregaResponse(
+            Math.round(distanciaKm * 100.0) / 100.0,
+            tempoTotal,
+            taxaEntrega,
+            formatarEnderecoRestaurante(enderecoRestaurante),
+            "Endereço de entrega"
+        );
     }
 
     /**

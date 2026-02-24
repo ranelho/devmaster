@@ -4,12 +4,6 @@ import com.devmaster.domain.HorarioRestaurante;
 
 import java.time.LocalTime;
 
-/**
- * DTO de resposta com dados do horário do restaurante.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record HorarioRestauranteResponse(
     Long id,
     Long restauranteId,

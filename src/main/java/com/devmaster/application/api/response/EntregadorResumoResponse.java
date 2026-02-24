@@ -5,13 +5,6 @@ import com.devmaster.domain.enums.TipoVeiculo;
 
 import java.math.BigDecimal;
 
-/**
- * DTO de resposta com resumo dos dados do entregador.
- * Usado em listagens e referências.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record EntregadorResumoResponse(
     Long id,
     String nomeCompleto,

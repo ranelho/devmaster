@@ -5,12 +5,6 @@ import com.devmaster.domain.HistoricoDisponibilidadeEntregador;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * DTO de resposta com dados do histórico de disponibilidade.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record HistoricoDisponibilidadeResponse(
     Long id,
     Long entregadorId,

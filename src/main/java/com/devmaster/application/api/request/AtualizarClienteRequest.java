@@ -7,13 +7,6 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
-/**
- * DTO de requisição para atualizar dados de um cliente.
- * Todos os campos são opcionais para permitir atualização parcial.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record AtualizarClienteRequest(
     
     @Pattern(

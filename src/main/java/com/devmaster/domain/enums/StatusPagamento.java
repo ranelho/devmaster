@@ -1,26 +1,18 @@
 package com.devmaster.domain.enums;
 
-/**
- * Enum para status do pagamento.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public enum StatusPagamento {
+    
     PENDENTE("Pendente"),
     PROCESSANDO("Processando"),
     APROVADO("Aprovado"),
     RECUSADO("Recusado"),
     CANCELADO("Cancelado"),
-    REEMBOLSADO("Reembolsado");
+    ESTORNADO("Estornado");
     
     private final String descricao;
-    
-    StatusPagamento(String descricao) {
-        this.descricao = descricao;
-    }
-    
-    public String getDescricao() {
-        return descricao;
-    }
 }

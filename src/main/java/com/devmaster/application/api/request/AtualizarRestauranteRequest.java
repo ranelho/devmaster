@@ -4,12 +4,6 @@ import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 
-/**
- * DTO de requisição para atualizar restaurante.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record AtualizarRestauranteRequest(
     @Size(max = 255, message = "Nome deve ter no máximo 255 caracteres")
     String nome,

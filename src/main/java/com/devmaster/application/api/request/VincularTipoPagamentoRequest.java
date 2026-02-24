@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 public record VincularTipoPagamentoRequest(
     
     @NotNull(message = "ID do tipo de pagamento é obrigatório")
-    @Schema(description = "ID do tipo de pagamento", example = "1", required = true)
+    @Schema(description = "ID do tipo de pagamento", example = "1")
     Long tipoPagamentoId,
     
     @Schema(description = "Ordem de exibição", example = "1")

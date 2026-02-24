@@ -2,12 +2,6 @@ package com.devmaster.application.api.response;
 
 import java.math.BigDecimal;
 
-/**
- * DTO de resposta com resultado da validação do cupom.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record ValidacaoCupomResponse(
     Boolean valido,
     String mensagem,

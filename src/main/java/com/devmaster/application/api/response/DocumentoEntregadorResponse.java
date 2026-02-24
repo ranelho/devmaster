@@ -7,12 +7,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-/**
- * DTO de resposta com dados do documento do entregador.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record DocumentoEntregadorResponse(
     Long id,
     Long entregadorId,

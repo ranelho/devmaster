@@ -4,12 +4,6 @@ import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 
-/**
- * DTO de requisição para endereço do restaurante.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record EnderecoRestauranteRequest(
     @NotBlank(message = "Logradouro é obrigatório")
     @Size(max = 255, message = "Logradouro deve ter no máximo 255 caracteres")

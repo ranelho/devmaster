@@ -6,12 +6,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * DTO de resposta com dados completos do cliente.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record ClienteResponse(
     Long id,
     String telefone,

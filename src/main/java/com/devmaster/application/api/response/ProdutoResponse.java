@@ -6,12 +6,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * Response completo para Produto.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record ProdutoResponse(
     Long id,
     Long restauranteId,

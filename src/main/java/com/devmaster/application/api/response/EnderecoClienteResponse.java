@@ -5,12 +5,6 @@ import com.devmaster.domain.EnderecoCliente;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * DTO de resposta com dados do endereço do cliente.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record EnderecoClienteResponse(
     Long id,
     Long clienteId,

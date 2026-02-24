@@ -4,12 +4,6 @@ import jakarta.validation.constraints.*;
 
 import java.time.LocalTime;
 
-/**
- * DTO de requisição para horário do restaurante.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record HorarioRestauranteRequest(
     @NotNull(message = "Dia da semana é obrigatório")
     @Min(value = 0, message = "Dia da semana deve ser entre 0 (Domingo) e 6 (Sábado)")

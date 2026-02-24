@@ -5,8 +5,8 @@ public record EnderecoViaCepResponse(
     String logradouro,
     String complemento,
     String bairro,
-    String localidade, // cidade
-    String uf, // estado
+    String localidade,
+    String uf,
     Double latitude,
     Double longitude
 ) {

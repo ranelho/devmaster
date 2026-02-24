@@ -4,12 +4,6 @@ import com.devmaster.domain.GrupoOpcao;
 
 import java.util.List;
 
-/**
- * Response para GrupoOpcao.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record GrupoOpcaoResponse(
     Long id,
     Long produtoId,

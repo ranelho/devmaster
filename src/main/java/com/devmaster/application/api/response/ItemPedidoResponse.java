@@ -5,12 +5,6 @@ import com.devmaster.domain.ItemPedido;
 import java.math.BigDecimal;
 import java.util.List;
 
-/**
- * Response para ItemPedido.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record ItemPedidoResponse(
     Long id,
     Long produtoId,

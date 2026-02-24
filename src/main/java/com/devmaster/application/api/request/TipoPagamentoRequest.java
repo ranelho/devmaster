@@ -2,12 +2,6 @@ package com.devmaster.application.api.request;
 
 import jakarta.validation.constraints.*;
 
-/**
- * Request para criação de TipoPagamento.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record TipoPagamentoRequest(
     @NotBlank(message = "Nome é obrigatório")
     @Size(max = 100, message = "Nome deve ter no máximo 100 caracteres")

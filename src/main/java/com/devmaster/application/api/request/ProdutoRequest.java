@@ -4,12 +4,6 @@ import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 
-/**
- * Request para criação de Produto.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record ProdutoRequest(
     @NotNull(message = "Categoria é obrigatória")
     Long categoriaId,

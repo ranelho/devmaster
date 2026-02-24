@@ -4,12 +4,6 @@ import com.devmaster.domain.OpcaoItemPedido;
 
 import java.math.BigDecimal;
 
-/**
- * Response para OpcaoItemPedido.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record OpcaoItemPedidoResponse(
     Long id,
     Long grupoOpcaoId,
