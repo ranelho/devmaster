@@ -46,9 +46,11 @@ public class RestauranteRestController implements RestauranteAPI {
         Boolean ativo,
         Boolean aberto,
         String nome,
-        Pageable pageable
+        int page,
+        int size
     ) {
-        return restauranteService.listarRestaurantes(null, ativo, aberto, nome, pageable);
+        return restauranteService.listarRestaurantes(null, ativo, aberto, nome, 
+            org.springframework.data.domain.PageRequest.of(page, size));
     }
     
     @Override

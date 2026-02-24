@@ -40,7 +40,7 @@ public interface RestauranteAPI {
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     RestauranteResponse criarRestaurante(
         @Parameter(description = "Dados do restaurante", required = true)
         @Valid @RequestBody RestauranteRequest request
@@ -83,7 +83,11 @@ public interface RestauranteAPI {
         @Parameter(description = "Filtrar por nome (busca parcial)")
         @RequestParam(required = false) String nome,
         
-        @PageableDefault(size = 20) Pageable pageable
+        @Parameter(description = "Número da página")
+        @RequestParam(defaultValue = "0") int page,
+        
+        @Parameter(description = "Tamanho da página")
+        @RequestParam(defaultValue = "20") int size
     );
     
     @Operation(summary = "Listar restaurantes abertos", description = "Lista restaurantes abertos ordenados por avaliação")
@@ -104,7 +108,7 @@ public interface RestauranteAPI {
         @ApiResponse(responseCode = "409", description = "Email já cadastrado")
     })
     @PutMapping("/{restauranteId}")
-    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     RestauranteResponse atualizarRestaurante(
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId,
