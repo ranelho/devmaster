@@ -1,5 +1,6 @@
 package com.devmaster.config;
 
+import com.devmaster.security.JwtAuthenticationEntryPoint;
 import com.devmaster.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -27,6 +29,9 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .exceptionHandling(exception -> exception
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
             )
             .authorizeHttpRequests(auth -> auth
                 // Endpoints públicos - não requerem autenticação

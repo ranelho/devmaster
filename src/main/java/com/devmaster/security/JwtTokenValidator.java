@@ -55,8 +55,20 @@ public class JwtTokenValidator {
             );
             
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                log.debug("Token validado com sucesso");
-                return response.getBody();
+                Map<String, Object> body = response.getBody();
+                Boolean valid = (Boolean) body.get("valid");
+                
+                log.debug("Resposta da validação - valid: {}, body: {}", valid, body);
+                
+                // Se o token é válido, retorna os claims
+                if (Boolean.TRUE.equals(valid)) {
+                    log.debug("Token validado com sucesso");
+                    return body;
+                }
+                
+                // Token inválido ou expirado
+                log.warn("Token inválido ou expirado - valid: false");
+                return null;
             }
             
             throw APIException.build(HttpStatus.UNAUTHORIZED, "Token inválido ou expirado");

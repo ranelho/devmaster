@@ -49,12 +49,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 
                 if (claims != null) {
                     // Extrai informações do token
-                    String username = (String) claims.get("sub");
+                    // API Auth retorna 'username', mas também aceita 'sub' como fallback
+                    String username = (String) claims.getOrDefault("username", claims.get("sub"));
                     String userId = (String) claims.get("userId");
                     @SuppressWarnings("unchecked")
                     List<String> roles = (List<String>) claims.getOrDefault("roles", List.of());
                     
                     log.info("Claims extraídos do token - username: {}, userId: {}, roles: {}", username, userId, roles);
+                    
+                    // Valida se os campos essenciais estão presentes
+                    if (username == null || roles == null || roles.isEmpty()) {
+                        log.warn("Token inválido ou expirado - campos essenciais ausentes");
+                        filterChain.doFilter(request, response);
+                        return;
+                    }
                     
                     // Cria authorities com prefixo ROLE_ se não existir
                     List<SimpleGrantedAuthority> authorities = roles.stream()
