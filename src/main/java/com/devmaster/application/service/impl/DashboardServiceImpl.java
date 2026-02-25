@@ -249,12 +249,6 @@ public class DashboardServiceImpl implements DashboardService {
     }
     
     private PedidoResumoResponse toResumoResponse(Pedido pedido) {
-        return PedidoResumoResponse.builder()
-            .id(pedido.getId())
-            .clienteNome(pedido.getClienteNome())
-            .valorTotal(pedido.getValorTotal())
-            .status(pedido.getStatus())
-            .dataPedido(pedido.getDataPedido())
-            .build();
+        return PedidoResumoResponse.from(pedido);
     }
 }
