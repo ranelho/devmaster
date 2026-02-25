@@ -70,7 +70,9 @@ public class PedidoApplicationService implements PedidoService {
         String numeroPedido = gerarNumeroPedido();
 
         BigDecimal subtotal = BigDecimal.ZERO;
-        BigDecimal taxaEntrega = restaurante.getTaxaEntrega();
+        BigDecimal taxaEntrega = request.taxaEntrega() != null 
+            ? request.taxaEntrega() 
+            : restaurante.getTaxaEntrega();
         BigDecimal desconto = BigDecimal.ZERO;
 
         Pedido pedido = Pedido.builder()
@@ -156,6 +158,21 @@ public class PedidoApplicationService implements PedidoService {
                 : pedidoRepository.findByClienteIdOrderByCriadoEmDesc(clienteId);
 
         return pedidos.stream()
+                .map(PedidoResumoResponse::from)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PedidoResumoResponse> listarPedidosPorTelefone(UUID usuarioId, String telefone) {
+        // Normalizar telefone removendo caracteres especiais
+        String telefoneNormalizado = telefone.replaceAll("[^0-9]", "");
+        
+        Cliente cliente = clienteRepository.findByTelefone(telefoneNormalizado)
+                .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
+
+        return pedidoRepository.findByClienteIdOrderByCriadoEmDesc(cliente.getId())
+                .stream()
                 .map(PedidoResumoResponse::from)
                 .toList();
     }

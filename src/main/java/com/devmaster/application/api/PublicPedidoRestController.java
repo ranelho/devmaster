@@ -40,4 +40,9 @@ public class PublicPedidoRestController implements PublicPedidoAPI {
     public List<PedidoResumoResponse> listarPedidosCliente(Long clienteId) {
         return pedidoService.listarPedidosCliente(null, clienteId, null);
     }
+
+    @Override
+    public List<PedidoResumoResponse> listarPedidosPorTelefone(String telefone) {
+        return pedidoService.listarPedidosPorTelefone(null, telefone);
+    }
 }

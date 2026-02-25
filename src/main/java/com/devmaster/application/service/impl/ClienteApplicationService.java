@@ -116,7 +116,10 @@ public class ClienteApplicationService implements ClienteService {
     @Override
     @Transactional(readOnly = true)
     public ClienteResponse buscarClientePorTelefone(String telefone) {
-        Cliente cliente = clienteRepository.findByTelefone(telefone)
+        // Normalizar telefone removendo caracteres especiais
+        String telefoneNormalizado = telefone.replaceAll("[^0-9]", "");
+        
+        Cliente cliente = clienteRepository.findByTelefone(telefoneNormalizado)
             .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
         
         return mapToResponse(cliente);

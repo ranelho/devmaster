@@ -78,4 +78,17 @@ public interface PublicPedidoAPI {
     List<PedidoResumoResponse> listarPedidosCliente(
         @Parameter(description = "ID do cliente") @PathVariable Long clienteId
     );
+    
+    @GetMapping("/cliente/telefone/{telefone}")
+    @Operation(
+        summary = "Listar pedidos por telefone",
+        description = "Lista todos os pedidos de um cliente pelo telefone. Endpoint público - não requer autenticação."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de pedidos"),
+        @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
+    })
+    List<PedidoResumoResponse> listarPedidosPorTelefone(
+        @Parameter(description = "Telefone do cliente") @PathVariable String telefone
+    );
 }

@@ -23,6 +23,7 @@ public interface PedidoService {
     PedidoResponse buscarPedidoPorNumero(UUID usuarioId, String numeroPedido);
     List<PedidoResumoResponse> listarPedidosRestaurante(UUID usuarioId, Long restauranteId, StatusPedido status);
     List<PedidoResumoResponse> listarPedidosCliente(UUID usuarioId, Long clienteId, StatusPedido status);
+    List<PedidoResumoResponse> listarPedidosPorTelefone(UUID usuarioId, String telefone);
     Page<PedidoResumoResponse> listarPedidosRestauranteComPaginacao(UUID usuarioId, Long restauranteId, StatusPedido status, Pageable pageable);
     Page<PedidoResumoResponse> listarPedidosClienteComPaginacao(UUID usuarioId, Long clienteId, Pageable pageable);
     PedidoResponse atualizarStatus(UUID usuarioId, Long pedidoId, AtualizarStatusPedidoRequest request);
