@@ -1,6 +1,7 @@
 package com.devmaster.application.api.response;
 
 import com.devmaster.domain.Restaurante;
+import com.devmaster.util.CNPJUtil;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -39,7 +40,7 @@ public record RestauranteResponse(
             restaurante.getDescricao(),
             restaurante.getTelefone(),
             restaurante.getEmail(),
-            restaurante.getCnpj(),
+            CNPJUtil.aplicarMascara(restaurante.getCnpj()),
             restaurante.getLogoUrl(),
             restaurante.getBannerUrl(),
             restaurante.getAtivo(),

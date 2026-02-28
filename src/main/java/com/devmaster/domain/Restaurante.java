@@ -39,7 +39,7 @@ public class Restaurante {
     
     private String email;
     
-    @Column(unique = true, length = 18)
+    @Column(unique = true, length = 14)
     private String cnpj;
     
     @Column(name = "logo_url", length = 500)

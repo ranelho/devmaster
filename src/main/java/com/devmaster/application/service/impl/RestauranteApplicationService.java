@@ -16,6 +16,7 @@ import com.devmaster.handler.APIException;
 import com.devmaster.infrastructure.repository.EnderecoRestauranteRepository;
 import com.devmaster.infrastructure.repository.HorarioRestauranteRepository;
 import com.devmaster.infrastructure.repository.RestauranteRepository;
+import com.devmaster.util.CNPJUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -51,8 +52,11 @@ public class RestauranteApplicationService implements RestauranteService {
             throw APIException.build(HttpStatus.CONFLICT, "Slug já cadastrado");
         }
         
+        // Remover máscara do CNPJ
+        String cnpjSemMascara = CNPJUtil.removerMascara(request.cnpj());
+        
         // Validar duplicação de CNPJ
-        if (request.cnpj() != null && restauranteRepository.existsByCnpj(request.cnpj())) {
+        if (cnpjSemMascara != null && restauranteRepository.existsByCnpj(cnpjSemMascara)) {
             throw APIException.build(HttpStatus.CONFLICT, "CNPJ já cadastrado");
         }
         
@@ -68,7 +72,7 @@ public class RestauranteApplicationService implements RestauranteService {
             .descricao(request.descricao())
             .telefone(request.telefone())
             .email(request.email())
-            .cnpj(request.cnpj())
+            .cnpj(cnpjSemMascara)
             .logoUrl(request.logoUrl())
             .bannerUrl(request.bannerUrl())
             .ativo(true)
