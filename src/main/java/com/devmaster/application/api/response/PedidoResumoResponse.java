@@ -1,6 +1,7 @@
 package com.devmaster.application.api.response;
 
 import com.devmaster.domain.Pedido;
+import com.devmaster.domain.enums.StatusPagamento;
 import com.devmaster.domain.enums.StatusPedido;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,30 +16,32 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PedidoResumoResponse {
-    
+
     private Long id;
     private String numeroPedido;
     private String clienteNome;
     private String restauranteNome;
     private BigDecimal valorTotal;
     private StatusPedido status;
+    private StatusPagamento statusPagamento;
     private String statusDescricao;
     private LocalDateTime dataPedido;
     private LocalDateTime criadoEm;
     private LocalDateTime previsaoEntrega;
-    
+
     public static PedidoResumoResponse from(Pedido pedido) {
         return PedidoResumoResponse.builder()
-            .id(pedido.getId())
-            .numeroPedido(pedido.getNumeroPedido())
-            .clienteNome(pedido.getClienteNome())
-            .restauranteNome(pedido.getRestaurante() != null ? pedido.getRestaurante().getNome() : null)
-            .valorTotal(pedido.getValorTotal())
-            .status(pedido.getStatus())
-            .statusDescricao(pedido.getStatus().getDescricao())
-            .dataPedido(pedido.getDataPedido())
-            .criadoEm(pedido.getCriadoEm())
-            .previsaoEntrega(pedido.getPrevisaoEntrega())
-            .build();
+                .id(pedido.getId())
+                .numeroPedido(pedido.getNumeroPedido())
+                .clienteNome(pedido.getClienteNome())
+                .restauranteNome(pedido.getRestaurante() != null ? pedido.getRestaurante().getNome() : null)
+                .valorTotal(pedido.getValorTotal())
+                .status(pedido.getStatus())
+                .statusPagamento(pedido.getStatusPagamento())
+                .statusDescricao(pedido.getStatus().getDescricao())
+                .dataPedido(pedido.getDataPedido())
+                .criadoEm(pedido.getCriadoEm())
+                .previsaoEntrega(pedido.getPrevisaoEntrega())
+                .build();
     }
 }
