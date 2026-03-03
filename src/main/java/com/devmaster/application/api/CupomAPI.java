@@ -30,6 +30,26 @@ import java.util.UUID;
 @RequestMapping("/v1/cupons")
 public interface CupomAPI {
     
+    // ========================================
+    // ENDPOINTS PÚBLICOS (SEM AUTENTICAÇÃO)
+    // ========================================
+    
+    @Operation(summary = "Validar cupom (Público)", description = "Valida um cupom e calcula o desconto - Não requer autenticação")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Validação realizada com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Cupom não encontrado"),
+        @ApiResponse(responseCode = "400", description = "Cupom inválido ou expirado")
+    })
+    @PostMapping("/public/validar")
+    ValidacaoCupomResponse validarCupomPublico(
+        @Parameter(description = "Dados para validação", required = true)
+        @Valid @RequestBody ValidarCupomRequest request
+    );
+    
+    // ========================================
+    // ENDPOINTS PROTEGIDOS (REQUEREM AUTENTICAÇÃO)
+    // ========================================
+    
     @Operation(summary = "Criar novo cupom", description = "Cria um novo cupom de desconto")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Cupom criado com sucesso"),
@@ -136,15 +156,5 @@ public interface CupomAPI {
     void removerCupom(
         @Parameter(description = "ID do cupom", required = true)
         @PathVariable Long cupomId
-    );
-    
-    @Operation(summary = "Validar cupom", description = "Valida um cupom e calcula o desconto")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Validação realizada com sucesso")
-    })
-    @PostMapping("/validar")
-    ValidacaoCupomResponse validarCupom(
-        @Parameter(description = "Dados para validação", required = true)
-        @Valid @RequestBody ValidarCupomRequest request
     );
 }

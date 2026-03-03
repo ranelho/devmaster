@@ -30,7 +30,7 @@ public interface PedidoService {
     void confirmarPedido(UUID usuarioId, Long pedidoId);
     void iniciarPreparo(UUID usuarioId, Long pedidoId);
     void marcarComoPronto(UUID usuarioId, Long pedidoId);
-    void despacharPedido(UUID usuarioId, Long pedidoId);
+    void despacharPedido(UUID usuarioId, Long pedidoId, Long entregadorId);
     void entregarPedido(UUID usuarioId, Long pedidoId);
     void cancelarPedido(UUID usuarioId, Long pedidoId, CancelarPedidoRequest request);
     void aprovarPagamento(UUID usuarioId, Long pedidoId);

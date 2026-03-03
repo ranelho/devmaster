@@ -84,7 +84,7 @@ public interface EntregadorAPI {
     @SecurityRequirement(name = "bearerAuth")
     @Operation(
         summary = "Atualizar entregador",
-        description = "Atualiza dados de um entregador. Requer role SUPER_ADMIN."
+        description = "Atualiza dados de um entregador. Qualquer usuário autenticado pode atualizar."
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Entregador atualizado com sucesso"),
@@ -103,7 +103,7 @@ public interface EntregadorAPI {
     @SecurityRequirement(name = "bearerAuth")
     @Operation(
         summary = "Desativar entregador",
-        description = "Desativa um entregador no sistema. Requer role SUPER_ADMIN."
+        description = "Desativa um entregador no sistema. Qualquer usuário autenticado pode desativar."
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Entregador desativado com sucesso"),
@@ -117,7 +117,7 @@ public interface EntregadorAPI {
     @SecurityRequirement(name = "bearerAuth")
     @Operation(
         summary = "Reativar entregador",
-        description = "Reativa um entregador desativado. Requer role SUPER_ADMIN."
+        description = "Reativa um entregador desativado. Qualquer usuário autenticado pode reativar."
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Entregador reativado com sucesso"),
@@ -131,7 +131,7 @@ public interface EntregadorAPI {
     @SecurityRequirement(name = "bearerAuth")
     @Operation(
         summary = "Alterar disponibilidade",
-        description = "Altera disponibilidade do entregador. Requer role SUPER_ADMIN."
+        description = "Altera disponibilidade do entregador. Qualquer usuário autenticado pode alterar."
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Disponibilidade alterada com sucesso"),
@@ -180,7 +180,7 @@ public interface EntregadorAPI {
     @GetMapping("/{id}/validar")
     @Operation(
         summary = "Validar entregador",
-        description = "Valida existência e disponibilidade do entregador. Usado para integração com módulo ENTREGA."
+        description = "Valida existência e disponibilidade do entregador. Endpoint público para integração."
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Entregador validado"),

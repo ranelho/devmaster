@@ -23,12 +23,21 @@ public record ProdutoResumoResponse(
     LocalDateTime criadoEm,
     LocalDateTime atualizadoEm,
     List<ImagemProdutoResponse> imagens,
-    List<GrupoOpcaoResponse> gruposOpcoes
+    List<GrupoOpcaoResponse> gruposOpcoes,
+    // Campos de desconto
+    BigDecimal percentualDesconto,
+    BigDecimal valorOriginal,
+    BigDecimal valorComDesconto,
+    Boolean temDescontoVigente
 ) {
     public static ProdutoResumoResponse from(
         Produto produto,
         List<ImagemProdutoResponse> imagens,
-        List<GrupoOpcaoResponse> gruposOpcoes
+        List<GrupoOpcaoResponse> gruposOpcoes,
+        BigDecimal percentualDesconto,
+        BigDecimal valorOriginal,
+        BigDecimal valorComDesconto,
+        Boolean temDescontoVigente
     ) {
         return new ProdutoResumoResponse(
             produto.getId(),
@@ -47,7 +56,11 @@ public record ProdutoResumoResponse(
             produto.getCriadoEm(),
             produto.getAtualizadoEm(),
             imagens,
-            gruposOpcoes
+            gruposOpcoes,
+            percentualDesconto,
+            valorOriginal,
+            valorComDesconto,
+            temDescontoVigente
         );
     }
 }

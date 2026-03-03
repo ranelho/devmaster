@@ -42,6 +42,10 @@ public class Pedido {
     @JoinColumn(name = "tipo_pagamento_id", nullable = false)
     private TipoPagamento tipoPagamento;
     
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "entregador_id")
+    private Entregador entregador;
+    
     @Column(name = "restaurante_id", insertable = false, updatable = false)
     private Long restauranteId;
     
@@ -162,6 +166,10 @@ public class Pedido {
         }
         this.status = StatusPedido.EM_ENTREGA;
         this.despachadoEm = LocalDateTime.now();
+    }
+    
+    public void vincularEntregador(Entregador entregador) {
+        this.entregador = entregador;
     }
     
     public void entregar() {

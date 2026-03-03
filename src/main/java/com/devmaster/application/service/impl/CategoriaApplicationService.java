@@ -73,7 +73,7 @@ public class CategoriaApplicationService implements CategoriaService {
         
         return categorias.stream()
             .map(CategoriaResponse::from)
-            .collect(Collectors.toList());
+            .toList();
     }
     
     @Override
@@ -172,7 +172,7 @@ public class CategoriaApplicationService implements CategoriaService {
         return categoriaRepository.findByRestauranteIdAndAtivoTrueOrderByOrdemExibicaoAsc(restauranteId)
             .stream()
             .map(CategoriaResponse::from)
-            .collect(Collectors.toList());
+            .toList();
     }
     
     @Override

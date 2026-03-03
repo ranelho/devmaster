@@ -29,7 +29,6 @@ public class EntregadorRestController implements EntregadorAPI {
     }
     
     @Override
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'GERENTE', 'ATENDENTE')")
     public Page<EntregadorResumoResponse> listarEntregadores(
         Boolean ativo,
         Boolean disponivel,
@@ -43,40 +42,34 @@ public class EntregadorRestController implements EntregadorAPI {
     }
     
     @Override
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'GERENTE', 'ATENDENTE')")
     public EntregadorResponse buscarEntregador(Long id) {
         return entregadorService.buscarEntregador(id);
     }
     
     @Override
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public EntregadorResponse atualizarEntregador(Long id, AtualizarEntregadorRequest request) {
         return entregadorService.atualizarEntregador(id, request);
     }
     
     @Override
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public MessageResponse desativarEntregador(Long id) {
         entregadorService.desativarEntregador(id);
         return new MessageResponse("Entregador desativado com sucesso");
     }
     
     @Override
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public MessageResponse reativarEntregador(Long id) {
         entregadorService.reativarEntregador(id);
         return new MessageResponse("Entregador reativado com sucesso");
     }
     
     @Override
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public MessageResponse alterarDisponibilidade(Long id, AlterarDisponibilidadeRequest request) {
         entregadorService.alterarDisponibilidade(id, request);
         return new MessageResponse("Disponibilidade alterada com sucesso");
     }
     
     @Override
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'GERENTE')")
     public List<EntregadorResumoResponse> buscarEntregadoresDisponiveisProximos(
         Double latitude,
         Double longitude,
@@ -88,7 +81,6 @@ public class EntregadorRestController implements EntregadorAPI {
     }
     
     @Override
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'GERENTE')")
     public EstatisticasEntregadorResponse obterEstatisticas(Long id) {
         return entregadorService.obterEstatisticas(id);
     }

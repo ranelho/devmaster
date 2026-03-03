@@ -3,6 +3,9 @@ package com.devmaster.application.api;
 import com.devmaster.application.api.request.*;
 import com.devmaster.application.api.response.*;
 import com.devmaster.application.service.ProdutoService;
+import com.devmaster.application.service.ImagemProdutoService;
+import com.devmaster.application.service.GrupoOpcaoService;
+import com.devmaster.application.service.OpcaoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,17 +13,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-/**
- * Implementação da API de Produtos.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
+
 @RestController
 @RequiredArgsConstructor
 public class ProdutoRestController implements ProdutoAPI {
     
     private final ProdutoService produtoService;
+    private final ImagemProdutoService imagemProdutoService;
+    private final GrupoOpcaoService grupoOpcaoService;
+    private final OpcaoService opcaoService;
     
     @Override
     public ProdutoResponse criarProduto(Long restauranteId, ProdutoRequest request) {
@@ -91,7 +92,7 @@ public class ProdutoRestController implements ProdutoAPI {
         Long produtoId,
         ImagemProdutoRequest request
     ) {
-        return produtoService.adicionarImagem(null, restauranteId, produtoId, request);
+        return imagemProdutoService.adicionarImagem(null, restauranteId, produtoId, request);
     }
     
     @Override
@@ -102,22 +103,22 @@ public class ProdutoRestController implements ProdutoAPI {
         Boolean principal,
         Integer ordemExibicao
     ) {
-        return produtoService.uploadImagem(null, restauranteId, produtoId, arquivo, principal, ordemExibicao);
+        return imagemProdutoService.uploadImagem(null, restauranteId, produtoId, arquivo, principal, ordemExibicao);
     }
     
     @Override
     public List<ImagemProdutoResponse> listarImagens(Long restauranteId, Long produtoId) {
-        return produtoService.listarImagens(null, restauranteId, produtoId);
+        return imagemProdutoService.listarImagens(null, restauranteId, produtoId);
     }
     
     @Override
     public void definirImagemPrincipal(Long restauranteId, Long produtoId, Long imagemId) {
-        produtoService.definirImagemPrincipal(null, restauranteId, produtoId, imagemId);
+        imagemProdutoService.definirImagemPrincipal(null, restauranteId, produtoId, imagemId);
     }
     
     @Override
     public void removerImagem(Long restauranteId, Long produtoId, Long imagemId) {
-        produtoService.removerImagem(null, restauranteId, produtoId, imagemId);
+        imagemProdutoService.removerImagem(null, restauranteId, produtoId, imagemId);
     }
     
     @Override
@@ -126,12 +127,12 @@ public class ProdutoRestController implements ProdutoAPI {
         Long produtoId,
         GrupoOpcaoRequest request
     ) {
-        return produtoService.adicionarGrupoOpcao(null, restauranteId, produtoId, request);
+        return grupoOpcaoService.adicionarGrupoOpcao(null, restauranteId, produtoId, request);
     }
     
     @Override
     public List<GrupoOpcaoResponse> listarGruposOpcoes(Long restauranteId, Long produtoId) {
-        return produtoService.listarGruposOpcoes(null, restauranteId, produtoId);
+        return grupoOpcaoService.listarGruposOpcoes(null, restauranteId, produtoId);
     }
     
     @Override
@@ -141,12 +142,12 @@ public class ProdutoRestController implements ProdutoAPI {
         Long grupoId,
         GrupoOpcaoRequest request
     ) {
-        return produtoService.atualizarGrupoOpcao(null, restauranteId, produtoId, grupoId, request);
+        return grupoOpcaoService.atualizarGrupoOpcao(null, restauranteId, produtoId, grupoId, request);
     }
     
     @Override
     public void removerGrupoOpcao(Long restauranteId, Long produtoId, Long grupoId) {
-        produtoService.removerGrupoOpcao(null, restauranteId, produtoId, grupoId);
+        grupoOpcaoService.removerGrupoOpcao(null, restauranteId, produtoId, grupoId);
     }
     
     @Override
@@ -156,7 +157,7 @@ public class ProdutoRestController implements ProdutoAPI {
         Long grupoId,
         OpcaoRequest request
     ) {
-        return produtoService.adicionarOpcao(null, restauranteId, produtoId, grupoId, request);
+        return opcaoService.adicionarOpcao(null, restauranteId, produtoId, grupoId, request);
     }
     
     @Override
@@ -166,7 +167,7 @@ public class ProdutoRestController implements ProdutoAPI {
         Long grupoId,
         Boolean disponivel
     ) {
-        return produtoService.listarOpcoes(null, restauranteId, produtoId, grupoId, disponivel);
+        return opcaoService.listarOpcoes(null, restauranteId, produtoId, grupoId, disponivel);
     }
     
     @Override
@@ -177,21 +178,21 @@ public class ProdutoRestController implements ProdutoAPI {
         Long opcaoId,
         OpcaoRequest request
     ) {
-        return produtoService.atualizarOpcao(null, restauranteId, produtoId, grupoId, opcaoId, request);
+        return opcaoService.atualizarOpcao(null, restauranteId, produtoId, grupoId, opcaoId, request);
     }
     
     @Override
     public void disponibilizarOpcao(Long restauranteId, Long produtoId, Long grupoId, Long opcaoId) {
-        produtoService.disponibilizarOpcao(null, restauranteId, produtoId, grupoId, opcaoId);
+        opcaoService.disponibilizarOpcao(null, restauranteId, produtoId, grupoId, opcaoId);
     }
     
     @Override
     public void indisponibilizarOpcao(Long restauranteId, Long produtoId, Long grupoId, Long opcaoId) {
-        produtoService.indisponibilizarOpcao(null, restauranteId, produtoId, grupoId, opcaoId);
+        opcaoService.indisponibilizarOpcao(null, restauranteId, produtoId, grupoId, opcaoId);
     }
     
     @Override
     public void removerOpcao(Long restauranteId, Long produtoId, Long grupoId, Long opcaoId) {
-        produtoService.removerOpcao(null, restauranteId, produtoId, grupoId, opcaoId);
+        opcaoService.removerOpcao(null, restauranteId, produtoId, grupoId, opcaoId);
     }
 }

@@ -8,12 +8,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-/**
- * Entidade que representa um cliente no sistema.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 @Entity
 @Table(name = "clientes", indexes = {
     @Index(name = "idx_clientes_telefone", columnList = "telefone"),
@@ -58,16 +52,12 @@ public class Cliente {
     @Builder.Default
     private Boolean ativo = true;
     
-    /**
-     * Desativa o cliente no sistema.
-     */
+
     public void desativar() {
         this.ativo = false;
     }
     
-    /**
-     * Reativa o cliente no sistema.
-     */
+
     public void reativar() {
         this.ativo = true;
     }

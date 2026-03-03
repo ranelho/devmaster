@@ -8,12 +8,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * Entidade que representa um endereço de entrega do cliente.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 @Entity
 @Table(name = "enderecos_cliente", indexes = {
     @Index(name = "idx_enderecos_cliente_cliente_id", columnList = "cliente_id"),

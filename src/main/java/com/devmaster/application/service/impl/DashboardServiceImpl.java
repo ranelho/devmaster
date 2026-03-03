@@ -144,6 +144,8 @@ public class DashboardServiceImpl implements DashboardService {
                     <div class="info-line"><span class="label">Referência:</span> %s</div>
                 </div>
                 
+                %s
+                
                 <div class="section">
                     <h3>💳 Pagamento</h3>
                     <div class="info-line"><span class="label">Forma:</span> %s</div>
@@ -182,6 +184,12 @@ public class DashboardServiceImpl implements DashboardService {
                 endereco.getEstado(), endereco.getCep(),
                 endereco.getComplemento() != null ? endereco.getComplemento() : "-",
                 "-",
+                pedido.getEntregador() != null ? 
+                    "<div class=\"section\"><h3>🛵 Entregador</h3>" +
+                    "<div class=\"info-line\"><span class=\"label\">Nome:</span> " + pedido.getEntregador().getNomeCompleto() + "</div>" +
+                    "<div class=\"info-line\"><span class=\"label\">Telefone:</span> " + pedido.getEntregador().getTelefone() + "</div>" +
+                    "<div class=\"info-line\"><span class=\"label\">Veículo:</span> " + pedido.getEntregador().getModeloVeiculo() + " - " + pedido.getEntregador().getPlacaVeiculo() + "</div>" +
+                    "</div>" : "",
                 pedido.getTipoPagamento().getNome(),
                 pedido.getStatusPagamento(),
                 pedido.getValorTroco() != null ? 

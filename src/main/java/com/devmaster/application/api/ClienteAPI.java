@@ -16,13 +16,6 @@ import org.springframework.http.HttpStatus;
 
 import org.springframework.web.bind.annotation.*;
 
-/**
- * API REST para gestão de clientes.
- * Endpoints públicos (sem autenticação) e privados (com autenticação).
- *
- * @author DevMaster Team
- * @since 1.0.0
- */
 @Tag(name = "Clientes", description = "Gestão de clientes do sistema")
 @RequestMapping("/public/v1/clientes")
 public interface ClienteAPI {

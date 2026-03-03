@@ -85,8 +85,11 @@ public interface PedidoAPI {
     
     @PatchMapping("/{pedidoId}/despachar")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "Despachar pedido", description = "Despacha o pedido para entrega")
-    void despacharPedido(@PathVariable Long pedidoId);
+    @Operation(summary = "Despachar pedido", description = "Despacha o pedido para entrega vinculando um entregador")
+    void despacharPedido(
+        @PathVariable Long pedidoId,
+        @RequestParam Long entregadorId
+    );
     
     @PatchMapping("/{pedidoId}/entregar")
     @ResponseStatus(HttpStatus.NO_CONTENT)

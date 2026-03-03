@@ -71,7 +71,7 @@ public class CupomRestController implements CupomAPI {
     }
     
     @Override
-    public ValidacaoCupomResponse validarCupom(ValidarCupomRequest request) {
+    public ValidacaoCupomResponse validarCupomPublico(ValidarCupomRequest request) {
         return cupomService.validarCupom(null, request);
     }
 }

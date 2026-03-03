@@ -78,8 +78,8 @@ public class PedidoRestController implements PedidoAPI {
     }
     
     @Override
-    public void despacharPedido(Long pedidoId) {
-        pedidoService.despacharPedido(null, pedidoId);
+    public void despacharPedido(Long pedidoId, Long entregadorId) {
+        pedidoService.despacharPedido(null, pedidoId, entregadorId);
     }
     
     @Override

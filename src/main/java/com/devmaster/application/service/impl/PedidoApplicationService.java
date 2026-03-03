@@ -45,6 +45,7 @@ public class PedidoApplicationService implements PedidoService {
     private final ItemPedidoRepository itemPedidoRepository;
     private final OpcaoItemPedidoRepository opcaoItemPedidoRepository;
     private final CupomPedidoRepository cupomPedidoRepository;
+    private final EntregadorRepository entregadorRepository;
     private final HistoricoStatusPedidoRepository historicoStatusPedidoRepository;
 
     @Override
@@ -165,8 +166,7 @@ public class PedidoApplicationService implements PedidoService {
     @Override
     @Transactional(readOnly = true)
     public List<PedidoResumoResponse> listarPedidosPorTelefone(UUID usuarioId, String telefone) {
-        // Normalizar telefone removendo caracteres especiais
-        String telefoneNormalizado = telefone.replaceAll("[^0-9]", "");
+        String telefoneNormalizado = telefone.replaceAll("\\D", "");
         
         Cliente cliente = clienteRepository.findByTelefone(telefoneNormalizado)
                 .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
@@ -261,11 +261,18 @@ public class PedidoApplicationService implements PedidoService {
 
     @Override
     @Transactional
-    public void despacharPedido(UUID usuarioId, Long pedidoId) {
+    public void despacharPedido(UUID usuarioId, Long pedidoId, Long entregadorId) {
         Pedido pedido = buscarPedidoOuFalhar(pedidoId);
+        Entregador entregador = buscarEntregadorOuFalhar(entregadorId);
+        
+        if (Boolean.FALSE.equals(entregador.getAtivo())) {
+            throw APIException.build(HttpStatus.BAD_REQUEST, "Entregador inativo");
+        }
+        
+        pedido.vincularEntregador(entregador);
         pedido.despachar();
         pedidoRepository.save(pedido);
-        registrarHistorico(pedido, StatusPedido.DESPACHADO, null, toStringOrSystem(usuarioId));
+        registrarHistorico(pedido, StatusPedido.DESPACHADO, "Entregador: " + entregador.getNomeCompleto(), toStringOrSystem(usuarioId));
     }
 
     @Override
@@ -590,6 +597,11 @@ public class PedidoApplicationService implements PedidoService {
     private Pedido buscarPedidoOuFalhar(Long pedidoId) {
         return pedidoRepository.findById(pedidoId)
                 .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
+    }
+    
+    private Entregador buscarEntregadorOuFalhar(Long entregadorId) {
+        return entregadorRepository.findById(entregadorId)
+                .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Entregador não encontrado"));
     }
     
     /**

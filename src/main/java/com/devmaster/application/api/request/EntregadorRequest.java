@@ -3,13 +3,8 @@ package com.devmaster.application.api.request;
 import com.devmaster.domain.enums.CategoriaCNH;
 import com.devmaster.domain.enums.TipoVeiculo;
 import jakarta.validation.constraints.*;
+import org.hibernate.validator.constraints.br.CPF;
 
-/**
- * DTO de requisição para criar um novo entregador.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 public record EntregadorRequest(
     @NotBlank(message = "Nome completo é obrigatório")
     @Size(max = 255, message = "Nome completo não pode exceder 255 caracteres")
@@ -31,6 +26,7 @@ public record EntregadorRequest(
         regexp = "^\\d{3}\\.?\\d{3}\\.?\\d{3}-?\\d{2}$",
         message = "CPF deve estar no formato XXX.XXX.XXX-XX"
     )
+    @CPF(message = "CPF inválido")
     String cpf,
     
     @Pattern(

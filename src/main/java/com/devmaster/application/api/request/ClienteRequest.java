@@ -6,12 +6,7 @@ import org.hibernate.validator.constraints.br.CPF;
 
 import java.time.LocalDate;
 
-/**
- * DTO de requisição para criar um novo cliente.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
+
 public record ClienteRequest(
     
     @NotBlank(message = "Telefone é obrigatório")

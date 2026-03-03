@@ -11,12 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Controller REST para gestão de clientes.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
+
 @RestController
 @RequiredArgsConstructor
 public class ClienteRestController implements ClienteAPI {
