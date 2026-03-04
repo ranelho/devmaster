@@ -326,7 +326,73 @@ Permite que interfaces incompatíveis trabalhem juntas.
 - **Exemplo**: O Spring Data JPA age como um Adapter sobre o JDBC/Hibernate.
 - **✅ Quando usar**: Para integrar bibliotecas externas ou sistemas legados.
 
-### 9. Exemplo de Fluxo Completo (Sequence Diagram)
+### 9. Guia de Segurança e Endpoints
+
+Nossa aplicação segue o princípio de **"Secure by Default"**, ou seja, tudo é fechado a menos que seja explicitamente aberto.
+
+#### 🔓 Endpoints Públicos (Acesso Livre)
+Para criar endpoints que não exigem autenticação (ex: Login, Cardápio, Cadastro de Cliente), siga estas regras:
+
+1.  **Nomenclatura**: Prefixe a interface da API com `Public` (ex: `PublicCategoriaAPI`).
+2.  **URL**: O path deve começar obrigatoriamente com `/public/` (ex: `/public/v1/restaurantes/...`).
+3.  **Configuração**: O `SecurityConfig.java` já está configurado para liberar tudo em `/public/**`.
+
+**Exemplo de Interface Pública:**
+`src/main/java/com/devmaster/application/api/PublicCategoriaAPI.java`
+```java
+@RequestMapping({"/public/v1/restaurantes/{restauranteId}/categorias"})
+public interface PublicCategoriaAPI {
+    // Métodos de consulta pública
+}
+```
+
+**Onde configurar (se precisar de exceções):**
+`src/main/java/com/devmaster/config/SecurityConfig.java`
+```java
+.authorizeHttpRequests(auth -> auth
+    .requestMatchers("/public/**").permitAll() // Regra global
+    .requestMatchers("/api-docs/**", "/swagger-ui/**").permitAll() // Docs
+    .anyRequest().authenticated() // Todo o resto bloqueado
+)
+```
+
+#### 🔒 Endpoints Privados (Autenticados)
+Qualquer endpoint que **NÃO** comece com `/public/` exigirá autenticação via Token JWT.
+
+- **Requisição**: Deve enviar o header `Authorization: Bearer <token_jwt>`.
+- **Contexto**: O ID do usuário logado pode ser recuperado no Controller.
+
+#### 👮 Controle de Acesso por Roles (RBAC)
+Para restringir acesso a endpoints específicos baseados no perfil do usuário (ex: apenas ADMIN pode criar categorias), utilizamos anotações na **Interface da API**.
+
+**Roles Disponíveis:**
+- `SUPER_ADMIN`
+- `ADMIN`
+- `GERENTE`
+- `ENTREGADOR`
+- `CLIENTE`
+
+**Como Usar:**
+Adicione a anotação `@PreAuthorize` no método da interface.
+
+```java
+// Apenas ADMIN ou GERENTE podem criar
+@PostMapping
+@PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
+ResponseEntity<CategoriaResponse> criarCategoria(...);
+
+// Apenas SUPER_ADMIN pode deletar
+@DeleteMapping("/{id}")
+@PreAuthorize("hasRole('SUPER_ADMIN')")
+ResponseEntity<Void> deletarCategoria(...);
+```
+
+**Boas Práticas de Segurança:**
+1.  **Sempre na Interface**: Coloque as anotações de segurança na Interface (`*API.java`), não na implementação, para que fiquem visíveis junto com a documentação.
+2.  **Menor Privilégio**: Dê apenas a permissão necessária.
+3.  **Validação Dupla**: Além do `@PreAuthorize`, valide regras de negócio no Service (ex: um gerente só pode editar o *próprio* restaurante).
+
+### 10. Exemplo de Fluxo Completo (Sequence Diagram)
 
 ```mermaid
 sequenceDiagram
