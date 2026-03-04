@@ -21,12 +21,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-/**
- * Implementação do serviço de Pedido.
- *
- * @author DevMaster Team
- * @since 1.0.0
- */
 @Service
 @RequiredArgsConstructor
 public class PedidoApplicationService implements PedidoService {
@@ -51,32 +45,20 @@ public class PedidoApplicationService implements PedidoService {
     @Override
     @Transactional
     public PedidoResponse criarPedido(UUID usuarioId, PedidoRequest request) {
-        Cliente cliente = buscarClienteOuFalhar(request.clienteId());
-        Restaurante restaurante = buscarRestauranteOuFalhar(request.restauranteId());
-        EnderecoCliente endereco = buscarEnderecoOuFalhar(request.enderecoEntregaId());
-        TipoPagamento tipoPagamento = buscarTipoPagamentoOuFalhar(request.tipoPagamentoId());
+        var cliente = buscarClienteOuFalhar(request.clienteId());
+        var restaurante = buscarRestauranteOuFalhar(request.restauranteId());
+        var endereco = buscarEnderecoOuFalhar(request.enderecoEntregaId());
+        var tipoPagamento = buscarTipoPagamentoOuFalhar(request.tipoPagamentoId());
 
-        if (!endereco.getCliente().getId().equals(cliente.getId())) {
-            throw APIException.build(HttpStatus.BAD_REQUEST, "Endereço não pertence ao cliente");
-        }
+        validarEnderecoDoCliente(endereco, cliente);
+        validarRestauranteAtivo(restaurante);
 
-        if (Boolean.FALSE.equals(restaurante.getAtivo())) {
-            throw APIException.build(HttpStatus.BAD_REQUEST, "Restaurante inativo");
-        }
+        var numeroPedido = gerarNumeroPedido();
+        var subtotal = BigDecimal.ZERO;
+        var taxaEntrega = request.taxaEntrega() != null ? request.taxaEntrega() : restaurante.getTaxaEntrega();
+        var desconto = BigDecimal.ZERO;
 
-        if (Boolean.FALSE.equals(restaurante.getAberto())) {
-            throw APIException.build(HttpStatus.BAD_REQUEST, "Restaurante fechado");
-        }
-
-        String numeroPedido = gerarNumeroPedido();
-
-        BigDecimal subtotal = BigDecimal.ZERO;
-        BigDecimal taxaEntrega = request.taxaEntrega() != null 
-            ? request.taxaEntrega() 
-            : restaurante.getTaxaEntrega();
-        BigDecimal desconto = BigDecimal.ZERO;
-
-        Pedido pedido = Pedido.builder()
+        var pedido = Pedido.builder()
                 .numeroPedido(numeroPedido)
                 .cliente(cliente)
                 .restaurante(restaurante)
@@ -95,7 +77,7 @@ public class PedidoApplicationService implements PedidoService {
 
         pedido = pedidoRepository.save(pedido);
 
-        for (ItemPedidoRequest itemRequest : request.itens()) {
+        for (var itemRequest : request.itens()) {
             subtotal = subtotal.add(criarItemPedido(pedido, itemRequest));
         }
 
@@ -108,11 +90,7 @@ public class PedidoApplicationService implements PedidoService {
                     "Valor mínimo do pedido é " + restaurante.getValorMinimoPedido());
         }
 
-        BigDecimal total = subtotal.add(taxaEntrega).subtract(desconto);
-
-        pedido.setSubtotal(subtotal);
-        pedido.setDesconto(desconto);
-        pedido.setTotal(total);
+        pedido.atualizarTotais(subtotal, taxaEntrega, desconto);
         pedido = pedidoRepository.save(pedido);
 
         registrarHistorico(pedido, StatusPedido.AGUARDANDO_CONFIRMACAO, "Pedido criado", toStringOrSystem(usuarioId));
@@ -123,14 +101,14 @@ public class PedidoApplicationService implements PedidoService {
     @Override
     @Transactional(readOnly = true)
     public PedidoResponse buscarPedido(UUID usuarioId, Long pedidoId) {
-        Pedido pedido = buscarPedidoOuFalhar(pedidoId);
+        var pedido = buscarPedidoOuFalhar(pedidoId);
         return montarPedidoResponse(pedido);
     }
 
     @Override
     @Transactional(readOnly = true)
     public PedidoResponse buscarPedidoPorNumero(UUID usuarioId, String numeroPedido) {
-        Pedido pedido = pedidoRepository.findByNumeroPedido(numeroPedido)
+        var pedido = pedidoRepository.findByNumeroPedido(numeroPedido)
                 .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
         return montarPedidoResponse(pedido);
     }
@@ -140,7 +118,7 @@ public class PedidoApplicationService implements PedidoService {
     public List<PedidoResumoResponse> listarPedidosRestaurante(UUID usuarioId, Long restauranteId, StatusPedido status) {
         buscarRestauranteOuFalhar(restauranteId);
 
-        List<Pedido> pedidos = status != null
+        var pedidos = status != null
                 ? pedidoRepository.findByRestauranteIdAndStatusOrderByCriadoEmDesc(restauranteId, status)
                 : pedidoRepository.findByRestauranteIdOrderByCriadoEmDesc(restauranteId);
 
@@ -154,7 +132,7 @@ public class PedidoApplicationService implements PedidoService {
     public List<PedidoResumoResponse> listarPedidosCliente(UUID usuarioId, Long clienteId, StatusPedido status) {
         buscarClienteOuFalhar(clienteId);
 
-        List<Pedido> pedidos = status != null
+        var pedidos = status != null
                 ? pedidoRepository.findByClienteIdAndStatusOrderByCriadoEmDesc(clienteId, status)
                 : pedidoRepository.findByClienteIdOrderByCriadoEmDesc(clienteId);
 
@@ -166,9 +144,9 @@ public class PedidoApplicationService implements PedidoService {
     @Override
     @Transactional(readOnly = true)
     public List<PedidoResumoResponse> listarPedidosPorTelefone(UUID usuarioId, String telefone) {
-        String telefoneNormalizado = telefone.replaceAll("\\D", "");
+        var telefoneNormalizado = telefone.replaceAll("\\D", "");
         
-        Cliente cliente = clienteRepository.findByTelefone(telefoneNormalizado)
+        var cliente = clienteRepository.findByTelefone(telefoneNormalizado)
                 .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
 
         return pedidoRepository.findByClienteIdOrderByCriadoEmDesc(cliente.getId())
@@ -187,14 +165,13 @@ public class PedidoApplicationService implements PedidoService {
     ) {
         buscarRestauranteOuFalhar(restauranteId);
 
-        Page<Pedido> pedidos = status != null
+        var pedidos = status != null
                 ? pedidoRepository.findByRestauranteIdAndStatus(restauranteId, status, pageable)
                 : pedidoRepository.findByRestauranteId(restauranteId, pageable);
 
         return pedidos.map(PedidoResumoResponse::from);
     }
 
-    @Override
     @Transactional(readOnly = true)
     public Page<PedidoResumoResponse> listarPedidosClienteComPaginacao(
             UUID usuarioId,
@@ -209,7 +186,7 @@ public class PedidoApplicationService implements PedidoService {
     @Override
     @Transactional
     public PedidoResponse atualizarStatus(UUID usuarioId, Long pedidoId, AtualizarStatusPedidoRequest request) {
-        Pedido pedido = buscarPedidoOuFalhar(pedidoId);
+        var pedido = buscarPedidoOuFalhar(pedidoId);
 
         switch (request.status()) {
             case CONFIRMADO -> pedido.confirmar();
@@ -232,28 +209,25 @@ public class PedidoApplicationService implements PedidoService {
         return montarPedidoResponse(pedido);
     }
 
-    @Override
     @Transactional
     public void confirmarPedido(UUID usuarioId, Long pedidoId) {
-        Pedido pedido = buscarPedidoOuFalhar(pedidoId);
+        var pedido = buscarPedidoOuFalhar(pedidoId);
         pedido.confirmar();
         pedidoRepository.save(pedido);
         registrarHistorico(pedido, StatusPedido.CONFIRMADO, null, toStringOrSystem(usuarioId));
     }
 
-    @Override
     @Transactional
     public void iniciarPreparo(UUID usuarioId, Long pedidoId) {
-        Pedido pedido = buscarPedidoOuFalhar(pedidoId);
+        var pedido = buscarPedidoOuFalhar(pedidoId);
         pedido.iniciarPreparo();
         pedidoRepository.save(pedido);
         registrarHistorico(pedido, StatusPedido.PREPARANDO, null, toStringOrSystem(usuarioId));
     }
 
-    @Override
     @Transactional
     public void marcarComoPronto(UUID usuarioId, Long pedidoId) {
-        Pedido pedido = buscarPedidoOuFalhar(pedidoId);
+        var pedido = buscarPedidoOuFalhar(pedidoId);
         pedido.marcarComoPronto();
         pedidoRepository.save(pedido);
         registrarHistorico(pedido, StatusPedido.PRONTO, null, toStringOrSystem(usuarioId));
@@ -262,8 +236,8 @@ public class PedidoApplicationService implements PedidoService {
     @Override
     @Transactional
     public void despacharPedido(UUID usuarioId, Long pedidoId, Long entregadorId) {
-        Pedido pedido = buscarPedidoOuFalhar(pedidoId);
-        Entregador entregador = buscarEntregadorOuFalhar(entregadorId);
+        var pedido = buscarPedidoOuFalhar(pedidoId);
+        var entregador = buscarEntregadorOuFalhar(entregadorId);
         
         if (Boolean.FALSE.equals(entregador.getAtivo())) {
             throw APIException.build(HttpStatus.BAD_REQUEST, "Entregador inativo");
@@ -278,16 +252,15 @@ public class PedidoApplicationService implements PedidoService {
     @Override
     @Transactional
     public void entregarPedido(UUID usuarioId, Long pedidoId) {
-        Pedido pedido = buscarPedidoOuFalhar(pedidoId);
+        var pedido = buscarPedidoOuFalhar(pedidoId);
         pedido.entregar();
         pedidoRepository.save(pedido);
         registrarHistorico(pedido, StatusPedido.ENTREGUE, null, toStringOrSystem(usuarioId));
     }
 
-    @Override
     @Transactional
     public void cancelarPedido(UUID usuarioId, Long pedidoId, CancelarPedidoRequest request) {
-        Pedido pedido = buscarPedidoOuFalhar(pedidoId);
+        var pedido = buscarPedidoOuFalhar(pedidoId);
 
         if (!pedido.podeSerCancelado()) {
             throw APIException.build(HttpStatus.BAD_REQUEST, "Pedido não pode ser cancelado neste status");
@@ -298,10 +271,9 @@ public class PedidoApplicationService implements PedidoService {
         registrarHistorico(pedido, StatusPedido.CANCELADO, request.motivo(), toStringOrSystem(usuarioId));
     }
 
-    @Override
     @Transactional
     public void aprovarPagamento(UUID usuarioId, Long pedidoId) {
-        Pedido pedido = buscarPedidoOuFalhar(pedidoId);
+        var pedido = buscarPedidoOuFalhar(pedidoId);
         pedido.aprovarPagamento();
         pedidoRepository.save(pedido);
     }
@@ -309,7 +281,7 @@ public class PedidoApplicationService implements PedidoService {
     @Override
     @Transactional
     public void recusarPagamento(UUID usuarioId, Long pedidoId) {
-        Pedido pedido = buscarPedidoOuFalhar(pedidoId);
+        var pedido = buscarPedidoOuFalhar(pedidoId);
         pedido.recusarPagamento();
         pedidoRepository.save(pedido);
     }
@@ -346,7 +318,7 @@ public class PedidoApplicationService implements PedidoService {
     public List<PedidoResumoResponse> buscarPedidosAtivos(UUID usuarioId, Long restauranteId) {
         buscarRestauranteOuFalhar(restauranteId);
 
-        List<StatusPedido> statusAtivos = List.of(
+        var statusAtivos = List.of(
                 StatusPedido.AGUARDANDO_CONFIRMACAO,
                 StatusPedido.CONFIRMADO,
                 StatusPedido.PREPARANDO,
@@ -363,8 +335,23 @@ public class PedidoApplicationService implements PedidoService {
 
     // Métodos auxiliares
 
+    private void validarEnderecoDoCliente(EnderecoCliente endereco, Cliente cliente) {
+        if (!endereco.getCliente().getId().equals(cliente.getId())) {
+            throw APIException.build(HttpStatus.BAD_REQUEST, "Endereço não pertence ao cliente");
+        }
+    }
+
+    private void validarRestauranteAtivo(Restaurante restaurante) {
+        if (Boolean.FALSE.equals(restaurante.getAtivo())) {
+            throw APIException.build(HttpStatus.BAD_REQUEST, "Restaurante inativo");
+        }
+        if (Boolean.FALSE.equals(restaurante.getAberto())) {
+            throw APIException.build(HttpStatus.BAD_REQUEST, "Restaurante fechado");
+        }
+    }
+
     private BigDecimal criarItemPedido(Pedido pedido, ItemPedidoRequest request) {
-        Produto produto = buscarProdutoOuFalhar(request.produtoId());
+        var produto = buscarProdutoOuFalhar(request.produtoId());
 
         if (Boolean.FALSE.equals(produto.getDisponivel())) {
             throw APIException.build(HttpStatus.BAD_REQUEST, "Produto indisponível: " + produto.getNome());
@@ -377,10 +364,10 @@ public class PedidoApplicationService implements PedidoService {
         // Validar grupos de opções obrigatórios
         validarGruposObrigatorios(produto.getId(), request.opcoes());
 
-        BigDecimal precoUnitario = produto.getPrecoFinal();
-        BigDecimal totalOpcoesAdicionais = BigDecimal.ZERO;
+        var precoUnitario = produto.getPrecoFinal();
+        var totalOpcoesAdicionais = BigDecimal.ZERO;
 
-        ItemPedido item = ItemPedido.builder()
+        var item = ItemPedido.builder()
                 .pedido(pedido)
                 .produto(produto)
                 .quantidade(request.quantidade())
@@ -402,7 +389,7 @@ public class PedidoApplicationService implements PedidoService {
     }
 
     private void validarGruposObrigatorios(Long produtoId, List<OpcaoItemRequest> opcoesRequest) {
-        List<GrupoOpcao> gruposObrigatorios = grupoOpcaoRepository
+        var gruposObrigatorios = grupoOpcaoRepository
                 .findByProdutoIdOrderByOrdemExibicao(produtoId)
                 .stream()
                 .filter(GrupoOpcao::getObrigatorio)
@@ -412,14 +399,14 @@ public class PedidoApplicationService implements PedidoService {
             return;
         }
 
-        List<Long> gruposComOpcoes = opcoesRequest != null
+        var gruposComOpcoes = opcoesRequest != null
                 ? opcoesRequest.stream()
                 .map(OpcaoItemRequest::grupoOpcaoId)
                 .distinct()
                 .toList()
                 : List.of();
 
-        for (GrupoOpcao grupo : gruposObrigatorios) {
+        for (var grupo : gruposObrigatorios) {
             if (!gruposComOpcoes.contains(grupo.getId())) {
                 throw APIException.build(HttpStatus.BAD_REQUEST,
                         "Grupo de opção obrigatório não selecionado: " + grupo.getNome());
@@ -438,11 +425,11 @@ public class PedidoApplicationService implements PedidoService {
     }
 
     private BigDecimal criarOpcoesItem(ItemPedido item, List<OpcaoItemRequest> opcoesRequest) {
-        BigDecimal totalAdicional = BigDecimal.ZERO;
+        var totalAdicional = BigDecimal.ZERO;
 
-        for (OpcaoItemRequest opcaoRequest : opcoesRequest) {
-            GrupoOpcao grupo = buscarGrupoOpcaoOuFalhar(opcaoRequest.grupoOpcaoId());
-            Opcao opcao = buscarOpcaoOuFalhar(opcaoRequest.opcaoId());
+        for (var opcaoRequest : opcoesRequest) {
+            var grupo = buscarGrupoOpcaoOuFalhar(opcaoRequest.grupoOpcaoId());
+            var opcao = buscarOpcaoOuFalhar(opcaoRequest.opcaoId());
 
             if (!opcao.getGrupoOpcao().getId().equals(grupo.getId())) {
                 throw APIException.build(HttpStatus.BAD_REQUEST, "Opção não pertence ao grupo");
@@ -452,7 +439,7 @@ public class PedidoApplicationService implements PedidoService {
                 throw APIException.build(HttpStatus.BAD_REQUEST, "Opção indisponível: " + opcao.getNome());
             }
 
-            OpcaoItemPedido opcaoItem = OpcaoItemPedido.builder()
+            var opcaoItem = OpcaoItemPedido.builder()
                     .itemPedido(item)
                     .grupoOpcao(grupo)
                     .opcao(opcao)
@@ -467,7 +454,7 @@ public class PedidoApplicationService implements PedidoService {
     }
 
     private BigDecimal aplicarCupom(Pedido pedido, String codigoCupom, BigDecimal subtotal) {
-        Cupom cupom = cupomRepository.findByCodigo(codigoCupom)
+        var cupom = cupomRepository.findByCodigo(codigoCupom)
                 .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Cupom não encontrado"));
 
         if (!cupom.isValido()) {
@@ -479,9 +466,9 @@ public class PedidoApplicationService implements PedidoService {
                     "Valor mínimo para usar o cupom é " + cupom.getValorMinimoPedido());
         }
 
-        BigDecimal desconto = cupom.calcularDesconto(subtotal);
+        var desconto = cupom.calcularDesconto(subtotal);
 
-        CupomPedido cupomPedido = CupomPedido.builder()
+        var cupomPedido = CupomPedido.builder()
                 .pedido(pedido)
                 .cupom(cupom)
                 .descontoAplicado(desconto)
@@ -495,7 +482,7 @@ public class PedidoApplicationService implements PedidoService {
     }
 
     private void registrarHistorico(Pedido pedido, StatusPedido status, String observacoes, String criadoPor) {
-        HistoricoStatusPedido historico = HistoricoStatusPedido.builder()
+        var historico = HistoricoStatusPedido.builder()
                 .pedido(pedido)
                 .status(status)
                 .observacoes(observacoes)
@@ -506,10 +493,10 @@ public class PedidoApplicationService implements PedidoService {
     }
 
     private PedidoResponse montarPedidoResponse(Pedido pedido) {
-        List<ItemPedidoResponse> itens = itemPedidoRepository.findByPedidoId(pedido.getId())
+        var itens = itemPedidoRepository.findByPedidoId(pedido.getId())
                 .stream()
                 .map(item -> {
-                    List<OpcaoItemPedidoResponse> opcoes = opcaoItemPedidoRepository
+                    var opcoes = opcaoItemPedidoRepository
                             .findByItemPedidoId(item.getId())
                             .stream()
                             .map(OpcaoItemPedidoResponse::from)
@@ -518,13 +505,13 @@ public class PedidoApplicationService implements PedidoService {
                 })
                 .toList();
 
-        List<HistoricoStatusPedidoResponse> historico = historicoStatusPedidoRepository
+        var historico = historicoStatusPedidoRepository
                 .findByPedidoIdOrderByCriadoEmAsc(pedido.getId())
                 .stream()
                 .map(HistoricoStatusPedidoResponse::from)
                 .toList();
 
-        String codigoCupom = cupomPedidoRepository.findByPedidoId(pedido.getId())
+        var codigoCupom = cupomPedidoRepository.findByPedidoId(pedido.getId())
                 .map(cp -> cp.getCupom().getCodigo())
                 .orElse(null);
 

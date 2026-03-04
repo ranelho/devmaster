@@ -6,12 +6,6 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * Entidade Produto.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 @Entity
 @Table(name = "produtos")
 @Getter

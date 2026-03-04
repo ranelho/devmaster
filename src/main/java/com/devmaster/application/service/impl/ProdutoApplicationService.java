@@ -276,11 +276,11 @@ public class ProdutoApplicationService implements ProdutoService {
         log.debug("📊 Produto ID={}: {} descontos encontrados", produto.getId(), descontos.size());
         
         DescontoResponse descontoVigente = descontos.isEmpty() ? null : descontos.stream()
-            .filter(d -> Boolean.TRUE.equals(d.getAtivo()) && Boolean.TRUE.equals(d.getVigente()))
+            .filter(d -> Boolean.TRUE.equals(d.ativo()) && Boolean.TRUE.equals(d.vigente()))
             .findFirst()
             .orElse(null);
         
-        BigDecimal percentualDesconto = descontoVigente != null ? descontoVigente.getPercentualDesconto() : null;
+        BigDecimal percentualDesconto = descontoVigente != null ? descontoVigente.percentualDesconto() : null;
         BigDecimal valorOriginal = descontoVigente != null ? produto.getPreco() : null;
         BigDecimal valorComDesconto = descontoVigente != null ? produto.getPreco().subtract(
             produto.getPreco().multiply(percentualDesconto).divide(BigDecimal.valueOf(100))

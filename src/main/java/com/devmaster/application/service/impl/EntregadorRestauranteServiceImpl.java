@@ -57,7 +57,7 @@ public class EntregadorRestauranteServiceImpl implements EntregadorRestauranteSe
         EntregadorRestaurante vinculo = repository.findByEntregadorIdAndRestauranteId(entregadorId, restauranteId)
             .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Vínculo não encontrado"));
         
-        if (!vinculo.getAtivo()) {
+        if (Boolean.FALSE.equals(vinculo.getAtivo())) {
             throw APIException.build(HttpStatus.BAD_REQUEST, "Vínculo já está inativo");
         }
         

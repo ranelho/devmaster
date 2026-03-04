@@ -2,7 +2,7 @@ package com.devmaster.application.api;
 
 import com.devmaster.application.api.request.*;
 import com.devmaster.application.api.response.*;
-import com.devmaster.application.service.PedidoService;
+import com.devmaster.application.service.impl.PedidoApplicationService;
 import com.devmaster.domain.enums.StatusPedido;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PedidoRestController implements PedidoAPI {
     
-    private final PedidoService pedidoService;
+    private final PedidoApplicationService pedidoService;
     
     @Override
     public PedidoResponse criarPedido(PedidoRequest request) {

@@ -50,13 +50,11 @@ public class Cliente {
     
     @Column(name = "ativo", nullable = false)
     @Builder.Default
-    private Boolean ativo = true;
-    
+    private Boolean ativo = true;    
 
     public void desativar() {
         this.ativo = false;
-    }
-    
+    }    
 
     public void reativar() {
         this.ativo = true;

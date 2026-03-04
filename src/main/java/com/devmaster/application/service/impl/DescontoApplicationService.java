@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,18 +29,18 @@ public class DescontoApplicationService implements DescontoService {
     @Override
     @Transactional
     public DescontoResponse criar(UUID usuarioId, DescontoRequest request) {
-        validarPeriodo(request.getDataHoraInicio(), request.getDataHoraFim());
+        validarPeriodo(request.dataHoraInicio(), request.dataHoraFim());
         
-        Produto produto = produtoRepository.findById(request.getProdutoId())
+        var produto = produtoRepository.findById(request.produtoId())
             .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Produto não encontrado"));
         
-        Desconto desconto = Desconto.builder()
+        var desconto = Desconto.builder()
             .produto(produto)
-            .percentualDesconto(request.getPercentualDesconto())
-            .tipoIntervalo(request.getTipoIntervalo())
-            .dataHoraInicio(request.getDataHoraInicio())
-            .dataHoraFim(request.getDataHoraFim())
-            .ativo(request.getAtivo())
+            .percentualDesconto(request.percentualDesconto())
+            .tipoIntervalo(request.tipoIntervalo())
+            .dataHoraInicio(request.dataHoraInicio())
+            .dataHoraFim(request.dataHoraFim())
+            .ativo(request.ativo())
             .build();
         
         desconto = descontoRepository.save(desconto);
@@ -54,20 +53,20 @@ public class DescontoApplicationService implements DescontoService {
     @Override
     @Transactional
     public DescontoResponse atualizar(UUID usuarioId, Long id, DescontoRequest request) {
-        validarPeriodo(request.getDataHoraInicio(), request.getDataHoraFim());
+        validarPeriodo(request.dataHoraInicio(), request.dataHoraFim());
         
-        Desconto desconto = descontoRepository.findById(id)
+        var desconto = descontoRepository.findById(id)
             .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Desconto não encontrado"));
         
-        Produto produto = produtoRepository.findById(request.getProdutoId())
+        var produto = produtoRepository.findById(request.produtoId())
             .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Produto não encontrado"));
         
         desconto.setProduto(produto);
-        desconto.setPercentualDesconto(request.getPercentualDesconto());
-        desconto.setTipoIntervalo(request.getTipoIntervalo());
-        desconto.setDataHoraInicio(request.getDataHoraInicio());
-        desconto.setDataHoraFim(request.getDataHoraFim());
-        desconto.setAtivo(request.getAtivo());
+        desconto.setPercentualDesconto(request.percentualDesconto());
+        desconto.setTipoIntervalo(request.tipoIntervalo());
+        desconto.setDataHoraInicio(request.dataHoraInicio());
+        desconto.setDataHoraFim(request.dataHoraFim());
+        desconto.setAtivo(request.ativo());
         
         desconto = descontoRepository.save(desconto);
         log.info("🔄 Desconto atualizado: ID={}", id);
@@ -78,7 +77,7 @@ public class DescontoApplicationService implements DescontoService {
     @Override
     @Transactional(readOnly = true)
     public DescontoResponse buscarPorId(UUID usuarioId, Long id) {
-        Desconto desconto = descontoRepository.findById(id)
+        var desconto = descontoRepository.findById(id)
             .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Desconto não encontrado"));
         return toResponse(desconto);
     }
@@ -124,18 +123,18 @@ public class DescontoApplicationService implements DescontoService {
     }
     
     private DescontoResponse toResponse(Desconto desconto) {
-        return DescontoResponse.builder()
-            .id(desconto.getId())
-            .produtoId(desconto.getProduto().getId())
-            .nomeProduto(desconto.getProduto().getNome())
-            .percentualDesconto(desconto.getPercentualDesconto())
-            .tipoIntervalo(desconto.getTipoIntervalo())
-            .dataHoraInicio(desconto.getDataHoraInicio())
-            .dataHoraFim(desconto.getDataHoraFim())
-            .ativo(desconto.getAtivo())
-            .vigente(desconto.isVigente())
-            .criadoEm(desconto.getCriadoEm())
-            .atualizadoEm(desconto.getAtualizadoEm())
-            .build();
+        return new DescontoResponse(
+            desconto.getId(),
+            desconto.getProduto().getId(),
+            desconto.getProduto().getNome(),
+            desconto.getPercentualDesconto(),
+            desconto.getTipoIntervalo(),
+            desconto.getDataHoraInicio(),
+            desconto.getDataHoraFim(),
+            desconto.getAtivo(),
+            desconto.isVigente(),
+            desconto.getCriadoEm(),
+            desconto.getAtualizadoEm()
+        );
     }
 }

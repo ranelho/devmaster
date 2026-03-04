@@ -8,6 +8,7 @@ import com.devmaster.domain.Categoria;
 import com.devmaster.domain.Restaurante;
 import com.devmaster.handler.APIException;
 import com.devmaster.infrastructure.repository.CategoriaRepository;
+import com.devmaster.infrastructure.repository.ProdutoRepository;
 import com.devmaster.infrastructure.repository.RestauranteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,27 +19,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-/**
- * Implementação do serviço de Categoria.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
+
 @Service
 @RequiredArgsConstructor
 public class CategoriaApplicationService implements CategoriaService {
     
     private final CategoriaRepository categoriaRepository;
     private final RestauranteRepository restauranteRepository;
+    private final ProdutoRepository produtoRepository;
     
     @Override
     @Transactional
     public CategoriaResponse criarCategoria(UUID usuarioId, Long restauranteId, CategoriaRequest request) {
         Restaurante restaurante = buscarRestauranteOuFalhar(restauranteId);
         
-        // Validar duplicação de nome
         if (categoriaRepository.existsByRestauranteIdAndNome(restauranteId, request.nome())) {
             throw APIException.build(HttpStatus.CONFLICT, "Já existe uma categoria com este nome");
         }
@@ -99,9 +94,7 @@ public class CategoriaApplicationService implements CategoriaService {
     ) {
         Categoria categoria = buscarCategoriaOuFalhar(restauranteId, categoriaId);
         
-        // Atualizar campos se fornecidos
         if (request.nome() != null) {
-            // Validar duplicação de nome (exceto se for o mesmo nome)
             if (!request.nome().equals(categoria.getNome()) && 
                 categoriaRepository.existsByRestauranteIdAndNome(restauranteId, request.nome())) {
                 throw APIException.build(HttpStatus.CONFLICT, "Já existe uma categoria com este nome");
@@ -142,7 +135,9 @@ public class CategoriaApplicationService implements CategoriaService {
     public void removerCategoria(UUID usuarioId, Long restauranteId, Long categoriaId) {
         Categoria categoria = buscarCategoriaOuFalhar(restauranteId, categoriaId);
         
-        // TODO: Verificar se existem produtos vinculados antes de remover
+        if (produtoRepository.existsByCategoriaId(categoriaId)) {
+            throw APIException.build(HttpStatus.CONFLICT, "Não é possível remover a categoria pois existem produtos vinculados a ela");
+        }
         
         categoriaRepository.delete(categoria);
     }

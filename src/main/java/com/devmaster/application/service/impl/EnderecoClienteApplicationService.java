@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Implementação do serviço de EnderecoCliente.
@@ -26,6 +25,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EnderecoClienteApplicationService implements EnderecoClienteService {
     
+    private static final String ENDERECO_NAO_ENCONTRADO = "Endereço não encontrado";
     private final EnderecoClienteRepository enderecoRepository;
     private final ClienteRepository clienteRepository;
     
@@ -54,7 +54,7 @@ public class EnderecoClienteApplicationService implements EnderecoClienteService
             .cep(request.cep())
             .latitude(request.latitude())
             .longitude(request.longitude())
-            .padrao(isPrimeiroEndereco || Boolean.TRUE.equals(request.padrao()))
+            .padrao(isPrimeiroEndereco || request.padrao())
             .build();
         
         endereco = enderecoRepository.save(endereco);
@@ -70,14 +70,14 @@ public class EnderecoClienteApplicationService implements EnderecoClienteService
         return enderecoRepository.findByClienteId(clienteId)
             .stream()
             .map(EnderecoClienteResponse::from)
-            .collect(Collectors.toList());
+            .toList();
     }
     
     @Override
     @Transactional(readOnly = true)
     public EnderecoClienteResponse buscarEndereco(Long clienteId, Long enderecoId) {
         EnderecoCliente endereco = enderecoRepository.findByIdAndClienteId(enderecoId, clienteId)
-            .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Endereço não encontrado"));
+            .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, ENDERECO_NAO_ENCONTRADO));
         
         return EnderecoClienteResponse.from(endereco);
     }
@@ -101,7 +101,7 @@ public class EnderecoClienteApplicationService implements EnderecoClienteService
         EnderecoClienteRequest request
     ) {
         EnderecoCliente endereco = enderecoRepository.findByIdAndClienteId(enderecoId, clienteId)
-            .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Endereço não encontrado"));
+            .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, ENDERECO_NAO_ENCONTRADO));
         
         // Atualizar campos
         if (request.rotulo() != null) endereco.setRotulo(request.rotulo());
@@ -130,7 +130,7 @@ public class EnderecoClienteApplicationService implements EnderecoClienteService
     @Transactional
     public EnderecoClienteResponse definirEnderecoPadrao(Long clienteId, Long enderecoId) {
         EnderecoCliente endereco = enderecoRepository.findByIdAndClienteId(enderecoId, clienteId)
-            .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Endereço não encontrado"));
+            .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, ENDERECO_NAO_ENCONTRADO));
         
         // Remover padrão dos outros endereços
         enderecoRepository.removerPadraoTodosEnderecos(clienteId);
@@ -146,17 +146,17 @@ public class EnderecoClienteApplicationService implements EnderecoClienteService
     @Transactional
     public void removerEndereco(Long clienteId, Long enderecoId) {
         EnderecoCliente endereco = enderecoRepository.findByIdAndClienteId(enderecoId, clienteId)
-            .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Endereço não encontrado"));
+            .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, ENDERECO_NAO_ENCONTRADO));
         
         // Se for o endereço padrão e houver outros, definir outro como padrão
-        if (endereco.getPadrao()) {
+        if (Boolean.TRUE.equals(endereco.getPadrao())) {
             List<EnderecoCliente> outrosEnderecos = enderecoRepository.findByClienteId(clienteId)
                 .stream()
                 .filter(e -> !e.getId().equals(enderecoId))
                 .toList();
             
             if (!outrosEnderecos.isEmpty()) {
-                EnderecoCliente novoPadrao = outrosEnderecos.get(0);
+                EnderecoCliente novoPadrao = outrosEnderecos.getFirst();
                 novoPadrao.definirComoPadrao();
                 enderecoRepository.save(novoPadrao);
             }

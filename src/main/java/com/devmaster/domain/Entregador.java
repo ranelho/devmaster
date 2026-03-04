@@ -10,13 +10,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * Entidade que representa um entregador no sistema.
- * Cadastro centralizado gerenciado pelo módulo DEVMASTER.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 @Entity
 @Table(name = "entregadores", indexes = {
     @Index(name = "idx_entregadores_telefone", columnList = "telefone"),

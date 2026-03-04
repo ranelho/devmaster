@@ -11,7 +11,6 @@ import com.devmaster.domain.UsuarioRestaurante.RoleRestaurante;
 import com.devmaster.handler.APIException;
 import com.devmaster.infrastructure.repository.RestauranteRepository;
 import com.devmaster.infrastructure.repository.UsuarioRestauranteRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -29,12 +28,25 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class UsuarioRestauranteApplicationService implements UsuarioRestauranteService {
     
+    private static final String VINCULO_NAO_ENCONTRADO = "Vínculo não encontrado";
+
     private final UsuarioRestauranteRepository usuarioRestauranteRepository;
     private final RestauranteRepository restauranteRepository;
     private final AuthIntegrationService authIntegrationService;
+    private final UsuarioRestauranteService self;
+
+    public UsuarioRestauranteApplicationService(
+            UsuarioRestauranteRepository usuarioRestauranteRepository,
+            RestauranteRepository restauranteRepository,
+            AuthIntegrationService authIntegrationService,
+            @org.springframework.context.annotation.Lazy UsuarioRestauranteService self) {
+        this.usuarioRestauranteRepository = usuarioRestauranteRepository;
+        this.restauranteRepository = restauranteRepository;
+        this.authIntegrationService = authIntegrationService;
+        this.self = self;
+    }
     
     @Override
     @Transactional
@@ -52,8 +64,6 @@ public class UsuarioRestauranteApplicationService implements UsuarioRestauranteS
         
         // Validar permissões do usuário autenticado
         validarPermissaoParaVincular(usuarioAutenticado, restauranteId, request.role());
-        
-        // Criar usuário no Auth Service
         // Se a role for ADMIN, criar como ADMIN no Auth Service
         boolean isAdmin = request.role() == RoleRestaurante.ADMIN;
         UUID novoUsuarioId = authIntegrationService.criarUsuario(
@@ -142,7 +152,7 @@ public class UsuarioRestauranteApplicationService implements UsuarioRestauranteS
         return usuarioRestauranteRepository.findByRestauranteIdAndAtivoTrue(restauranteId)
             .stream()
             .map(UsuarioRestauranteResponse::from)
-            .collect(Collectors.toList());
+            .toList();
     }
     
     @Override
@@ -158,7 +168,7 @@ public class UsuarioRestauranteApplicationService implements UsuarioRestauranteS
         return usuarioRestauranteRepository.findByRestauranteIdAndRoleAndAtivoTrue(restauranteId, role)
             .stream()
             .map(UsuarioRestauranteResponse::from)
-            .collect(Collectors.toList());
+            .toList();
     }
     
     @Override
@@ -174,7 +184,7 @@ public class UsuarioRestauranteApplicationService implements UsuarioRestauranteS
         UsuarioRestaurante vinculo = usuarioRestauranteRepository
             .findByUsuarioIdAndRestauranteIdAndAtivoTrue(usuarioId, restauranteId)
             .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, 
-                "Vínculo não encontrado"));
+                VINCULO_NAO_ENCONTRADO));
         
         return UsuarioRestauranteResponse.from(vinculo);
     }
@@ -194,7 +204,7 @@ public class UsuarioRestauranteApplicationService implements UsuarioRestauranteS
         UsuarioRestaurante vinculo = usuarioRestauranteRepository
             .findByUsuarioIdAndRestauranteIdAndAtivoTrue(usuarioId, restauranteId)
             .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, 
-                "Vínculo não encontrado"));
+                VINCULO_NAO_ENCONTRADO));
         
         vinculo.desativar();
         usuarioRestauranteRepository.save(vinculo);
@@ -221,7 +231,7 @@ public class UsuarioRestauranteApplicationService implements UsuarioRestauranteS
             .filter(v -> v.getRestaurante().getId().equals(restauranteId))
             .findFirst()
             .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, 
-                "Vínculo não encontrado"));
+                VINCULO_NAO_ENCONTRADO));
         
         vinculo.ativar();
         usuarioRestauranteRepository.save(vinculo);
@@ -263,8 +273,8 @@ public class UsuarioRestauranteApplicationService implements UsuarioRestauranteS
         RoleRestaurante roleAVincular
     ) {
         // Verificar se é SUPER_ADMIN (não está vinculado a nenhum restaurante)
-        boolean isSuperAdmin = !temAcessoAoRestaurante(usuarioAutenticado, restauranteId) &&
-                               buscarRestauranteIdDoUsuario(usuarioAutenticado) == null;
+        boolean isSuperAdmin = !self.temAcessoAoRestaurante(usuarioAutenticado, restauranteId) &&
+                               self.buscarRestauranteIdDoUsuario(usuarioAutenticado) == null;
         
         // SUPER_ADMIN pode vincular qualquer role a qualquer restaurante
         if (isSuperAdmin) {
@@ -273,12 +283,12 @@ public class UsuarioRestauranteApplicationService implements UsuarioRestauranteS
         }
         
         // Para outros usuários, validar se tem acesso ao restaurante
-        if (!temAcessoAoRestaurante(usuarioAutenticado, restauranteId)) {
+        if (!self.temAcessoAoRestaurante(usuarioAutenticado, restauranteId)) {
             throw APIException.build(HttpStatus.FORBIDDEN, 
                 "Você não tem permissão para vincular usuários a este restaurante");
         }
         
-        RoleRestaurante roleAutenticado = buscarRole(usuarioAutenticado, restauranteId);
+        RoleRestaurante roleAutenticado = self.buscarRole(usuarioAutenticado, restauranteId);
         
         // ADMIN pode criar GERENTE e ATENDENTE
         if (roleAutenticado == RoleRestaurante.ADMIN) {
@@ -304,21 +314,25 @@ public class UsuarioRestauranteApplicationService implements UsuarioRestauranteS
     }
     
     private void validarAcessoAoRestaurante(UUID usuarioId, Long restauranteId) {
-        // TODO: Verificar se usuário é SUPER_ADMIN (consultar serviço de auth)
+        // Verificar se usuário é SUPER_ADMIN (consultar serviço de auth)
+        var usuarioAuth = authIntegrationService.buscarUsuario(usuarioId);
+        if (usuarioAuth.roles().contains("ROLE_SUPER_ADMIN")) {
+            return;
+        }
         
-        if (!temAcessoAoRestaurante(usuarioId, restauranteId)) {
+        if (!self.temAcessoAoRestaurante(usuarioId, restauranteId)) {
             throw APIException.build(HttpStatus.FORBIDDEN, 
                 "Você não tem acesso a este restaurante");
         }
     }
     
     private void validarPermissaoParaGerenciarUsuarios(UUID usuarioId, Long restauranteId) {
-        if (!temAcessoAoRestaurante(usuarioId, restauranteId)) {
+        if (!self.temAcessoAoRestaurante(usuarioId, restauranteId)) {
             throw APIException.build(HttpStatus.FORBIDDEN, 
                 "Você não tem acesso a este restaurante");
         }
         
-        RoleRestaurante role = buscarRole(usuarioId, restauranteId);
+        RoleRestaurante role = self.buscarRole(usuarioId, restauranteId);
         
         if (role == RoleRestaurante.ATENDENTE) {
             throw APIException.build(HttpStatus.FORBIDDEN, 

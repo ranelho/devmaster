@@ -80,7 +80,7 @@ public class AuthIntegrationApplicationService implements AuthIntegrationService
             // Buscar o usuário por email para obter o UUID real
             log.info("Buscando usuário por email para obter UUID: {}", email);
             
-            Map<String, Object> userInfo = webClient.get()
+            Map userInfo = webClient.get()
                 .uri(uriBuilder -> uriBuilder
                     .path("/api/auth/user/by-email")
                     .queryParam("email", email)
@@ -140,7 +140,8 @@ public class AuthIntegrationApplicationService implements AuthIntegrationService
                 usuarioId,
                 "Usuário",
                 "usuario@example.com",
-                true
+                true,
+                java.util.Collections.emptyList()
             );
             
         } catch (Exception e) {

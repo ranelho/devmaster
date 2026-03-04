@@ -42,7 +42,6 @@ public class DocumentoEntregadorApplicationService implements DocumentoEntregado
     ) {
         Entregador entregador = buscarEntregadorOuFalhar(entregadorId);
 
-        // Verificar se já existe documento do mesmo tipo
         if (documentoRepository.existsByEntregadorIdAndTipoDocumento(entregadorId, request.tipoDocumento())) {
             throw APIException.build(HttpStatus.CONFLICT,
                     "Entregador já possui documento do tipo " + request.tipoDocumento().getDescricao());

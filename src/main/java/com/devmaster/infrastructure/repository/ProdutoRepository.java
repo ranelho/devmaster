@@ -35,6 +35,8 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
     Page<Produto> findByRestauranteIdAndCategoriaId(Long restauranteId, Long categoriaId, Pageable pageable);
     
     boolean existsByRestauranteIdAndNome(Long restauranteId, String nome);
+
+    boolean existsByCategoriaId(Long categoriaId);
     
     // Métodos públicos
     List<Produto> findByRestauranteIdOrderByOrdemExibicaoAsc(Long restauranteId);

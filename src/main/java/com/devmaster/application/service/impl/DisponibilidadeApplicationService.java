@@ -19,91 +19,91 @@ import java.util.UUID;
 
 /**
  * Implementação do serviço de Disponibilidade.
- * 
+ *
  * @author DevMaster Team
  * @since 1.0.0
  */
 @Service
 @RequiredArgsConstructor
 public class DisponibilidadeApplicationService implements DisponibilidadeService {
-    
+
     private final HistoricoDisponibilidadeRepository historicoRepository;
     private final EntregadorRepository entregadorRepository;
-    
+
     @Override
     @Transactional(readOnly = true)
     public Page<HistoricoDisponibilidadeResponse> listarHistorico(
-        UUID usuarioId,
-        Long entregadorId,
-        Pageable pageable
+            UUID usuarioId,
+            Long entregadorId,
+            Pageable pageable
     ) {
         buscarEntregadorOuFalhar(entregadorId);
-        
+
         return historicoRepository.findByEntregadorId(entregadorId, pageable)
-            .map(HistoricoDisponibilidadeResponse::from);
+                .map(HistoricoDisponibilidadeResponse::from);
     }
-    
+
     @Override
     @Transactional(readOnly = true)
     public Page<HistoricoDisponibilidadeResponse> listarHistoricoPorPeriodo(
-        UUID usuarioId,
-        Long entregadorId,
-        LocalDateTime dataInicio,
-        LocalDateTime dataFim,
-        Pageable pageable
+            UUID usuarioId,
+            Long entregadorId,
+            LocalDateTime dataInicio,
+            LocalDateTime dataFim,
+            Pageable pageable
     ) {
         buscarEntregadorOuFalhar(entregadorId);
-        
+
         if (dataInicio.isAfter(dataFim)) {
             throw APIException.build(HttpStatus.BAD_REQUEST, "Data inicial deve ser anterior à data final");
         }
-        
+
         return historicoRepository.findByEntregadorIdAndCriadoEmBetween(
-            entregadorId, dataInicio, dataFim, pageable
+                entregadorId, dataInicio, dataFim, pageable
         ).map(HistoricoDisponibilidadeResponse::from);
     }
-    
+
     @Override
     @Transactional(readOnly = true)
     public HistoricoDisponibilidadeResponse buscarUltimoRegistro(UUID usuarioId, Long entregadorId) {
         buscarEntregadorOuFalhar(entregadorId);
-        
+
         HistoricoDisponibilidadeEntregador historico = historicoRepository.findUltimoRegistro(entregadorId)
-            .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, 
-                "Nenhum registro de disponibilidade encontrado"));
-        
+                .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND,
+                        "Nenhum registro de disponibilidade encontrado"));
+
         return HistoricoDisponibilidadeResponse.from(historico);
     }
-    
+
     @Override
     @Transactional(readOnly = true)
     public HistoricoDisponibilidadeResponse buscarUltimaLocalizacao(UUID usuarioId, Long entregadorId) {
         buscarEntregadorOuFalhar(entregadorId);
-        
+
         HistoricoDisponibilidadeEntregador historico = historicoRepository.findUltimaLocalizacao(entregadorId)
-            .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, 
-                "Nenhuma localização registrada"));
-        
+                .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND,
+                        "Nenhuma localização registrada"));
+
         return HistoricoDisponibilidadeResponse.from(historico);
     }
-    
+
     @Override
     @Transactional(readOnly = true)
     public Page<HistoricoDisponibilidadeResponse> listarRegistrosComLocalizacao(
-        UUID usuarioId,
-        Long entregadorId,
-        Pageable pageable
+            UUID usuarioId,
+            Long entregadorId,
+            Pageable pageable
     ) {
         buscarEntregadorOuFalhar(entregadorId);
-        
+
         return historicoRepository.findRegistrosComLocalizacao(entregadorId, pageable)
-            .map(HistoricoDisponibilidadeResponse::from);
+                .map(HistoricoDisponibilidadeResponse::from);
     }
-    
+
     // Métodos auxiliares
-    
+
     private Entregador buscarEntregadorOuFalhar(Long entregadorId) {
         return entregadorRepository.findById(entregadorId)
-            .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Entregador não encontrado"));
+                .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Entregador não encontrado"));
     }
 }

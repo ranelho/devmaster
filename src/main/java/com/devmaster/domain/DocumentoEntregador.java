@@ -9,12 +9,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-/**
- * Entidade que representa um documento anexado ao cadastro do entregador.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 @Entity
 @Table(name = "documentos_entregador", indexes = {
     @Index(name = "idx_documentos_entregador_entregador_id", columnList = "entregador_id"),
@@ -63,31 +57,18 @@ public class DocumentoEntregador {
     @Column(name = "criado_em", nullable = false, updatable = false)
     private LocalDateTime criadoEm;
     
-    /**
-     * Verifica o documento.
-     * 
-     * @param verificadoPor ID do usuário que verificou o documento
-     */
     public void verificar(UUID verificadoPor) {
         this.verificado = true;
         this.verificadoEm = LocalDateTime.now();
         this.verificadoPor = verificadoPor;
     }
     
-    /**
-     * Remove a verificação do documento.
-     */
     public void removerVerificacao() {
         this.verificado = false;
         this.verificadoEm = null;
         this.verificadoPor = null;
     }
     
-    /**
-     * Verifica se o documento está vencido.
-     * 
-     * @return true se vencido, false caso contrário
-     */
     public boolean isVencido() {
         if (dataValidade == null) {
             return false;

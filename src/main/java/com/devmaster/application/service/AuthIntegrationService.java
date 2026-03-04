@@ -44,6 +44,7 @@ public interface AuthIntegrationService {
         UUID id,
         String nome,
         String email,
-        boolean ativo
+        boolean ativo,
+        java.util.List<String> roles
     ) {}
 }

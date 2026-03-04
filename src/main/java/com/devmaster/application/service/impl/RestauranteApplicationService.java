@@ -30,12 +30,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-/**
- * Implementação do serviço de Restaurante.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 @Service
 @RequiredArgsConstructor
 public class RestauranteApplicationService implements RestauranteService {
@@ -184,45 +178,22 @@ public class RestauranteApplicationService implements RestauranteService {
         Restaurante restaurante = buscarRestauranteOuFalhar(restauranteId);
         
         // Atualizar campos se fornecidos
-        if (request.nome() != null) {
-            restaurante.setNome(request.nome());
+        if (request.email() != null && !request.email().equals(restaurante.getEmail()) && 
+            restauranteRepository.existsByEmail(request.email())) {
+            throw APIException.build(HttpStatus.CONFLICT, "Email já cadastrado");
         }
         
-        if (request.descricao() != null) {
-            restaurante.setDescricao(request.descricao());
-        }
-        
-        if (request.telefone() != null) {
-            restaurante.setTelefone(request.telefone());
-        }
-        
-        if (request.email() != null) {
-            if (!request.email().equals(restaurante.getEmail()) && 
-                restauranteRepository.existsByEmail(request.email())) {
-                throw APIException.build(HttpStatus.CONFLICT, "Email já cadastrado");
-            }
-            restaurante.setEmail(request.email());
-        }
-        
-        if (request.logoUrl() != null) {
-            restaurante.setLogoUrl(request.logoUrl());
-        }
-        
-        if (request.bannerUrl() != null) {
-            restaurante.setBannerUrl(request.bannerUrl());
-        }
-        
-        if (request.taxaEntrega() != null) {
-            restaurante.setTaxaEntrega(request.taxaEntrega());
-        }
-        
-        if (request.valorMinimoPedido() != null) {
-            restaurante.setValorMinimoPedido(request.valorMinimoPedido());
-        }
-        
-        if (request.tempoMedioEntrega() != null) {
-            restaurante.setTempoMedioEntrega(request.tempoMedioEntrega());
-        }
+        restaurante.atualizar(
+            request.nome(),
+            request.descricao(),
+            request.telefone(),
+            request.email(),
+            request.logoUrl(),
+            request.bannerUrl(),
+            request.taxaEntrega(),
+            request.valorMinimoPedido(),
+            request.tempoMedioEntrega()
+        );
         
         restaurante = restauranteRepository.save(restaurante);
         

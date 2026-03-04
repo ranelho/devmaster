@@ -6,16 +6,9 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * Entidade Restaurante/Estabelecimento.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 @Entity
 @Table(name = "restaurantes")
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -84,6 +77,21 @@ public class Restaurante {
     }
     
     // Métodos de negócio
+    
+    public void atualizar(String nome, String descricao, String telefone, String email, 
+                         String logoUrl, String bannerUrl, BigDecimal taxaEntrega, 
+                         BigDecimal valorMinimoPedido, Integer tempoMedioEntrega) {
+        
+        if (nome != null) this.nome = nome;
+        if (descricao != null) this.descricao = descricao;
+        if (telefone != null) this.telefone = telefone;
+        if (email != null) this.email = email;
+        if (logoUrl != null) this.logoUrl = logoUrl;
+        if (bannerUrl != null) this.bannerUrl = bannerUrl;
+        if (taxaEntrega != null) this.taxaEntrega = taxaEntrega;
+        if (valorMinimoPedido != null) this.valorMinimoPedido = valorMinimoPedido;
+        if (tempoMedioEntrega != null) this.tempoMedioEntrega = tempoMedioEntrega;
+    }
     
     public void ativar() {
         this.ativo = true;

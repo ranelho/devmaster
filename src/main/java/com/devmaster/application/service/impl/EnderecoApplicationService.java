@@ -7,6 +7,7 @@ import com.devmaster.application.service.EnderecoService;
 import com.devmaster.application.service.EntregaIntegrationService;
 import com.devmaster.handler.APIException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EnderecoApplicationService implements EnderecoService {
 
     private final RestTemplate restTemplate;
@@ -25,7 +27,7 @@ public class EnderecoApplicationService implements EnderecoService {
     @Override
     public EnderecoViaCepResponse buscarEnderecoPorCep(String cep) {
         // Remove formatação do CEP
-        String cepLimpo = cep.replaceAll("[^0-9]", "");
+        String cepLimpo = cep.replaceAll("\\D", "");
         
         if (cepLimpo.length() != 8) {
             throw APIException.build(HttpStatus.BAD_REQUEST, "CEP inválido");
@@ -96,7 +98,7 @@ public class EnderecoApplicationService implements EnderecoService {
                 response.results() != null && 
                 !response.results().isEmpty()) {
                 
-                GoogleMapsResponse.Result result = response.results().get(0);
+                GoogleMapsResponse.Result result = response.results().getFirst();
                 return new Double[]{
                     result.geometry().location().lat(),
                     result.geometry().location().lng()
@@ -105,7 +107,7 @@ public class EnderecoApplicationService implements EnderecoService {
             
         } catch (Exception e) {
             // Se falhar, retorna coordenadas padrão
-            System.err.println("Erro ao buscar coordenadas: " + e.getMessage());
+            log.error("Erro ao buscar coordenadas: {}", e.getMessage(), e);
         }
         
         // Retorna coordenadas padrão se não conseguir buscar

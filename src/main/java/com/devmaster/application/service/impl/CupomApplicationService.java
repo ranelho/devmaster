@@ -22,12 +22,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-/**
- * Implementação do serviço de Cupom.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 @Service
 @RequiredArgsConstructor
 public class CupomApplicationService implements CupomService {
@@ -112,40 +106,15 @@ public class CupomApplicationService implements CupomService {
     public CupomResponse atualizarCupom(UUID usuarioId, Long cupomId, AtualizarCupomRequest request) {
         Cupom cupom = buscarCupomOuFalhar(cupomId);
         
-        // Atualizar campos se fornecidos
-        if (request.descricao() != null) {
-            cupom.setDescricao(request.descricao());
-        }
-        
-        if (request.valorDesconto() != null) {
-            cupom.setValorDesconto(request.valorDesconto());
-        }
-        
-        if (request.valorMinimoPedido() != null) {
-            cupom.setValorMinimoPedido(request.valorMinimoPedido());
-        }
-        
-        if (request.descontoMaximo() != null) {
-            cupom.setDescontoMaximo(request.descontoMaximo());
-        }
-        
-        if (request.limiteUso() != null) {
-            cupom.setLimiteUso(request.limiteUso());
-        }
-        
-        if (request.validoDe() != null) {
-            cupom.setValidoDe(request.validoDe());
-        }
-        
-        if (request.validoAte() != null) {
-            cupom.setValidoAte(request.validoAte());
-        }
-        
-        // Validar datas
-        if (cupom.getValidoDe().isAfter(cupom.getValidoAte())) {
-            throw APIException.build(HttpStatus.BAD_REQUEST, 
-                "Data de início deve ser anterior à data de fim");
-        }
+        cupom.atualizar(
+            request.descricao(),
+            request.valorDesconto(),
+            request.valorMinimoPedido(),
+            request.descontoMaximo(),
+            request.limiteUso(),
+            request.validoDe(),
+            request.validoAte()
+        );
         
         cupom = cupomRepository.save(cupom);
         return CupomResponse.from(cupom);

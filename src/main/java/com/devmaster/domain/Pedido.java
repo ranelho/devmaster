@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "pedidos")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -128,12 +127,11 @@ public class Pedido {
     
     // Métodos de negócio
     
-    public BigDecimal getTotal() {
-        return valorTotal;
-    }
-    
-    public void setTotal(BigDecimal total) {
-        this.valorTotal = total;
+    public void atualizarTotais(BigDecimal subtotal, BigDecimal taxaEntrega, BigDecimal desconto) {
+        this.subtotal = subtotal;
+        this.taxaEntrega = taxaEntrega;
+        this.desconto = desconto;
+        this.valorTotal = subtotal.add(taxaEntrega).subtract(desconto);
     }
     
     public void confirmar() {

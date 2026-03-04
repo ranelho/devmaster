@@ -1,22 +1,17 @@
 package com.devmaster.domain;
 
 import com.devmaster.domain.enums.TipoDesconto;
+import com.devmaster.handler.APIException;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.http.HttpStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * Entidade Cupom de desconto.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
 @Entity
 @Table(name = "cupons")
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -70,6 +65,28 @@ public class Cupom {
     
     // Métodos de negócio
     
+    public void atualizar(String descricao, BigDecimal valorDesconto, BigDecimal valorMinimoPedido, 
+                         BigDecimal descontoMaximo, Integer limiteUso, 
+                         LocalDateTime validoDe, LocalDateTime validoAte) {
+        
+        if (validoDe != null && validoAte != null && validoDe.isAfter(validoAte)) {
+            throw APIException.build(HttpStatus.BAD_REQUEST, "Data de início deve ser anterior à data de fim");
+        }
+        
+        if (descricao != null) this.descricao = descricao;
+        if (valorDesconto != null) this.valorDesconto = valorDesconto;
+        if (valorMinimoPedido != null) this.valorMinimoPedido = valorMinimoPedido;
+        if (descontoMaximo != null) this.descontoMaximo = descontoMaximo;
+        if (limiteUso != null) this.limiteUso = limiteUso;
+        if (validoDe != null) this.validoDe = validoDe;
+        if (validoAte != null) this.validoAte = validoAte;
+        
+        // Re-validar datas caso apenas uma tenha sido atualizada e gerado inconsistência
+        if (this.validoDe.isAfter(this.validoAte)) {
+            throw APIException.build(HttpStatus.BAD_REQUEST, "Data de início deve ser anterior à data de fim");
+        }
+    }
+
     public void ativar() {
         this.ativo = true;
     }
