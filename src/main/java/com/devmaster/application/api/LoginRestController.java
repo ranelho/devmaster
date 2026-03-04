@@ -1,10 +1,14 @@
 package com.devmaster.application.api;
 
+import com.devmaster.application.api.request.ChangePasswordRequest;
 import com.devmaster.application.api.request.LoginRequest;
 import com.devmaster.application.api.response.LoginResponse;
 import com.devmaster.application.api.response.LogoutResponse;
+import com.devmaster.application.service.AuthIntegrationService;
 import com.devmaster.application.service.UsuarioRestauranteService;
 import com.devmaster.handler.APIException;
+import com.devmaster.security.UserContext;
+import com.devmaster.security.UserContextService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +32,8 @@ public class LoginRestController implements LoginAPI {
     
     private final UsuarioRestauranteService usuarioRestauranteService;
     private final WebClient.Builder webClientBuilder;
+    private final AuthIntegrationService authIntegrationService;
+    private final UserContextService userContextService;
     
     @Value("${auth.service.url:http://localhost:8082}")
     private String authServiceUrl;
@@ -155,5 +161,12 @@ public class LoginRestController implements LoginAPI {
             log.error("💥 [LOGOUT] Erro inesperado ao fazer logout", e);
             throw APIException.build(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao processar logout");
         }
+    }
+
+    @Override
+    public ResponseEntity<Void> changePassword(ChangePasswordRequest request) {
+        UserContext user = userContextService.getCurrentUser();
+        authIntegrationService.changePassword(user.getUserId(), request.getCurrentPassword(), request.getNewPassword());
+        return ResponseEntity.noContent().build();
     }
 }

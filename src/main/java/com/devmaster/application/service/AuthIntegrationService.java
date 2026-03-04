@@ -47,4 +47,13 @@ public interface AuthIntegrationService {
         boolean ativo,
         java.util.List<String> roles
     ) {}
+
+    /**
+     * Altera a senha do usuário no serviço de autenticação.
+     *
+     * @param usuarioId UUID do usuário
+     * @param currentPassword Senha atual
+     * @param newPassword Nova senha
+     */
+    void changePassword(UUID usuarioId, String currentPassword, String newPassword);
 }

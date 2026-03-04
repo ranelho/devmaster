@@ -10,6 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
@@ -149,5 +151,63 @@ public class AuthIntegrationApplicationService implements AuthIntegrationService
             throw APIException.build(HttpStatus.NOT_FOUND, 
                 "Usuário não encontrado no serviço de autenticação");
         }
+    }
+
+    @Override
+    public void changePassword(UUID usuarioId, String currentPassword, String newPassword) {
+        log.info("Alterando senha do usuário: {}", usuarioId);
+        
+        try {
+            String token = getTokenFromContext();
+            
+            WebClient webClient = webClientBuilder
+                .baseUrl(authServiceUrl)
+                .build();
+            
+            Map<String, String> request = Map.of(
+                "currentPassword", currentPassword,
+                "newPassword", newPassword
+            );
+            
+            webClient.post()
+                .uri("/api/auth/change-password")
+                .header("Authorization", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .retrieve()
+                .onStatus(
+                    status -> status.is4xxClientError() || status.is5xxServerError(),
+                    clientResponse -> clientResponse.bodyToMono(String.class)
+                        .flatMap(errorBody -> {
+                            log.error("Erro ao alterar senha: status={}, body={}", 
+                                clientResponse.statusCode(), errorBody);
+                            return Mono.error(new WebClientResponseException(
+                                clientResponse.statusCode().value(),
+                                "Erro ao alterar senha",
+                                null, errorBody.getBytes(), null));
+                        })
+                )
+                .toBodilessEntity()
+                .block();
+                
+            log.info("Senha alterada com sucesso para usuário: {}", usuarioId);
+            
+        } catch (WebClientResponseException e) {
+            log.error("Erro ao alterar senha: {}", e.getMessage());
+            throw APIException.build(HttpStatus.valueOf(e.getStatusCode().value()), 
+                "Erro ao alterar senha: " + e.getResponseBodyAsString());
+        } catch (Exception e) {
+            log.error("Erro inesperado ao alterar senha", e);
+            throw APIException.build(HttpStatus.INTERNAL_SERVER_ERROR, 
+                "Erro ao alterar senha");
+        }
+    }
+
+    private String getTokenFromContext() {
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attributes != null) {
+            return attributes.getRequest().getHeader("Authorization");
+        }
+        return null;
     }
 }

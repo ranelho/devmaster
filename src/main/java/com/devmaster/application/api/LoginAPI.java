@@ -1,5 +1,6 @@
 package com.devmaster.application.api;
 
+import com.devmaster.application.api.request.ChangePasswordRequest;
 import com.devmaster.application.api.request.LoginRequest;
 import com.devmaster.application.api.response.LoginResponse;
 import com.devmaster.application.api.response.LogoutResponse;
@@ -19,14 +20,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * API para autenticação integrada com busca de restaurante.
  */
 @Tag(name = "Autenticação", description = "Endpoints de autenticação")
-@RequestMapping("/public/auth")
 public interface LoginAPI {
     
     @Operation(summary = "Login com restaurante", 
                description = "Faz login no Auth Service e retorna o restauranteId do usuário")
     @ApiResponse(responseCode = "200", description = "Login realizado com sucesso")
     @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
-    @PostMapping("/login")
+    @PostMapping("/public/auth/login")
     ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request);
     
     @Operation(
@@ -36,9 +36,20 @@ public interface LoginAPI {
     )
     @ApiResponse(responseCode = "200", description = "Logout realizado com sucesso")
     @ApiResponse(responseCode = "401", description = "Token inválido ou expirado")
-    @PostMapping("/logout")
+    @PostMapping("/public/auth/logout")
     ResponseEntity<LogoutResponse> logout(
         @Parameter(description = "Token JWT", required = true)
         @RequestHeader("Authorization") String authorization
     );
+
+    @Operation(
+            summary = "Alterar senha",
+            description = "Altera a senha do usuário autenticado",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponse(responseCode = "204", description = "Senha alterada com sucesso")
+    @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    @ApiResponse(responseCode = "401", description = "Não autorizado")
+    @PostMapping("/api/auth/change-password")
+    ResponseEntity<Void> changePassword(@Valid @RequestBody ChangePasswordRequest request);
 }
