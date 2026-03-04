@@ -9,8 +9,11 @@ import com.devmaster.application.service.OpcaoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 
@@ -24,175 +27,220 @@ public class ProdutoRestController implements ProdutoAPI {
     private final OpcaoService opcaoService;
     
     @Override
-    public ProdutoResponse criarProduto(Long restauranteId, ProdutoRequest request) {
-        return produtoService.criarProduto(null, restauranteId, request);
+    public ResponseEntity<ProdutoResponse> criarProduto(Long restauranteId, ProdutoRequest request) {
+        ProdutoResponse response = produtoService.criarProduto(null, restauranteId, request);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(response.id())
+                .toUri();
+        return ResponseEntity.created(location).body(response);
     }
     
     @Override
-    public ProdutoResponse buscarProduto(Long restauranteId, Long produtoId) {
-        return produtoService.buscarProduto(null, restauranteId, produtoId);
+    public ResponseEntity<ProdutoResponse> buscarProduto(Long restauranteId, Long produtoId) {
+        ProdutoResponse response = produtoService.buscarProduto(null, restauranteId, produtoId);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public List<ProdutoResumoResponse> listarProdutos(
+    public ResponseEntity<List<ProdutoResumoResponse>> listarProdutos(
         Long restauranteId,
         Long categoriaId,
         Boolean disponivel,
         Boolean destaque
     ) {
-        return produtoService.listarProdutos(null, restauranteId, categoriaId, disponivel, destaque);
+        List<ProdutoResumoResponse> response = produtoService.listarProdutos(null, restauranteId, categoriaId, disponivel, destaque);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public Page<ProdutoResumoResponse> listarProdutosComPaginacao(
+    public ResponseEntity<Page<ProdutoResumoResponse>> listarProdutosComPaginacao(
         Long restauranteId,
         Long categoriaId,
         Pageable pageable
     ) {
-        return produtoService.listarProdutosComPaginacao(null, restauranteId, categoriaId, pageable);
+        Page<ProdutoResumoResponse> response = produtoService.listarProdutosComPaginacao(null, restauranteId, categoriaId, pageable);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public ProdutoResponse atualizarProduto(
+    public ResponseEntity<ProdutoResponse> atualizarProduto(
         Long restauranteId,
         Long produtoId,
         AtualizarProdutoRequest request
     ) {
-        return produtoService.atualizarProduto(null, restauranteId, produtoId, request);
+        ProdutoResponse response = produtoService.atualizarProduto(null, restauranteId, produtoId, request);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public void disponibilizarProduto(Long restauranteId, Long produtoId) {
+    public ResponseEntity<Void> disponibilizarProduto(Long restauranteId, Long produtoId) {
         produtoService.disponibilizarProduto(null, restauranteId, produtoId);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public void indisponibilizarProduto(Long restauranteId, Long produtoId) {
+    public ResponseEntity<Void> indisponibilizarProduto(Long restauranteId, Long produtoId) {
         produtoService.indisponibilizarProduto(null, restauranteId, produtoId);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public void destacarProduto(Long restauranteId, Long produtoId) {
+    public ResponseEntity<Void> destacarProduto(Long restauranteId, Long produtoId) {
         produtoService.destacarProduto(null, restauranteId, produtoId);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public void removerDestaqueProduto(Long restauranteId, Long produtoId) {
+    public ResponseEntity<Void> removerDestaqueProduto(Long restauranteId, Long produtoId) {
         produtoService.removerDestaqueProduto(null, restauranteId, produtoId);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public void removerProduto(Long restauranteId, Long produtoId) {
+    public ResponseEntity<Void> removerProduto(Long restauranteId, Long produtoId) {
         produtoService.removerProduto(null, restauranteId, produtoId);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public ImagemProdutoResponse adicionarImagem(
+    public ResponseEntity<ImagemProdutoResponse> adicionarImagem(
         Long restauranteId,
         Long produtoId,
         ImagemProdutoRequest request
     ) {
-        return imagemProdutoService.adicionarImagem(null, restauranteId, produtoId, request);
+        ImagemProdutoResponse response = imagemProdutoService.adicionarImagem(null, restauranteId, produtoId, request);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(response.id())
+                .toUri();
+        return ResponseEntity.created(location).body(response);
     }
     
     @Override
-    public ImagemProdutoResponse uploadImagem(
+    public ResponseEntity<ImagemProdutoResponse> uploadImagem(
         Long restauranteId,
         Long produtoId,
         org.springframework.web.multipart.MultipartFile arquivo,
         Boolean principal,
         Integer ordemExibicao
     ) {
-        return imagemProdutoService.uploadImagem(null, restauranteId, produtoId, arquivo, principal, ordemExibicao);
+        ImagemProdutoResponse response = imagemProdutoService.uploadImagem(null, restauranteId, produtoId, arquivo, principal, ordemExibicao);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(response.id())
+                .toUri();
+        return ResponseEntity.created(location).body(response);
     }
     
     @Override
-    public List<ImagemProdutoResponse> listarImagens(Long restauranteId, Long produtoId) {
-        return imagemProdutoService.listarImagens(null, restauranteId, produtoId);
+    public ResponseEntity<List<ImagemProdutoResponse>> listarImagens(Long restauranteId, Long produtoId) {
+        List<ImagemProdutoResponse> response = imagemProdutoService.listarImagens(null, restauranteId, produtoId);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public void definirImagemPrincipal(Long restauranteId, Long produtoId, Long imagemId) {
+    public ResponseEntity<Void> definirImagemPrincipal(Long restauranteId, Long produtoId, Long imagemId) {
         imagemProdutoService.definirImagemPrincipal(null, restauranteId, produtoId, imagemId);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public void removerImagem(Long restauranteId, Long produtoId, Long imagemId) {
+    public ResponseEntity<Void> removerImagem(Long restauranteId, Long produtoId, Long imagemId) {
         imagemProdutoService.removerImagem(null, restauranteId, produtoId, imagemId);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public GrupoOpcaoResponse adicionarGrupoOpcao(
+    public ResponseEntity<GrupoOpcaoResponse> adicionarGrupoOpcao(
         Long restauranteId,
         Long produtoId,
         GrupoOpcaoRequest request
     ) {
-        return grupoOpcaoService.adicionarGrupoOpcao(null, restauranteId, produtoId, request);
+        GrupoOpcaoResponse response = grupoOpcaoService.adicionarGrupoOpcao(null, restauranteId, produtoId, request);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(response.id())
+                .toUri();
+        return ResponseEntity.created(location).body(response);
     }
     
     @Override
-    public List<GrupoOpcaoResponse> listarGruposOpcoes(Long restauranteId, Long produtoId) {
-        return grupoOpcaoService.listarGruposOpcoes(null, restauranteId, produtoId);
+    public ResponseEntity<List<GrupoOpcaoResponse>> listarGruposOpcoes(Long restauranteId, Long produtoId) {
+        List<GrupoOpcaoResponse> response = grupoOpcaoService.listarGruposOpcoes(null, restauranteId, produtoId);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public GrupoOpcaoResponse atualizarGrupoOpcao(
+    public ResponseEntity<GrupoOpcaoResponse> atualizarGrupoOpcao(
         Long restauranteId,
         Long produtoId,
         Long grupoId,
         GrupoOpcaoRequest request
     ) {
-        return grupoOpcaoService.atualizarGrupoOpcao(null, restauranteId, produtoId, grupoId, request);
+        GrupoOpcaoResponse response = grupoOpcaoService.atualizarGrupoOpcao(null, restauranteId, produtoId, grupoId, request);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public void removerGrupoOpcao(Long restauranteId, Long produtoId, Long grupoId) {
+    public ResponseEntity<Void> removerGrupoOpcao(Long restauranteId, Long produtoId, Long grupoId) {
         grupoOpcaoService.removerGrupoOpcao(null, restauranteId, produtoId, grupoId);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public OpcaoResponse adicionarOpcao(
+    public ResponseEntity<OpcaoResponse> adicionarOpcao(
         Long restauranteId,
         Long produtoId,
         Long grupoId,
         OpcaoRequest request
     ) {
-        return opcaoService.adicionarOpcao(null, restauranteId, produtoId, grupoId, request);
+        OpcaoResponse response = opcaoService.adicionarOpcao(null, restauranteId, produtoId, grupoId, request);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(response.id())
+                .toUri();
+        return ResponseEntity.created(location).body(response);
     }
     
     @Override
-    public List<OpcaoResponse> listarOpcoes(
+    public ResponseEntity<List<OpcaoResponse>> listarOpcoes(
         Long restauranteId,
         Long produtoId,
         Long grupoId,
         Boolean disponivel
     ) {
-        return opcaoService.listarOpcoes(null, restauranteId, produtoId, grupoId, disponivel);
+        List<OpcaoResponse> response = opcaoService.listarOpcoes(null, restauranteId, produtoId, grupoId, disponivel);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public OpcaoResponse atualizarOpcao(
+    public ResponseEntity<OpcaoResponse> atualizarOpcao(
         Long restauranteId,
         Long produtoId,
         Long grupoId,
         Long opcaoId,
         OpcaoRequest request
     ) {
-        return opcaoService.atualizarOpcao(null, restauranteId, produtoId, grupoId, opcaoId, request);
+        OpcaoResponse response = opcaoService.atualizarOpcao(null, restauranteId, produtoId, grupoId, opcaoId, request);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public void disponibilizarOpcao(Long restauranteId, Long produtoId, Long grupoId, Long opcaoId) {
+    public ResponseEntity<Void> disponibilizarOpcao(Long restauranteId, Long produtoId, Long grupoId, Long opcaoId) {
         opcaoService.disponibilizarOpcao(null, restauranteId, produtoId, grupoId, opcaoId);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public void indisponibilizarOpcao(Long restauranteId, Long produtoId, Long grupoId, Long opcaoId) {
+    public ResponseEntity<Void> indisponibilizarOpcao(Long restauranteId, Long produtoId, Long grupoId, Long opcaoId) {
         opcaoService.indisponibilizarOpcao(null, restauranteId, produtoId, grupoId, opcaoId);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public void removerOpcao(Long restauranteId, Long produtoId, Long grupoId, Long opcaoId) {
+    public ResponseEntity<Void> removerOpcao(Long restauranteId, Long produtoId, Long grupoId, Long opcaoId) {
         opcaoService.removerOpcao(null, restauranteId, produtoId, grupoId, opcaoId);
+        return ResponseEntity.noContent().build();
     }
 }

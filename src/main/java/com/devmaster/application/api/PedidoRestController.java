@@ -7,8 +7,11 @@ import com.devmaster.domain.enums.StatusPedido;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,105 +22,128 @@ public class PedidoRestController implements PedidoAPI {
     private final PedidoApplicationService pedidoService;
     
     @Override
-    public PedidoResponse criarPedido(PedidoRequest request) {
-        return pedidoService.criarPedido(null, request);
+    public ResponseEntity<PedidoResponse> criarPedido(PedidoRequest request) {
+        PedidoResponse response = pedidoService.criarPedido(null, request);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(response.id())
+                .toUri();
+        return ResponseEntity.created(location).body(response);
     }
     
     @Override
-    public PedidoResponse buscarPedido(Long pedidoId) {
-        return pedidoService.buscarPedido(null, pedidoId);
+    public ResponseEntity<PedidoResponse> buscarPedido(Long pedidoId) {
+        PedidoResponse response = pedidoService.buscarPedido(null, pedidoId);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public PedidoResponse buscarPedidoPorNumero(String numeroPedido) {
-        return pedidoService.buscarPedidoPorNumero(null, numeroPedido);
+    public ResponseEntity<PedidoResponse> buscarPedidoPorNumero(String numeroPedido) {
+        PedidoResponse response = pedidoService.buscarPedidoPorNumero(null, numeroPedido);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public List<PedidoResumoResponse> listarPedidosRestaurante(Long restauranteId, StatusPedido status) {
-        return pedidoService.listarPedidosRestaurante(null, restauranteId, status);
+    public ResponseEntity<List<PedidoResumoResponse>> listarPedidosRestaurante(Long restauranteId, StatusPedido status) {
+        List<PedidoResumoResponse> response = pedidoService.listarPedidosRestaurante(null, restauranteId, status);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public List<PedidoResumoResponse> listarPedidosCliente(Long clienteId, StatusPedido status) {
-        return pedidoService.listarPedidosCliente(null, clienteId, status);
+    public ResponseEntity<List<PedidoResumoResponse>> listarPedidosCliente(Long clienteId, StatusPedido status) {
+        List<PedidoResumoResponse> response = pedidoService.listarPedidosCliente(null, clienteId, status);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public Page<PedidoResumoResponse> listarPedidosRestauranteComPaginacao(
+    public ResponseEntity<Page<PedidoResumoResponse>> listarPedidosRestauranteComPaginacao(
         Long restauranteId,
         StatusPedido status,
         Pageable pageable
     ) {
-        return pedidoService.listarPedidosRestauranteComPaginacao(null, restauranteId, status, pageable);
+        Page<PedidoResumoResponse> response = pedidoService.listarPedidosRestauranteComPaginacao(null, restauranteId, status, pageable);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public Page<PedidoResumoResponse> listarPedidosClienteComPaginacao(Long clienteId, Pageable pageable) {
-        return pedidoService.listarPedidosClienteComPaginacao(null, clienteId, pageable);
+    public ResponseEntity<Page<PedidoResumoResponse>> listarPedidosClienteComPaginacao(Long clienteId, Pageable pageable) {
+        Page<PedidoResumoResponse> response = pedidoService.listarPedidosClienteComPaginacao(null, clienteId, pageable);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public PedidoResponse atualizarStatus(Long pedidoId, AtualizarStatusPedidoRequest request) {
-        return pedidoService.atualizarStatus(null, pedidoId, request);
+    public ResponseEntity<PedidoResponse> atualizarStatus(Long pedidoId, AtualizarStatusPedidoRequest request) {
+        PedidoResponse response = pedidoService.atualizarStatus(null, pedidoId, request);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public void confirmarPedido(Long pedidoId) {
+    public ResponseEntity<Void> confirmarPedido(Long pedidoId) {
         pedidoService.confirmarPedido(null, pedidoId);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public void iniciarPreparo(Long pedidoId) {
+    public ResponseEntity<Void> iniciarPreparo(Long pedidoId) {
         pedidoService.iniciarPreparo(null, pedidoId);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public void marcarComoPronto(Long pedidoId) {
+    public ResponseEntity<Void> marcarComoPronto(Long pedidoId) {
         pedidoService.marcarComoPronto(null, pedidoId);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public void despacharPedido(Long pedidoId, Long entregadorId) {
+    public ResponseEntity<Void> despacharPedido(Long pedidoId, Long entregadorId) {
         pedidoService.despacharPedido(null, pedidoId, entregadorId);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public void entregarPedido(Long pedidoId) {
+    public ResponseEntity<Void> entregarPedido(Long pedidoId) {
         pedidoService.entregarPedido(null, pedidoId);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public void cancelarPedido(Long pedidoId, CancelarPedidoRequest request) {
+    public ResponseEntity<Void> cancelarPedido(Long pedidoId, CancelarPedidoRequest request) {
         pedidoService.cancelarPedido(null, pedidoId, request);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public void aprovarPagamento(Long pedidoId) {
+    public ResponseEntity<Void> aprovarPagamento(Long pedidoId) {
         pedidoService.aprovarPagamento(null, pedidoId);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public void recusarPagamento(Long pedidoId) {
+    public ResponseEntity<Void> recusarPagamento(Long pedidoId) {
         pedidoService.recusarPagamento(null, pedidoId);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public List<HistoricoStatusPedidoResponse> buscarHistorico(Long pedidoId) {
-        return pedidoService.buscarHistorico(null, pedidoId);
+    public ResponseEntity<List<HistoricoStatusPedidoResponse>> buscarHistorico(Long pedidoId) {
+        List<HistoricoStatusPedidoResponse> response = pedidoService.buscarHistorico(null, pedidoId);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public List<PedidoResumoResponse> buscarPedidosPorPeriodo(
+    public ResponseEntity<List<PedidoResumoResponse>> buscarPedidosPorPeriodo(
         Long restauranteId,
         LocalDateTime inicio,
         LocalDateTime fim
     ) {
-        return pedidoService.buscarPedidosPorPeriodo(null, restauranteId, inicio, fim);
+        List<PedidoResumoResponse> response = pedidoService.buscarPedidosPorPeriodo(null, restauranteId, inicio, fim);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public List<PedidoResumoResponse> buscarPedidosAtivos(Long restauranteId) {
-        return pedidoService.buscarPedidosAtivos(null, restauranteId);
+    public ResponseEntity<List<PedidoResumoResponse>> buscarPedidosAtivos(Long restauranteId) {
+        List<PedidoResumoResponse> response = pedidoService.buscarPedidosAtivos(null, restauranteId);
+        return ResponseEntity.ok(response);
     }
 }

@@ -373,6 +373,45 @@ public class RestauranteApplicationService implements RestauranteService {
     
     @Override
     @Transactional
+    public List<HorarioRestauranteResponse> atualizarHorarios(
+        UUID usuarioId,
+        Long restauranteId,
+        List<HorarioRestauranteRequest> horarios
+    ) {
+        Restaurante restaurante = buscarRestauranteOuFalhar(restauranteId);
+        
+        // Remover horários existentes
+        List<HorarioRestaurante> horariosExistentes = horarioRepository.findByRestauranteIdOrderByDiaSemana(restauranteId);
+        horarioRepository.deleteAll(horariosExistentes);
+        
+        // Criar novos horários
+        List<HorarioRestaurante> novosHorarios = horarios.stream()
+            .map(request -> {
+                // Validar horários
+                if (request.horarioAbertura().isAfter(request.horarioFechamento())) {
+                    throw APIException.build(HttpStatus.BAD_REQUEST, 
+                        "Horário de abertura deve ser anterior ao horário de fechamento (Dia: " + request.diaSemana() + ")");
+                }
+                
+                return HorarioRestaurante.builder()
+                    .restaurante(restaurante)
+                    .diaSemana(request.diaSemana())
+                    .horarioAbertura(request.horarioAbertura())
+                    .horarioFechamento(request.horarioFechamento())
+                    .fechado(request.fechado() != null ? request.fechado() : false)
+                    .build();
+            })
+            .collect(Collectors.toList());
+        
+        novosHorarios = horarioRepository.saveAll(novosHorarios);
+        
+        return novosHorarios.stream()
+            .map(HorarioRestauranteResponse::from)
+            .collect(Collectors.toList());
+    }
+    
+    @Override
+    @Transactional
     public void removerHorario(UUID usuarioId, Long restauranteId, Integer diaSemana) {
         buscarRestauranteOuFalhar(restauranteId);
         

@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.List;
  * @since 1.0.0
  */
 @Tag(name = "Produtos Públicos", description = "Endpoints públicos para consulta de produtos")
-@RequestMapping("/public/v1/restaurantes/{restauranteId}/produtos")
+@RequestMapping({"/public/v1/restaurantes/{restauranteId}/produtos", "/public/v2/restaurantes/{restauranteId}/produtos"})
 public interface PublicProdutoAPI {
     
     @Operation(summary = "Listar produtos do restaurante", description = "Lista produtos disponíveis do restaurante (acesso público)")
@@ -27,7 +28,7 @@ public interface PublicProdutoAPI {
         @ApiResponse(responseCode = "404", description = "Restaurante não encontrado")
     })
     @GetMapping
-    List<ProdutoResumoResponse> listarProdutos(
+    ResponseEntity<List<ProdutoResumoResponse>> listarProdutos(
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId,
         
@@ -47,7 +48,7 @@ public interface PublicProdutoAPI {
         @ApiResponse(responseCode = "404", description = "Produto não encontrado")
     })
     @GetMapping("/{produtoId}")
-    ProdutoResponse buscarProduto(
+    ResponseEntity<ProdutoResponse> buscarProduto(
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId,
         
@@ -60,7 +61,7 @@ public interface PublicProdutoAPI {
         @ApiResponse(responseCode = "200", description = "Lista de produtos retornada com sucesso")
     })
     @GetMapping("/destaques")
-    List<ProdutoResumoResponse> listarProdutosDestaque(
+    ResponseEntity<List<ProdutoResumoResponse>> listarProdutosDestaque(
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId,
         

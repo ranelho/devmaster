@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.List;
  * @since 1.0.0
  */
 @Tag(name = "Categorias Públicas", description = "Endpoints públicos para consulta de categorias")
-@RequestMapping("/public/v1/restaurantes/{restauranteId}/categorias")
+@RequestMapping({"/public/v1/restaurantes/{restauranteId}/categorias", "/public/v2/restaurantes/{restauranteId}/categorias"})
 public interface PublicCategoriaAPI {
     
     @Operation(summary = "Listar categorias do restaurante", description = "Lista categorias ativas do restaurante ordenadas (acesso público)")
@@ -26,7 +27,7 @@ public interface PublicCategoriaAPI {
         @ApiResponse(responseCode = "404", description = "Restaurante não encontrado")
     })
     @GetMapping
-    List<CategoriaResponse> listarCategorias(
+    ResponseEntity<List<CategoriaResponse>> listarCategorias(
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId
     );
@@ -37,7 +38,7 @@ public interface PublicCategoriaAPI {
         @ApiResponse(responseCode = "404", description = "Categoria não encontrada")
     })
     @GetMapping("/{categoriaId}")
-    CategoriaResponse buscarCategoria(
+    ResponseEntity<CategoriaResponse> buscarCategoria(
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId,
         

@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
  * @since 1.0.0
  */
 @Tag(name = "Descontos", description = "Endpoints para gerenciamento de descontos")
-@RequestMapping("/v1/descontos")
+@RequestMapping({"/v1/descontos", "/v2/descontos"})
 public interface DescontoAPI {
     
     @Operation(summary = "Criar desconto", description = "Cria um novo desconto para um produto")
@@ -30,8 +30,7 @@ public interface DescontoAPI {
         @ApiResponse(responseCode = "404", description = "Produto não encontrado")
     })
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    DescontoResponse criar(
+    ResponseEntity<DescontoResponse> criar(
         @Parameter(description = "Dados do desconto", required = true)
         @Valid @RequestBody DescontoRequest request
     );
@@ -43,7 +42,7 @@ public interface DescontoAPI {
         @ApiResponse(responseCode = "404", description = "Desconto não encontrado")
     })
     @PutMapping("/{id}")
-    DescontoResponse atualizar(
+    ResponseEntity<DescontoResponse> atualizar(
         @Parameter(description = "ID do desconto", required = true)
         @PathVariable Long id,
         
@@ -57,7 +56,7 @@ public interface DescontoAPI {
         @ApiResponse(responseCode = "404", description = "Desconto não encontrado")
     })
     @GetMapping("/{id}")
-    DescontoResponse buscarPorId(
+    ResponseEntity<DescontoResponse> buscarPorId(
         @Parameter(description = "ID do desconto", required = true)
         @PathVariable Long id
     );
@@ -67,14 +66,14 @@ public interface DescontoAPI {
         @ApiResponse(responseCode = "200", description = "Lista de descontos retornada com sucesso")
     })
     @GetMapping
-    List<DescontoResponse> listarTodos();
+    ResponseEntity<List<DescontoResponse>> listarTodos();
     
     @Operation(summary = "Listar descontos por produto", description = "Lista todos os descontos de um produto específico")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Lista de descontos retornada com sucesso")
     })
     @GetMapping("/produto/{produtoId}")
-    List<DescontoResponse> listarPorProduto(
+    ResponseEntity<List<DescontoResponse>> listarPorProduto(
         @Parameter(description = "ID do produto", required = true)
         @PathVariable Long produtoId
     );
@@ -84,7 +83,7 @@ public interface DescontoAPI {
         @ApiResponse(responseCode = "200", description = "Lista de descontos vigentes retornada com sucesso")
     })
     @GetMapping("/vigentes")
-    List<DescontoResponse> listarVigentes();
+    ResponseEntity<List<DescontoResponse>> listarVigentes();
     
     @Operation(summary = "Deletar desconto", description = "Remove um desconto do sistema")
     @ApiResponses(value = {
@@ -92,8 +91,7 @@ public interface DescontoAPI {
         @ApiResponse(responseCode = "404", description = "Desconto não encontrado")
     })
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deletar(
+    ResponseEntity<Void> deletar(
         @Parameter(description = "ID do desconto", required = true)
         @PathVariable Long id
     );

@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.List;
  * @since 1.0.0
  */
 @Tag(name = "Restaurantes Públicos", description = "Endpoints públicos para consulta de restaurantes")
-@RequestMapping("/public/v1/restaurantes")
+@RequestMapping({"/public/v1/restaurantes", "/public/v2/restaurantes"})
 public interface PublicRestauranteAPI {
     
     @Operation(summary = "Buscar restaurante por slug", description = "Retorna os dados completos de um restaurante pelo slug (acesso público)")
@@ -27,7 +28,7 @@ public interface PublicRestauranteAPI {
         @ApiResponse(responseCode = "404", description = "Restaurante não encontrado")
     })
     @GetMapping("/slug/{slug}")
-    RestauranteResponse buscarRestaurantePorSlug(
+    ResponseEntity<RestauranteResponse> buscarRestaurantePorSlug(
         @Parameter(description = "Slug do restaurante", required = true)
         @PathVariable String slug
     );
@@ -38,7 +39,7 @@ public interface PublicRestauranteAPI {
         @ApiResponse(responseCode = "404", description = "Restaurante não encontrado")
     })
     @GetMapping("/{restauranteId}")
-    RestauranteResponse buscarRestaurante(
+    ResponseEntity<RestauranteResponse> buscarRestaurante(
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId
     );
@@ -48,7 +49,7 @@ public interface PublicRestauranteAPI {
         @ApiResponse(responseCode = "200", description = "Lista de restaurantes retornada com sucesso")
     })
     @GetMapping("/abertos")
-    List<RestauranteResumoResponse> listarRestaurantesAbertos(
+    ResponseEntity<List<RestauranteResumoResponse>> listarRestaurantesAbertos(
         @Parameter(description = "Limite de resultados")
         @RequestParam(defaultValue = "50") int limite
     );
@@ -58,14 +59,14 @@ public interface PublicRestauranteAPI {
         @ApiResponse(responseCode = "200", description = "Lista de restaurantes retornada com sucesso")
     })
     @GetMapping("/ativos")
-    List<RestauranteResumoResponse> listarRestaurantesAtivos();
+    ResponseEntity<List<RestauranteResumoResponse>> listarRestaurantesAtivos();
     
     @Operation(summary = "Buscar restaurantes por nome", description = "Busca restaurantes ativos por nome (acesso público)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Lista de restaurantes retornada com sucesso")
     })
     @GetMapping("/buscar")
-    List<RestauranteResumoResponse> buscarPorNome(
+    ResponseEntity<List<RestauranteResumoResponse>> buscarPorNome(
         @Parameter(description = "Nome do restaurante (busca parcial)")
         @RequestParam String nome
     );

@@ -7,6 +7,8 @@ import com.devmaster.application.api.response.ResumoStatusResponse;
 import com.devmaster.application.service.DashboardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
@@ -20,47 +22,61 @@ public class DashboardController implements DashboardAPI {
     private final DashboardService service;
     
     @Override
-    public DashboardResponse buscarDashboardCompleto(Long restauranteId, LocalDate data) {
-        return service.buscarDashboardCompleto(restauranteId, data);
+    public ResponseEntity<DashboardResponse> buscarDashboardCompleto(Long restauranteId, LocalDate data) {
+        DashboardResponse response = service.buscarDashboardCompleto(restauranteId, data);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public List<PedidoResumoResponse> buscarPedidosNovos(Long restauranteId) {
-        return service.buscarPedidosNovos(restauranteId);
+    public ResponseEntity<List<PedidoResumoResponse>> buscarPedidosNovos(Long restauranteId) {
+        List<PedidoResumoResponse> response = service.buscarPedidosNovos(restauranteId);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public List<PedidoResumoResponse> buscarPedidosEmPreparo(Long restauranteId) {
-        return service.buscarPedidosEmPreparo(restauranteId);
+    public ResponseEntity<List<PedidoResumoResponse>> buscarPedidosEmPreparo(Long restauranteId) {
+        List<PedidoResumoResponse> response = service.buscarPedidosEmPreparo(restauranteId);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public List<PedidoResumoResponse> buscarPedidosProntos(Long restauranteId) {
-        return service.buscarPedidosProntos(restauranteId);
+    public ResponseEntity<List<PedidoResumoResponse>> buscarPedidosProntos(Long restauranteId) {
+        List<PedidoResumoResponse> response = service.buscarPedidosProntos(restauranteId);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public List<PedidoResumoResponse> buscarPedidosEmEntrega(Long restauranteId) {
-        return service.buscarPedidosEmEntrega(restauranteId);
+    public ResponseEntity<List<PedidoResumoResponse>> buscarPedidosEmEntrega(Long restauranteId) {
+        List<PedidoResumoResponse> response = service.buscarPedidosEmEntrega(restauranteId);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public String gerarComandaHTML(Long pedidoId) {
-        return service.gerarComandaHTML(pedidoId);
+    public ResponseEntity<String> gerarComandaHTML(Long pedidoId) {
+        String html = service.gerarComandaHTML(pedidoId);
+        return ResponseEntity.ok()
+            .contentType(MediaType.TEXT_HTML)
+            .body(html);
     }
     
     @Override
-    public byte[] gerarComandaPDF(Long pedidoId) {
-        return service.gerarComandaPDF(pedidoId);
+    public ResponseEntity<byte[]> gerarComandaPDF(Long pedidoId) {
+        byte[] pdf = service.gerarComandaPDF(pedidoId);
+        return ResponseEntity.ok()
+            .contentType(MediaType.APPLICATION_PDF)
+            .header("Content-Disposition", "attachment; filename=comanda_" + pedidoId + ".pdf")
+            .body(pdf);
     }
     
     @Override
-    public DashboardMetricasResponse buscarMetricas(Long restauranteId, LocalDate data) {
-        return service.buscarMetricas(restauranteId, data);
+    public ResponseEntity<DashboardMetricasResponse> buscarMetricas(Long restauranteId, LocalDate data) {
+        DashboardMetricasResponse response = service.buscarMetricas(restauranteId, data);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public List<ResumoStatusResponse> buscarResumoStatus(Long restauranteId) {
-        return service.buscarResumoStatus(restauranteId);
+    public ResponseEntity<List<ResumoStatusResponse>> buscarResumoStatus(Long restauranteId) {
+        List<ResumoStatusResponse> response = service.buscarResumoStatus(restauranteId);
+        return ResponseEntity.ok(response);
     }
 }

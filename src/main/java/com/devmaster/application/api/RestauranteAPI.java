@@ -2,8 +2,10 @@ package com.devmaster.application.api;
 
 import com.devmaster.application.api.request.AtualizarRestauranteRequest;
 import com.devmaster.application.api.request.EnderecoRestauranteRequest;
+import com.devmaster.application.api.request.HorarioRestauranteRequest;
 import com.devmaster.application.api.request.RestauranteRequest;
 import com.devmaster.application.api.response.EnderecoRestauranteResponse;
+import com.devmaster.application.api.response.HorarioRestauranteResponse;
 import com.devmaster.application.api.response.RestauranteResponse;
 import com.devmaster.application.api.response.RestauranteResumoResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,8 +17,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,44 +29,34 @@ import java.util.List;
  * @since 1.0.0
  */
 @Tag(name = "Restaurantes", description = "Endpoints para gerenciamento de restaurantes")
-@RequestMapping("/v1/restaurantes")
+@RequestMapping({"/v1/restaurantes", "/v2/restaurantes"})
 public interface RestauranteAPI {
     
-    @Operation(summary = "Criar novo restaurante", description = "Cria um novo restaurante no sistema (apenas SUPER_ADMIN)")
+    // ========================================
+    // GESTÃO DO RESTAURANTE
+    // ========================================
+    
+    @Operation(summary = "Criar novo restaurante", description = "Cria um novo restaurante no sistema")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Restaurante criado com sucesso"),
         @ApiResponse(responseCode = "400", description = "Dados inválidos"),
-        @ApiResponse(responseCode = "403", description = "Acesso negado - apenas SUPER_ADMIN"),
-        @ApiResponse(responseCode = "409", description = "Slug, CNPJ ou email já cadastrado")
+        @ApiResponse(responseCode = "409", description = "CNPJ já cadastrado")
     })
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
-    RestauranteResponse criarRestaurante(
+    ResponseEntity<RestauranteResponse> criarRestaurante(
         @Parameter(description = "Dados do restaurante", required = true)
         @Valid @RequestBody RestauranteRequest request
     );
     
-    @Operation(summary = "Buscar restaurante por ID", description = "Retorna os dados completos de um restaurante")
+    @Operation(summary = "Buscar restaurante por ID", description = "Retorna os dados detalhados de um restaurante")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Restaurante encontrado"),
         @ApiResponse(responseCode = "404", description = "Restaurante não encontrado")
     })
     @GetMapping("/{restauranteId}")
-    RestauranteResponse buscarRestaurante(
+    ResponseEntity<RestauranteResponse> buscarRestaurante(
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId
-    );
-    
-    @Operation(summary = "Buscar restaurante por slug", description = "Retorna os dados completos de um restaurante pelo slug")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Restaurante encontrado"),
-        @ApiResponse(responseCode = "404", description = "Restaurante não encontrado")
-    })
-    @GetMapping("/slug/{slug}")
-    RestauranteResponse buscarRestaurantePorSlug(
-        @Parameter(description = "Slug do restaurante", required = true)
-        @PathVariable String slug
     );
     
     @Operation(summary = "Listar restaurantes", description = "Lista restaurantes com filtros e paginação")
@@ -73,43 +64,26 @@ public interface RestauranteAPI {
         @ApiResponse(responseCode = "200", description = "Lista de restaurantes retornada com sucesso")
     })
     @GetMapping
-    Page<RestauranteResumoResponse> listarRestaurantes(
+    ResponseEntity<Page<RestauranteResumoResponse>> listarRestaurantes(
+        @Parameter(description = "Filtrar por nome")
+        @RequestParam(required = false) String nome,
+        
         @Parameter(description = "Filtrar por status ativo")
         @RequestParam(required = false) Boolean ativo,
         
         @Parameter(description = "Filtrar por status aberto")
         @RequestParam(required = false) Boolean aberto,
         
-        @Parameter(description = "Filtrar por nome (busca parcial)")
-        @RequestParam(required = false) String nome,
-        
-        @Parameter(description = "Número da página")
-        @RequestParam(defaultValue = "0") int page,
-        
-        @Parameter(description = "Tamanho da página")
-        @RequestParam(defaultValue = "20") int size
+        @PageableDefault(size = 20) Pageable pageable
     );
     
-    @Operation(summary = "Listar restaurantes abertos", description = "Lista restaurantes abertos ordenados por avaliação")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Lista de restaurantes retornada com sucesso")
-    })
-    @GetMapping("/abertos")
-    List<RestauranteResumoResponse> listarRestaurantesAbertos(
-        @Parameter(description = "Limite de resultados")
-        @RequestParam(defaultValue = "10") int limite
-    );
-    
-    @Operation(summary = "Atualizar restaurante", description = "Atualiza os dados de um restaurante (apenas SUPER_ADMIN)")
+    @Operation(summary = "Atualizar restaurante", description = "Atualiza os dados de um restaurante")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Restaurante atualizado com sucesso"),
-        @ApiResponse(responseCode = "403", description = "Acesso negado - apenas SUPER_ADMIN"),
-        @ApiResponse(responseCode = "404", description = "Restaurante não encontrado"),
-        @ApiResponse(responseCode = "409", description = "Email já cadastrado")
+        @ApiResponse(responseCode = "404", description = "Restaurante não encontrado")
     })
     @PutMapping("/{restauranteId}")
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
-    RestauranteResponse atualizarRestaurante(
+    ResponseEntity<RestauranteResponse> atualizarRestaurante(
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId,
         
@@ -123,58 +97,68 @@ public interface RestauranteAPI {
         @ApiResponse(responseCode = "404", description = "Restaurante não encontrado")
     })
     @PatchMapping("/{restauranteId}/ativar")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    void ativarRestaurante(
+    ResponseEntity<Void> ativarRestaurante(
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId
     );
     
-    @Operation(summary = "Desativar restaurante", description = "Desativa um restaurante")
+    @Operation(summary = "Desativar restaurante", description = "Desativa um restaurante ativo")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Restaurante desativado com sucesso"),
         @ApiResponse(responseCode = "404", description = "Restaurante não encontrado")
     })
     @PatchMapping("/{restauranteId}/desativar")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    void desativarRestaurante(
+    ResponseEntity<Void> desativarRestaurante(
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId
     );
     
-    @Operation(summary = "Abrir restaurante", description = "Marca o restaurante como aberto para pedidos")
+    @Operation(summary = "Abrir restaurante", description = "Abre o restaurante para receber pedidos")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Restaurante aberto com sucesso"),
         @ApiResponse(responseCode = "404", description = "Restaurante não encontrado"),
-        @ApiResponse(responseCode = "400", description = "Restaurante inativo não pode ser aberto")
+        @ApiResponse(responseCode = "400", description = "Restaurante já está aberto ou inativo")
     })
     @PatchMapping("/{restauranteId}/abrir")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    void abrirRestaurante(
+    ResponseEntity<Void> abrirRestaurante(
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId
     );
     
-    @Operation(summary = "Fechar restaurante", description = "Marca o restaurante como fechado para pedidos")
+    @Operation(summary = "Fechar restaurante", description = "Fecha o restaurante para pedidos")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Restaurante fechado com sucesso"),
-        @ApiResponse(responseCode = "404", description = "Restaurante não encontrado")
+        @ApiResponse(responseCode = "404", description = "Restaurante não encontrado"),
+        @ApiResponse(responseCode = "400", description = "Restaurante já está fechado")
     })
     @PatchMapping("/{restauranteId}/fechar")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    void fecharRestaurante(
+    ResponseEntity<Void> fecharRestaurante(
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId
     );
     
-    @Operation(summary = "Adicionar endereço", description = "Adiciona endereço ao restaurante")
+    // ========================================
+    // ENDEREÇO
+    // ========================================
+    
+    @Operation(summary = "Buscar endereço", description = "Retorna o endereço do restaurante")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Endereço encontrado"),
+        @ApiResponse(responseCode = "404", description = "Restaurante ou endereço não encontrado")
+    })
+    @GetMapping("/{restauranteId}/endereco")
+    ResponseEntity<EnderecoRestauranteResponse> buscarEndereco(
+        @Parameter(description = "ID do restaurante", required = true)
+        @PathVariable Long restauranteId
+    );
+    
+    @Operation(summary = "Adicionar endereço", description = "Adiciona ou atualiza o endereço do restaurante")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Endereço adicionado com sucesso"),
-        @ApiResponse(responseCode = "404", description = "Restaurante não encontrado"),
-        @ApiResponse(responseCode = "409", description = "Restaurante já possui endereço")
+        @ApiResponse(responseCode = "404", description = "Restaurante não encontrado")
     })
     @PostMapping("/{restauranteId}/endereco")
-    @ResponseStatus(HttpStatus.CREATED)
-    EnderecoRestauranteResponse adicionarEndereco(
+    ResponseEntity<EnderecoRestauranteResponse> adicionarEndereco(
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId,
         
@@ -188,22 +172,39 @@ public interface RestauranteAPI {
         @ApiResponse(responseCode = "404", description = "Restaurante ou endereço não encontrado")
     })
     @PutMapping("/{restauranteId}/endereco")
-    EnderecoRestauranteResponse atualizarEndereco(
+    ResponseEntity<EnderecoRestauranteResponse> atualizarEndereco(
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId,
         
-        @Parameter(description = "Dados do endereço", required = true)
+        @Parameter(description = "Dados para atualização", required = true)
         @Valid @RequestBody EnderecoRestauranteRequest request
     );
     
-    @Operation(summary = "Buscar endereço", description = "Retorna o endereço do restaurante")
+    // ========================================
+    // HORÁRIOS DE FUNCIONAMENTO
+    // ========================================
+    
+    @Operation(summary = "Listar horários", description = "Lista os horários de funcionamento do restaurante")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Endereço encontrado"),
-        @ApiResponse(responseCode = "404", description = "Restaurante ou endereço não encontrado")
+        @ApiResponse(responseCode = "200", description = "Lista de horários retornada com sucesso")
     })
-    @GetMapping("/{restauranteId}/endereco")
-    EnderecoRestauranteResponse buscarEndereco(
+    @GetMapping("/{restauranteId}/horarios")
+    ResponseEntity<List<HorarioRestauranteResponse>> listarHorarios(
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId
+    );
+    
+    @Operation(summary = "Atualizar horários", description = "Atualiza a lista de horários de funcionamento")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Horários atualizados com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Restaurante não encontrado")
+    })
+    @PutMapping("/{restauranteId}/horarios")
+    ResponseEntity<List<HorarioRestauranteResponse>> atualizarHorarios(
+        @Parameter(description = "ID do restaurante", required = true)
+        @PathVariable Long restauranteId,
+        
+        @Parameter(description = "Lista de horários", required = true)
+        @Valid @RequestBody List<HorarioRestauranteRequest> horarios
     );
 }

@@ -12,9 +12,11 @@ import com.devmaster.domain.enums.TipoVeiculo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -24,69 +26,80 @@ public class EntregadorRestController implements EntregadorAPI {
     private final EntregadorService entregadorService;
     
     @Override
-    public EntregadorResponse criarEntregador(EntregadorRequest request) {
-        return entregadorService.criarEntregador(request);
+    public ResponseEntity<EntregadorResponse> criarEntregador(EntregadorRequest request) {
+        EntregadorResponse response = entregadorService.criarEntregador(request);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(response.id())
+                .toUri();
+        return ResponseEntity.created(location).body(response);
     }
     
     @Override
-    public Page<EntregadorResumoResponse> listarEntregadores(
+    public ResponseEntity<Page<EntregadorResumoResponse>> listarEntregadores(
         Boolean ativo,
         Boolean disponivel,
         TipoVeiculo tipoVeiculo,
         int page,
         int size
     ) {
-        return entregadorService.listarEntregadores(
+        Page<EntregadorResumoResponse> response = entregadorService.listarEntregadores(
             ativo, disponivel, tipoVeiculo, PageRequest.of(page, size)
         );
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public EntregadorResponse buscarEntregador(Long id) {
-        return entregadorService.buscarEntregador(id);
+    public ResponseEntity<EntregadorResponse> buscarEntregador(Long id) {
+        EntregadorResponse response = entregadorService.buscarEntregador(id);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public EntregadorResponse atualizarEntregador(Long id, AtualizarEntregadorRequest request) {
-        return entregadorService.atualizarEntregador(id, request);
+    public ResponseEntity<EntregadorResponse> atualizarEntregador(Long id, AtualizarEntregadorRequest request) {
+        EntregadorResponse response = entregadorService.atualizarEntregador(id, request);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public MessageResponse desativarEntregador(Long id) {
+    public ResponseEntity<Void> desativarEntregador(Long id) {
         entregadorService.desativarEntregador(id);
-        return new MessageResponse("Entregador desativado com sucesso");
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public MessageResponse reativarEntregador(Long id) {
+    public ResponseEntity<MessageResponse> reativarEntregador(Long id) {
         entregadorService.reativarEntregador(id);
-        return new MessageResponse("Entregador reativado com sucesso");
+        return ResponseEntity.ok(new MessageResponse("Entregador reativado com sucesso"));
     }
     
     @Override
-    public MessageResponse alterarDisponibilidade(Long id, AlterarDisponibilidadeRequest request) {
+    public ResponseEntity<MessageResponse> alterarDisponibilidade(Long id, AlterarDisponibilidadeRequest request) {
         entregadorService.alterarDisponibilidade(id, request);
-        return new MessageResponse("Disponibilidade alterada com sucesso");
+        return ResponseEntity.ok(new MessageResponse("Disponibilidade alterada com sucesso"));
     }
     
     @Override
-    public List<EntregadorResumoResponse> buscarEntregadoresDisponiveisProximos(
+    public ResponseEntity<List<EntregadorResumoResponse>> buscarEntregadoresDisponiveisProximos(
         Double latitude,
         Double longitude,
         Double raioKm
     ) {
-        return entregadorService.buscarEntregadoresDisponiveisProximos(
+        List<EntregadorResumoResponse> response = entregadorService.buscarEntregadoresDisponiveisProximos(
             latitude, longitude, raioKm
         );
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public EstatisticasEntregadorResponse obterEstatisticas(Long id) {
-        return entregadorService.obterEstatisticas(id);
+    public ResponseEntity<EstatisticasEntregadorResponse> obterEstatisticas(Long id) {
+        EstatisticasEntregadorResponse response = entregadorService.obterEstatisticas(id);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public EntregadorResumoResponse validarEntregador(Long id) {
-        return entregadorService.validarEntregador(id);
+    public ResponseEntity<EntregadorResumoResponse> validarEntregador(Long id) {
+        EntregadorResumoResponse response = entregadorService.validarEntregador(id);
+        return ResponseEntity.ok(response);
     }
 }

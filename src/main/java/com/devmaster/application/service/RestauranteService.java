@@ -86,6 +86,12 @@ public interface RestauranteService {
         HorarioRestauranteRequest request
     );
     
+    List<HorarioRestauranteResponse> atualizarHorarios(
+        UUID usuarioId,
+        Long restauranteId,
+        List<HorarioRestauranteRequest> horarios
+    );
+    
     void removerHorario(UUID usuarioId, Long restauranteId, Integer diaSemana);
     
     // Métodos públicos (sem autenticação)

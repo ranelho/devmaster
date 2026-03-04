@@ -2,16 +2,21 @@ package com.devmaster.application.api;
 
 import com.devmaster.application.api.request.AtualizarRestauranteRequest;
 import com.devmaster.application.api.request.EnderecoRestauranteRequest;
+import com.devmaster.application.api.request.HorarioRestauranteRequest;
 import com.devmaster.application.api.request.RestauranteRequest;
 import com.devmaster.application.api.response.EnderecoRestauranteResponse;
+import com.devmaster.application.api.response.HorarioRestauranteResponse;
 import com.devmaster.application.api.response.RestauranteResponse;
 import com.devmaster.application.api.response.RestauranteResumoResponse;
 import com.devmaster.application.service.RestauranteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 /**
@@ -27,83 +32,88 @@ public class RestauranteRestController implements RestauranteAPI {
     private final RestauranteService restauranteService;
     
     @Override
-    public RestauranteResponse criarRestaurante(RestauranteRequest request) {
-        return restauranteService.criarRestaurante(null, request);
+    public ResponseEntity<RestauranteResponse> criarRestaurante(RestauranteRequest request) {
+        RestauranteResponse response = restauranteService.criarRestaurante(null, request);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(response.id())
+                .toUri();
+        return ResponseEntity.created(location).body(response);
     }
     
     @Override
-    public RestauranteResponse buscarRestaurante(Long restauranteId) {
-        return restauranteService.buscarRestaurante(null, restauranteId);
+    public ResponseEntity<RestauranteResponse> buscarRestaurante(Long restauranteId) {
+        RestauranteResponse response = restauranteService.buscarRestaurante(null, restauranteId);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public RestauranteResponse buscarRestaurantePorSlug(String slug) {
-        return restauranteService.buscarRestaurantePorSlug(null, slug);
+    public ResponseEntity<Page<RestauranteResumoResponse>> listarRestaurantes(String nome, Boolean ativo, Boolean aberto, Pageable pageable) {
+        Page<RestauranteResumoResponse> response = restauranteService.listarRestaurantes(null, ativo, aberto, nome, pageable);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public Page<RestauranteResumoResponse> listarRestaurantes(
-        Boolean ativo,
-        Boolean aberto,
-        String nome,
-        int page,
-        int size
-    ) {
-        return restauranteService.listarRestaurantes(null, ativo, aberto, nome, 
-            org.springframework.data.domain.PageRequest.of(page, size));
+    public ResponseEntity<RestauranteResponse> atualizarRestaurante(Long restauranteId, AtualizarRestauranteRequest request) {
+        RestauranteResponse response = restauranteService.atualizarRestaurante(null, restauranteId, request);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public List<RestauranteResumoResponse> listarRestaurantesAbertos(int limite) {
-        return restauranteService.listarRestaurantesAbertosOrdenadosPorAvaliacao(null, limite);
-    }
-    
-    @Override
-    public RestauranteResponse atualizarRestaurante(
-        Long restauranteId,
-        AtualizarRestauranteRequest request
-    ) {
-        return restauranteService.atualizarRestaurante(null, restauranteId, request);
-    }
-    
-    @Override
-    public void ativarRestaurante(Long restauranteId) {
+    public ResponseEntity<Void> ativarRestaurante(Long restauranteId) {
         restauranteService.ativarRestaurante(null, restauranteId);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public void desativarRestaurante(Long restauranteId) {
+    public ResponseEntity<Void> desativarRestaurante(Long restauranteId) {
         restauranteService.desativarRestaurante(null, restauranteId);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public void abrirRestaurante(Long restauranteId) {
+    public ResponseEntity<Void> abrirRestaurante(Long restauranteId) {
         restauranteService.abrirRestaurante(null, restauranteId);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public void fecharRestaurante(Long restauranteId) {
+    public ResponseEntity<Void> fecharRestaurante(Long restauranteId) {
         restauranteService.fecharRestaurante(null, restauranteId);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public EnderecoRestauranteResponse adicionarEndereco(
-        Long restauranteId,
-        EnderecoRestauranteRequest request
-    ) {
-        return restauranteService.adicionarEndereco(null, restauranteId, request);
+    public ResponseEntity<EnderecoRestauranteResponse> buscarEndereco(Long restauranteId) {
+        EnderecoRestauranteResponse response = restauranteService.buscarEndereco(null, restauranteId);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public EnderecoRestauranteResponse atualizarEndereco(
-        Long restauranteId,
-        EnderecoRestauranteRequest request
-    ) {
-        return restauranteService.atualizarEndereco(null, restauranteId, request);
+    public ResponseEntity<EnderecoRestauranteResponse> adicionarEndereco(Long restauranteId, EnderecoRestauranteRequest request) {
+        EnderecoRestauranteResponse response = restauranteService.adicionarEndereco(null, restauranteId, request);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(response.id())
+                .toUri();
+        return ResponseEntity.created(location).body(response);
     }
     
     @Override
-    public EnderecoRestauranteResponse buscarEndereco(Long restauranteId) {
-        return restauranteService.buscarEndereco(null, restauranteId);
+    public ResponseEntity<EnderecoRestauranteResponse> atualizarEndereco(Long restauranteId, EnderecoRestauranteRequest request) {
+        EnderecoRestauranteResponse response = restauranteService.atualizarEndereco(null, restauranteId, request);
+        return ResponseEntity.ok(response);
+    }
+    
+    @Override
+    public ResponseEntity<List<HorarioRestauranteResponse>> listarHorarios(Long restauranteId) {
+        List<HorarioRestauranteResponse> response = restauranteService.listarHorarios(null, restauranteId);
+        return ResponseEntity.ok(response);
+    }
+    
+    @Override
+    public ResponseEntity<List<HorarioRestauranteResponse>> atualizarHorarios(Long restauranteId, List<HorarioRestauranteRequest> horarios) {
+        List<HorarioRestauranteResponse> response = restauranteService.atualizarHorarios(null, restauranteId, horarios);
+        return ResponseEntity.ok(response);
     }
 }

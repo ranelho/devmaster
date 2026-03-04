@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,7 +30,7 @@ public class DisponibilidadeRestController implements DisponibilidadeAPI {
     
     @Override
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'GERENTE')")
-    public Page<HistoricoDisponibilidadeResponse> listarHistorico(
+    public ResponseEntity<Page<HistoricoDisponibilidadeResponse>> listarHistorico(
         Authentication authentication,
         Long entregadorId,
         LocalDateTime dataInicio,
@@ -41,39 +42,43 @@ public class DisponibilidadeRestController implements DisponibilidadeAPI {
         UUID usuarioId = UUID.fromString(authentication.getName());
         
         if (dataInicio != null && dataFim != null) {
-            return disponibilidadeService.listarHistoricoPorPeriodo(
+            Page<HistoricoDisponibilidadeResponse> response = disponibilidadeService.listarHistoricoPorPeriodo(
                 usuarioId, entregadorId, dataInicio, dataFim, PageRequest.of(page, size)
             );
+            return ResponseEntity.ok(response);
         }
         
-        return disponibilidadeService.listarHistorico(usuarioId, entregadorId, PageRequest.of(page, size));
+        Page<HistoricoDisponibilidadeResponse> response = disponibilidadeService.listarHistorico(usuarioId, entregadorId, PageRequest.of(page, size));
+        return ResponseEntity.ok(response);
     }
     
     @Override
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'GERENTE')")
-    public HistoricoDisponibilidadeResponse buscarUltimoRegistro(
+    public ResponseEntity<HistoricoDisponibilidadeResponse> buscarUltimoRegistro(
         Authentication authentication,
         Long entregadorId
     ) {
         validarAutenticacao(authentication);
         UUID usuarioId = UUID.fromString(authentication.getName());
-        return disponibilidadeService.buscarUltimoRegistro(usuarioId, entregadorId);
+        HistoricoDisponibilidadeResponse response = disponibilidadeService.buscarUltimoRegistro(usuarioId, entregadorId);
+        return ResponseEntity.ok(response);
     }
     
     @Override
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'GERENTE')")
-    public HistoricoDisponibilidadeResponse buscarUltimaLocalizacao(
+    public ResponseEntity<HistoricoDisponibilidadeResponse> buscarUltimaLocalizacao(
         Authentication authentication,
         Long entregadorId
     ) {
         validarAutenticacao(authentication);
         UUID usuarioId = UUID.fromString(authentication.getName());
-        return disponibilidadeService.buscarUltimaLocalizacao(usuarioId, entregadorId);
+        HistoricoDisponibilidadeResponse response = disponibilidadeService.buscarUltimaLocalizacao(usuarioId, entregadorId);
+        return ResponseEntity.ok(response);
     }
     
     @Override
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'GERENTE')")
-    public Page<HistoricoDisponibilidadeResponse> listarRegistrosComLocalizacao(
+    public ResponseEntity<Page<HistoricoDisponibilidadeResponse>> listarRegistrosComLocalizacao(
         Authentication authentication,
         Long entregadorId,
         int page,
@@ -81,9 +86,10 @@ public class DisponibilidadeRestController implements DisponibilidadeAPI {
     ) {
         validarAutenticacao(authentication);
         UUID usuarioId = UUID.fromString(authentication.getName());
-        return disponibilidadeService.listarRegistrosComLocalizacao(
+        Page<HistoricoDisponibilidadeResponse> response = disponibilidadeService.listarRegistrosComLocalizacao(
             usuarioId, entregadorId, PageRequest.of(page, size)
         );
+        return ResponseEntity.ok(response);
     }
     
     private void validarAutenticacao(Authentication authentication) {

@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +22,7 @@ import java.util.List;
  * @since 1.0.0
  */
 @Tag(name = "Categorias", description = "Endpoints para gerenciamento de categorias de produtos")
-@RequestMapping("/v1/restaurantes/{restauranteId}/categorias")
+@RequestMapping({"/v1/restaurantes/{restauranteId}/categorias", "/v2/restaurantes/{restauranteId}/categorias"})
 public interface CategoriaAPI {
     
     @Operation(summary = "Criar nova categoria", description = "Cria uma nova categoria para o restaurante")
@@ -33,9 +33,8 @@ public interface CategoriaAPI {
         @ApiResponse(responseCode = "409", description = "Já existe categoria com este nome")
     })
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'GERENTE')")
-    CategoriaResponse criarCategoria(
+    ResponseEntity<CategoriaResponse> criarCategoria(
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId,
         
@@ -49,7 +48,7 @@ public interface CategoriaAPI {
         @ApiResponse(responseCode = "404", description = "Categoria ou restaurante não encontrado")
     })
     @GetMapping("/{categoriaId}")
-    CategoriaResponse buscarCategoria(
+    ResponseEntity<CategoriaResponse> buscarCategoria(
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId,
         
@@ -62,7 +61,7 @@ public interface CategoriaAPI {
         @ApiResponse(responseCode = "200", description = "Lista de categorias retornada com sucesso")
     })
     @GetMapping
-    List<CategoriaResponse> listarCategorias(
+    ResponseEntity<List<CategoriaResponse>> listarCategorias(
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId,
         
@@ -79,7 +78,7 @@ public interface CategoriaAPI {
     })
     @PutMapping("/{categoriaId}")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'GERENTE')")
-    CategoriaResponse atualizarCategoria(
+    ResponseEntity<CategoriaResponse> atualizarCategoria(
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId,
         
@@ -96,8 +95,7 @@ public interface CategoriaAPI {
         @ApiResponse(responseCode = "404", description = "Categoria ou restaurante não encontrado")
     })
     @PatchMapping("/{categoriaId}/ativar")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    void ativarCategoria(
+    ResponseEntity<Void> ativarCategoria(
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId,
         
@@ -111,8 +109,7 @@ public interface CategoriaAPI {
         @ApiResponse(responseCode = "404", description = "Categoria ou restaurante não encontrado")
     })
     @PatchMapping("/{categoriaId}/desativar")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    void desativarCategoria(
+    ResponseEntity<Void> desativarCategoria(
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId,
         
@@ -127,9 +124,8 @@ public interface CategoriaAPI {
         @ApiResponse(responseCode = "404", description = "Categoria ou restaurante não encontrado")
     })
     @DeleteMapping("/{categoriaId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'GERENTE')")
-    void removerCategoria(
+    ResponseEntity<Void> removerCategoria(
         @Parameter(description = "ID do restaurante", required = true)
         @PathVariable Long restauranteId,
         

@@ -26,9 +26,13 @@ spring:
         order_inserts: true
         order_updates: true
 
+      jakarta.persistence.schema-generation.scripts.action: create
+      jakarta.persistence.schema-generation.scripts.create-target: schema.sql
+      jakarta.persistence.schema-generation.create-source: metadata
+
 # Server Configuration
 server:
-  port: ${SERVER_PORT:8080}
+  port: ${SERVER_PORT:8081}
 
 # Logging Configuration
 logging:

@@ -5,8 +5,11 @@ import com.devmaster.application.api.response.EnderecoClienteResponse;
 import com.devmaster.application.api.response.MessageResponse;
 import com.devmaster.application.service.EnderecoClienteService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 /**
@@ -22,42 +25,52 @@ public class EnderecoClienteRestController implements EnderecoClienteAPI {
     private final EnderecoClienteService enderecoService;
     
     @Override
-    public EnderecoClienteResponse adicionarEndereco(Long clienteId, EnderecoClienteRequest request) {
-        return enderecoService.adicionarEndereco(clienteId, request);
+    public ResponseEntity<EnderecoClienteResponse> adicionarEndereco(Long clienteId, EnderecoClienteRequest request) {
+        EnderecoClienteResponse response = enderecoService.adicionarEndereco(clienteId, request);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(response.id())
+                .toUri();
+        return ResponseEntity.created(location).body(response);
     }
     
     @Override
-    public List<EnderecoClienteResponse> listarEnderecos(Long clienteId) {
-        return enderecoService.listarEnderecos(clienteId);
+    public ResponseEntity<List<EnderecoClienteResponse>> listarEnderecos(Long clienteId) {
+        List<EnderecoClienteResponse> response = enderecoService.listarEnderecos(clienteId);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public EnderecoClienteResponse buscarEndereco(Long clienteId, Long enderecoId) {
-        return enderecoService.buscarEndereco(clienteId, enderecoId);
+    public ResponseEntity<EnderecoClienteResponse> buscarEndereco(Long clienteId, Long enderecoId) {
+        EnderecoClienteResponse response = enderecoService.buscarEndereco(clienteId, enderecoId);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public EnderecoClienteResponse buscarEnderecoPadrao(Long clienteId) {
-        return enderecoService.buscarEnderecoPadrao(clienteId);
+    public ResponseEntity<EnderecoClienteResponse> buscarEnderecoPadrao(Long clienteId) {
+        EnderecoClienteResponse response = enderecoService.buscarEnderecoPadrao(clienteId);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public EnderecoClienteResponse atualizarEndereco(
+    public ResponseEntity<EnderecoClienteResponse> atualizarEndereco(
         Long clienteId,
         Long enderecoId,
         EnderecoClienteRequest request
     ) {
-        return enderecoService.atualizarEndereco(clienteId, enderecoId, request);
+        EnderecoClienteResponse response = enderecoService.atualizarEndereco(clienteId, enderecoId, request);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public EnderecoClienteResponse definirEnderecoPadrao(Long clienteId, Long enderecoId) {
-        return enderecoService.definirEnderecoPadrao(clienteId, enderecoId);
+    public ResponseEntity<EnderecoClienteResponse> definirEnderecoPadrao(Long clienteId, Long enderecoId) {
+        EnderecoClienteResponse response = enderecoService.definirEnderecoPadrao(clienteId, enderecoId);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public MessageResponse removerEndereco(Long clienteId, Long enderecoId) {
+    public ResponseEntity<Void> removerEndereco(Long clienteId, Long enderecoId) {
         enderecoService.removerEndereco(clienteId, enderecoId);
-        return new MessageResponse("Endereço removido com sucesso");
+        return ResponseEntity.noContent().build();
     }
 }

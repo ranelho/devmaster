@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +29,6 @@ import java.util.List;
 public interface DocumentoEntregadorAPI {
     
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Adicionar documento", description = "Adiciona documento ao cadastro do entregador. Requer role SUPER_ADMIN.")
     @ApiResponses(value = {
@@ -40,7 +39,7 @@ public interface DocumentoEntregadorAPI {
         @ApiResponse(responseCode = "404", description = "Entregador não encontrado"),
         @ApiResponse(responseCode = "409", description = "Documento do tipo já existe")
     })
-    DocumentoEntregadorResponse adicionarDocumento(
+    ResponseEntity<DocumentoEntregadorResponse> adicionarDocumento(
         Authentication authentication,
         @Parameter(description = "ID do entregador") @PathVariable Long entregadorId,
         @Valid @RequestBody DocumentoEntregadorRequest request
@@ -55,7 +54,7 @@ public interface DocumentoEntregadorAPI {
         @ApiResponse(responseCode = "403", description = "Sem permissão"),
         @ApiResponse(responseCode = "404", description = "Entregador não encontrado")
     })
-    List<DocumentoEntregadorResponse> listarDocumentos(
+    ResponseEntity<List<DocumentoEntregadorResponse>> listarDocumentos(
         Authentication authentication,
         @Parameter(description = "ID do entregador") @PathVariable Long entregadorId
     );
@@ -69,7 +68,7 @@ public interface DocumentoEntregadorAPI {
         @ApiResponse(responseCode = "403", description = "Sem permissão"),
         @ApiResponse(responseCode = "404", description = "Documento não encontrado")
     })
-    DocumentoEntregadorResponse buscarDocumento(
+    ResponseEntity<DocumentoEntregadorResponse> buscarDocumento(
         Authentication authentication,
         @Parameter(description = "ID do entregador") @PathVariable Long entregadorId,
         @Parameter(description = "ID do documento") @PathVariable Long documentoId
@@ -84,7 +83,7 @@ public interface DocumentoEntregadorAPI {
         @ApiResponse(responseCode = "403", description = "Sem permissão"),
         @ApiResponse(responseCode = "404", description = "Documento não encontrado")
     })
-    DocumentoEntregadorResponse buscarDocumentoPorTipo(
+    ResponseEntity<DocumentoEntregadorResponse> buscarDocumentoPorTipo(
         Authentication authentication,
         @Parameter(description = "ID do entregador") @PathVariable Long entregadorId,
         @Parameter(description = "Tipo do documento") @PathVariable TipoDocumento tipoDocumento
@@ -100,7 +99,7 @@ public interface DocumentoEntregadorAPI {
         @ApiResponse(responseCode = "403", description = "Sem permissão"),
         @ApiResponse(responseCode = "404", description = "Documento não encontrado")
     })
-    DocumentoEntregadorResponse verificarDocumento(
+    ResponseEntity<DocumentoEntregadorResponse> verificarDocumento(
         Authentication authentication,
         @Parameter(description = "ID do entregador") @PathVariable Long entregadorId,
         @Parameter(description = "ID do documento") @PathVariable Long documentoId,
@@ -111,12 +110,12 @@ public interface DocumentoEntregadorAPI {
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Remover documento", description = "Remove documento do cadastro. Requer role SUPER_ADMIN.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Documento removido com sucesso"),
+        @ApiResponse(responseCode = "204", description = "Documento removido com sucesso"),
         @ApiResponse(responseCode = "401", description = "Não autenticado"),
         @ApiResponse(responseCode = "403", description = "Sem permissão"),
         @ApiResponse(responseCode = "404", description = "Documento não encontrado")
     })
-    MessageResponse removerDocumento(
+    ResponseEntity<Void> removerDocumento(
         Authentication authentication,
         @Parameter(description = "ID do entregador") @PathVariable Long entregadorId,
         @Parameter(description = "ID do documento") @PathVariable Long documentoId

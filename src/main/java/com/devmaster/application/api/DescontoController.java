@@ -4,8 +4,11 @@ import com.devmaster.application.api.request.DescontoRequest;
 import com.devmaster.application.api.response.DescontoResponse;
 import com.devmaster.application.service.DescontoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -15,37 +18,48 @@ public class DescontoController implements DescontoAPI {
     private final DescontoService descontoService;
     
     @Override
-    public DescontoResponse criar(DescontoRequest request) {
-        return descontoService.criar(null, request);
+    public ResponseEntity<DescontoResponse> criar(DescontoRequest request) {
+        DescontoResponse response = descontoService.criar(null, request);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(response.id())
+                .toUri();
+        return ResponseEntity.created(location).body(response);
     }
     
     @Override
-    public DescontoResponse atualizar(Long id, DescontoRequest request) {
-        return descontoService.atualizar(null, id, request);
+    public ResponseEntity<DescontoResponse> atualizar(Long id, DescontoRequest request) {
+        DescontoResponse response = descontoService.atualizar(null, id, request);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public DescontoResponse buscarPorId(Long id) {
-        return descontoService.buscarPorId(null, id);
+    public ResponseEntity<DescontoResponse> buscarPorId(Long id) {
+        DescontoResponse response = descontoService.buscarPorId(null, id);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public List<DescontoResponse> listarTodos() {
-        return descontoService.listarTodos(null);
+    public ResponseEntity<List<DescontoResponse>> listarTodos() {
+        List<DescontoResponse> response = descontoService.listarTodos(null);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public List<DescontoResponse> listarPorProduto(Long produtoId) {
-        return descontoService.listarPorProduto(null, produtoId);
+    public ResponseEntity<List<DescontoResponse>> listarPorProduto(Long produtoId) {
+        List<DescontoResponse> response = descontoService.listarPorProduto(null, produtoId);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public List<DescontoResponse> listarVigentes() {
-        return descontoService.listarVigentes(null);
+    public ResponseEntity<List<DescontoResponse>> listarVigentes() {
+        List<DescontoResponse> response = descontoService.listarVigentes(null);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public void deletar(Long id) {
+    public ResponseEntity<Void> deletar(Long id) {
         descontoService.deletar(null, id);
+        return ResponseEntity.noContent().build();
     }
 }

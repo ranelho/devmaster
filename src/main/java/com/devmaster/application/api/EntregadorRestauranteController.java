@@ -5,6 +5,7 @@ import com.devmaster.application.api.response.EntregadorResumoResponse;
 import com.devmaster.application.api.response.MessageResponse;
 import com.devmaster.application.service.EntregadorRestauranteService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -16,29 +17,32 @@ public class EntregadorRestauranteController implements EntregadorRestauranteAPI
     private final EntregadorRestauranteService service;
     
     @Override
-    public MessageResponse vincular(VincularEntregadorRequest request) {
+    public ResponseEntity<MessageResponse> vincular(VincularEntregadorRequest request) {
         service.vincular(request.entregadorId(), request.restauranteId());
-        return new MessageResponse("Entregador vinculado ao restaurante com sucesso");
+        return ResponseEntity.ok(new MessageResponse("Entregador vinculado ao restaurante com sucesso"));
     }
     
     @Override
-    public MessageResponse desvincular(VincularEntregadorRequest request) {
+    public ResponseEntity<Void> desvincular(VincularEntregadorRequest request) {
         service.desvincular(request.entregadorId(), request.restauranteId());
-        return new MessageResponse("Entregador desvinculado do restaurante com sucesso");
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public List<EntregadorResumoResponse> listarEntregadoresPorRestaurante(Long restauranteId) {
-        return service.listarEntregadoresPorRestaurante(restauranteId);
+    public ResponseEntity<List<EntregadorResumoResponse>> listarEntregadoresPorRestaurante(Long restauranteId) {
+        List<EntregadorResumoResponse> response = service.listarEntregadoresPorRestaurante(restauranteId);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public List<EntregadorResumoResponse> listarEntregadoresDisponiveisPorRestaurante(Long restauranteId) {
-        return service.listarEntregadoresDisponiveisPorRestaurante(restauranteId);
+    public ResponseEntity<List<EntregadorResumoResponse>> listarEntregadoresDisponiveisPorRestaurante(Long restauranteId) {
+        List<EntregadorResumoResponse> response = service.listarEntregadoresDisponiveisPorRestaurante(restauranteId);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public EntregadorResumoResponse buscarPorCpf(String cpf) {
-        return service.buscarPorCpf(cpf);
+    public ResponseEntity<EntregadorResumoResponse> buscarPorCpf(String cpf) {
+        EntregadorResumoResponse response = service.buscarPorCpf(cpf);
+        return ResponseEntity.ok(response);
     }
 }

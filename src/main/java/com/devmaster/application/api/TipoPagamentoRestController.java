@@ -4,8 +4,11 @@ import com.devmaster.application.api.request.TipoPagamentoRequest;
 import com.devmaster.application.api.response.TipoPagamentoResponse;
 import com.devmaster.application.service.TipoPagamentoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 /**
@@ -21,37 +24,48 @@ public class TipoPagamentoRestController implements TipoPagamentoAPI {
     private final TipoPagamentoService tipoPagamentoService;
     
     @Override
-    public TipoPagamentoResponse criarTipoPagamento(TipoPagamentoRequest request) {
-        return tipoPagamentoService.criarTipoPagamento(null, request);
+    public ResponseEntity<TipoPagamentoResponse> criarTipoPagamento(TipoPagamentoRequest request) {
+        TipoPagamentoResponse response = tipoPagamentoService.criarTipoPagamento(null, request);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(response.id())
+                .toUri();
+        return ResponseEntity.created(location).body(response);
     }
     
     @Override
-    public TipoPagamentoResponse buscarTipoPagamento(Long id) {
-        return tipoPagamentoService.buscarTipoPagamento(null, id);
+    public ResponseEntity<TipoPagamentoResponse> buscarTipoPagamento(Long id) {
+        TipoPagamentoResponse response = tipoPagamentoService.buscarTipoPagamento(null, id);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public List<TipoPagamentoResponse> listarTiposPagamento(Boolean ativo) {
-        return tipoPagamentoService.listarTiposPagamento(null, ativo);
+    public ResponseEntity<List<TipoPagamentoResponse>> listarTiposPagamento(Boolean ativo) {
+        List<TipoPagamentoResponse> response = tipoPagamentoService.listarTiposPagamento(null, ativo);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public TipoPagamentoResponse atualizarTipoPagamento(Long id, TipoPagamentoRequest request) {
-        return tipoPagamentoService.atualizarTipoPagamento(null, id, request);
+    public ResponseEntity<TipoPagamentoResponse> atualizarTipoPagamento(Long id, TipoPagamentoRequest request) {
+        TipoPagamentoResponse response = tipoPagamentoService.atualizarTipoPagamento(null, id, request);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public void ativarTipoPagamento(Long id) {
+    public ResponseEntity<Void> ativarTipoPagamento(Long id) {
         tipoPagamentoService.ativarTipoPagamento(null, id);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public void desativarTipoPagamento(Long id) {
+    public ResponseEntity<Void> desativarTipoPagamento(Long id) {
         tipoPagamentoService.desativarTipoPagamento(null, id);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public void removerTipoPagamento(Long id) {
+    public ResponseEntity<Void> removerTipoPagamento(Long id) {
         tipoPagamentoService.removerTipoPagamento(null, id);
+        return ResponseEntity.noContent().build();
     }
 }

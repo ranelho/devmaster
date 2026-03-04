@@ -23,7 +23,7 @@ import java.util.UUID;
  * @since 1.0.0
  */
 @Tag(name = "Usuários Restaurante", description = "Gerenciamento de vínculos usuário-restaurante")
-@RequestMapping("/v1/restaurantes/{restauranteId}/usuarios")
+@RequestMapping({"/v1/restaurantes/{restauranteId}/usuarios", "/v2/restaurantes/{restauranteId}/usuarios"})
 public interface UsuarioRestauranteRestauranteAPI {
     
     @Operation(summary = "Criar usuário e vincular ao restaurante", 

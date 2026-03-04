@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Endereço Público", description = "APIs públicas para buscar endereço e calcular entrega (sem autenticação)")
-@RequestMapping("/public/v1/enderecos")
+@RequestMapping({"/public/v1/enderecos", "/public/v2/enderecos"})
 public interface EnderecoAPI {
 
     @Operation(

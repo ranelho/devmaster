@@ -12,16 +12,15 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Clientes", description = "Gestão de clientes do sistema")
-@RequestMapping("/public/v1/clientes")
+@RequestMapping({"/public/v1/clientes", "/public/v2/clientes"})
 public interface ClienteAPI {
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     @Operation(
         summary = "Criar novo cliente ou retornar existente",
         description = """
@@ -41,7 +40,7 @@ public interface ClienteAPI {
         @ApiResponse(responseCode = "400", description = "Dados inválidos"),
         @ApiResponse(responseCode = "409", description = "Email já cadastrado para outro cliente")
     })
-    ClienteResponse criarCliente(@Valid @RequestBody ClienteRequest request);
+    ResponseEntity<ClienteResponse> criarCliente(@Valid @RequestBody ClienteRequest request);
 
     @GetMapping("/{id}")
     @Operation(
@@ -52,7 +51,7 @@ public interface ClienteAPI {
             @ApiResponse(responseCode = "200", description = "Cliente encontrado"),
             @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
     })
-    ClienteResponse buscarCliente(@Parameter(description = "ID do cliente") @PathVariable Long id);
+    ResponseEntity<ClienteResponse> buscarCliente(@Parameter(description = "ID do cliente") @PathVariable Long id);
 
     @GetMapping("/telefone/{telefone}")
     @Operation(
@@ -63,7 +62,7 @@ public interface ClienteAPI {
             @ApiResponse(responseCode = "200", description = "Cliente encontrado"),
             @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
     })
-    ClienteResponse buscarClientePorTelefone(
+    ResponseEntity<ClienteResponse> buscarClientePorTelefone(
             @Parameter(description = "Telefone do cliente") @PathVariable String telefone
     );
 
@@ -78,7 +77,7 @@ public interface ClienteAPI {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Sem permissão")
     })
-    Page<ClienteResponse> listarClientes(
+    ResponseEntity<Page<ClienteResponse>> listarClientes(
             @Parameter(description = "Filtrar por status ativo") @RequestParam(required = false) Boolean ativo,
             @Parameter(description = "Filtrar por nome") @RequestParam(required = false) String nome,
             @Parameter(description = "Número da página") @RequestParam(defaultValue = "0") int page,
@@ -96,7 +95,7 @@ public interface ClienteAPI {
             @ApiResponse(responseCode = "404", description = "Cliente não encontrado"),
             @ApiResponse(responseCode = "409", description = "Telefone, email ou CPF já cadastrado")
     })
-    ClienteResponse atualizarCliente(
+    ResponseEntity<ClienteResponse> atualizarCliente(
             @Parameter(description = "ID do cliente") @PathVariable Long id,
             @Valid @RequestBody AtualizarClienteRequest request
     );
@@ -108,12 +107,12 @@ public interface ClienteAPI {
             description = "Desativa um cliente no sistema. Requer role ADMIN."
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Cliente desativado com sucesso"),
+            @ApiResponse(responseCode = "204", description = "Cliente desativado com sucesso"),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Sem permissão"),
             @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
     })
-    MessageResponse desativarCliente(@Parameter(description = "ID do cliente") @PathVariable Long id);
+    ResponseEntity<Void> desativarCliente(@Parameter(description = "ID do cliente") @PathVariable Long id);
 
     @PatchMapping("/{id}/reativar")
     @SecurityRequirement(name = "bearerAuth")
@@ -127,5 +126,5 @@ public interface ClienteAPI {
             @ApiResponse(responseCode = "403", description = "Sem permissão"),
             @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
     })
-    MessageResponse reativarCliente(@Parameter(description = "ID do cliente") @PathVariable Long id);
+    ResponseEntity<MessageResponse> reativarCliente(@Parameter(description = "ID do cliente") @PathVariable Long id);
 }

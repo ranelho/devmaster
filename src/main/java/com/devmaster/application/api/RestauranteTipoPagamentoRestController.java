@@ -10,8 +10,11 @@ import com.devmaster.handler.APIException;
 import com.devmaster.infrastructure.repository.TipoPagamentoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -22,7 +25,7 @@ public class RestauranteTipoPagamentoRestController implements RestauranteTipoPa
     private final TipoPagamentoRepository tipoPagamentoRepository;
     
     @Override
-    public RestauranteTipoPagamentoResponse vincularTipoPagamento(Long restauranteId, VincularTipoPagamentoRequest request) {
+    public ResponseEntity<RestauranteTipoPagamentoResponse> vincularTipoPagamento(Long restauranteId, VincularTipoPagamentoRequest request) {
 
         if (restauranteTipoPagamentoRepository.existsByRestauranteIdAndTipoPagamentoId(restauranteId, request.tipoPagamentoId())) {
             throw APIException.build(HttpStatus.CONFLICT, "Tipo de pagamento já vinculado ao restaurante");
@@ -40,25 +43,29 @@ public class RestauranteTipoPagamentoRestController implements RestauranteTipoPa
         
         vinculo = restauranteTipoPagamentoRepository.save(vinculo);
         
-
-        return RestauranteTipoPagamentoResponse.from(vinculo);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(vinculo.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(RestauranteTipoPagamentoResponse.from(vinculo));
     }
     
     @Override
-    public List<RestauranteTipoPagamentoResponse> listarTiposPagamento(Long restauranteId) {
-        return restauranteTipoPagamentoRepository.findByRestauranteId(restauranteId)
+    public ResponseEntity<List<RestauranteTipoPagamentoResponse>> listarTiposPagamento(Long restauranteId) {
+        List<RestauranteTipoPagamentoResponse> response = restauranteTipoPagamentoRepository.findByRestauranteId(restauranteId)
             .stream()
             .map(RestauranteTipoPagamentoResponse::from)
             .toList();
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public void desvincularTipoPagamento(Long restauranteId, Long tipoPagamentoId) {
+    public ResponseEntity<Void> desvincularTipoPagamento(Long restauranteId, Long tipoPagamentoId) {
         RestauranteTipoPagamento vinculo = restauranteTipoPagamentoRepository
             .findByRestauranteIdAndTipoPagamentoId(restauranteId, tipoPagamentoId)
             .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Vínculo não encontrado"));
         
         restauranteTipoPagamentoRepository.delete(vinculo);
-        
+        return ResponseEntity.noContent().build();
     }
 }

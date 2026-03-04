@@ -14,7 +14,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,7 +27,7 @@ import java.util.UUID;
  * @since 1.0.0
  */
 @Tag(name = "Cupons", description = "Endpoints para gerenciamento de cupons de desconto")
-@RequestMapping("/v1/cupons")
+@RequestMapping({"/v1/cupons", "/v2/cupons"})
 public interface CupomAPI {
     
     // ========================================
@@ -41,7 +41,7 @@ public interface CupomAPI {
         @ApiResponse(responseCode = "400", description = "Cupom inválido ou expirado")
     })
     @PostMapping("/public/validar")
-    ValidacaoCupomResponse validarCupomPublico(
+    ResponseEntity<ValidacaoCupomResponse> validarCupomPublico(
         @Parameter(description = "Dados para validação", required = true)
         @Valid @RequestBody ValidarCupomRequest request
     );
@@ -57,8 +57,7 @@ public interface CupomAPI {
         @ApiResponse(responseCode = "409", description = "Código já cadastrado")
     })
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    CupomResponse criarCupom(
+    ResponseEntity<CupomResponse> criarCupom(
         @Parameter(description = "Dados do cupom", required = true)
         @Valid @RequestBody CupomRequest request
     );
@@ -69,7 +68,7 @@ public interface CupomAPI {
         @ApiResponse(responseCode = "404", description = "Cupom não encontrado")
     })
     @GetMapping("/{cupomId}")
-    CupomResponse buscarCupom(
+    ResponseEntity<CupomResponse> buscarCupom(
         @Parameter(description = "ID do cupom", required = true)
         @PathVariable Long cupomId
     );
@@ -80,7 +79,7 @@ public interface CupomAPI {
         @ApiResponse(responseCode = "404", description = "Cupom não encontrado")
     })
     @GetMapping("/codigo/{codigo}")
-    CupomResponse buscarCupomPorCodigo(
+    ResponseEntity<CupomResponse> buscarCupomPorCodigo(
         @Parameter(description = "Código do cupom", required = true)
         @PathVariable String codigo
     );
@@ -90,7 +89,7 @@ public interface CupomAPI {
         @ApiResponse(responseCode = "200", description = "Lista de cupons retornada com sucesso")
     })
     @GetMapping
-    Page<CupomResponse> listarCupons(
+    ResponseEntity<Page<CupomResponse>> listarCupons(
         @Parameter(description = "Filtrar por status ativo")
         @RequestParam(required = false) Boolean ativo,
         
@@ -105,7 +104,7 @@ public interface CupomAPI {
         @ApiResponse(responseCode = "200", description = "Lista de cupons retornada com sucesso")
     })
     @GetMapping("/validos")
-    List<CupomResponse> listarCuponsValidos();
+    ResponseEntity<List<CupomResponse>> listarCuponsValidos();
     
     @Operation(summary = "Atualizar cupom", description = "Atualiza os dados de um cupom")
     @ApiResponses(value = {
@@ -113,7 +112,7 @@ public interface CupomAPI {
         @ApiResponse(responseCode = "404", description = "Cupom não encontrado")
     })
     @PutMapping("/{cupomId}")
-    CupomResponse atualizarCupom(
+    ResponseEntity<CupomResponse> atualizarCupom(
         @Parameter(description = "ID do cupom", required = true)
         @PathVariable Long cupomId,
         
@@ -127,8 +126,7 @@ public interface CupomAPI {
         @ApiResponse(responseCode = "404", description = "Cupom não encontrado")
     })
     @PatchMapping("/{cupomId}/ativar")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    void ativarCupom(
+    ResponseEntity<Void> ativarCupom(
         @Parameter(description = "ID do cupom", required = true)
         @PathVariable Long cupomId
     );
@@ -139,8 +137,7 @@ public interface CupomAPI {
         @ApiResponse(responseCode = "404", description = "Cupom não encontrado")
     })
     @PatchMapping("/{cupomId}/desativar")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    void desativarCupom(
+    ResponseEntity<Void> desativarCupom(
         @Parameter(description = "ID do cupom", required = true)
         @PathVariable Long cupomId
     );
@@ -152,8 +149,7 @@ public interface CupomAPI {
         @ApiResponse(responseCode = "400", description = "Cupom já foi utilizado")
     })
     @DeleteMapping("/{cupomId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    void removerCupom(
+    ResponseEntity<Void> removerCupom(
         @Parameter(description = "ID do cupom", required = true)
         @PathVariable Long cupomId
     );

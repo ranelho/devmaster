@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Tag(name = "Usuários Restaurante", description = "Gerenciamento de vínculos usuário-restaurante")
-@RequestMapping("/v1/usuarios-restaurante")
+@RequestMapping({"/v1/usuarios-restaurante", "/v2/usuarios-restaurante"})
 public interface UsuarioRestauranteAPI {
     
     @Operation(summary = "Buscar restaurante do usuário autenticado", 

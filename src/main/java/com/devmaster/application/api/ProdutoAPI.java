@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,27 +19,26 @@ import java.util.List;
  * @since 1.0.0
  */
 @Tag(name = "Produtos", description = "Gerenciamento de produtos, imagens e opções")
-@RequestMapping("/v1/restaurantes/{restauranteId}/produtos")
+@RequestMapping({"/v1/restaurantes/{restauranteId}/produtos", "/v2/restaurantes/{restauranteId}/produtos"})
 public interface ProdutoAPI {
     
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Criar produto", description = "Cria um novo produto para o restaurante")
-    ProdutoResponse criarProduto(
+    ResponseEntity<ProdutoResponse> criarProduto(
         @PathVariable Long restauranteId,
         @Valid @RequestBody ProdutoRequest request
     );
     
     @GetMapping("/{produtoId}")
     @Operation(summary = "Buscar produto", description = "Busca um produto por ID com imagens e opções")
-    ProdutoResponse buscarProduto(
+    ResponseEntity<ProdutoResponse> buscarProduto(
         @PathVariable Long restauranteId,
         @PathVariable Long produtoId
     );
     
     @GetMapping
     @Operation(summary = "Listar produtos", description = "Lista produtos com filtros opcionais")
-    List<ProdutoResumoResponse> listarProdutos(
+    ResponseEntity<List<ProdutoResumoResponse>> listarProdutos(
         @PathVariable Long restauranteId,
         @RequestParam(required = false) Long categoriaId,
         @RequestParam(required = false) Boolean disponivel,
@@ -48,7 +47,7 @@ public interface ProdutoAPI {
     
     @GetMapping("/paginado")
     @Operation(summary = "Listar produtos paginado", description = "Lista produtos com paginação")
-    Page<ProdutoResumoResponse> listarProdutosComPaginacao(
+    ResponseEntity<Page<ProdutoResumoResponse>> listarProdutosComPaginacao(
         @PathVariable Long restauranteId,
         @RequestParam(required = false) Long categoriaId,
         Pageable pageable
@@ -56,48 +55,43 @@ public interface ProdutoAPI {
     
     @PutMapping("/{produtoId}")
     @Operation(summary = "Atualizar produto", description = "Atualiza dados de um produto")
-    ProdutoResponse atualizarProduto(
+    ResponseEntity<ProdutoResponse> atualizarProduto(
         @PathVariable Long restauranteId,
         @PathVariable Long produtoId,
         @Valid @RequestBody AtualizarProdutoRequest request
     );
     
     @PatchMapping("/{produtoId}/disponibilizar")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Disponibilizar produto", description = "Marca produto como disponível")
-    void disponibilizarProduto(
+    ResponseEntity<Void> disponibilizarProduto(
         @PathVariable Long restauranteId,
         @PathVariable Long produtoId
     );
     
     @PatchMapping("/{produtoId}/indisponibilizar")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Indisponibilizar produto", description = "Marca produto como indisponível")
-    void indisponibilizarProduto(
+    ResponseEntity<Void> indisponibilizarProduto(
         @PathVariable Long restauranteId,
         @PathVariable Long produtoId
     );
     
     @PatchMapping("/{produtoId}/destacar")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Destacar produto", description = "Marca produto como destaque")
-    void destacarProduto(
+    ResponseEntity<Void> destacarProduto(
         @PathVariable Long restauranteId,
         @PathVariable Long produtoId
     );
     
     @PatchMapping("/{produtoId}/remover-destaque")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Remover destaque", description = "Remove produto dos destaques")
-    void removerDestaqueProduto(
+    ResponseEntity<Void> removerDestaqueProduto(
         @PathVariable Long restauranteId,
         @PathVariable Long produtoId
     );
     
     @DeleteMapping("/{produtoId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Remover produto", description = "Remove um produto")
-    void removerProduto(
+    ResponseEntity<Void> removerProduto(
         @PathVariable Long restauranteId,
         @PathVariable Long produtoId
     );
@@ -105,18 +99,16 @@ public interface ProdutoAPI {
     // Imagens
     
     @PostMapping("/{produtoId}/imagens")
-    @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Adicionar imagem", description = "Adiciona uma imagem ao produto (JSON)")
-    ImagemProdutoResponse adicionarImagem(
+    ResponseEntity<ImagemProdutoResponse> adicionarImagem(
         @PathVariable Long restauranteId,
         @PathVariable Long produtoId,
         @Valid @RequestBody ImagemProdutoRequest request
     );
     
     @PostMapping(value = "/{produtoId}/imagens/upload", consumes = "multipart/form-data")
-    @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Upload de imagem", description = "Faz upload de uma imagem (multipart)")
-    ImagemProdutoResponse uploadImagem(
+    ResponseEntity<ImagemProdutoResponse> uploadImagem(
         @PathVariable Long restauranteId,
         @PathVariable Long produtoId,
         @RequestParam("arquivo") org.springframework.web.multipart.MultipartFile arquivo,
@@ -126,24 +118,22 @@ public interface ProdutoAPI {
     
     @GetMapping("/{produtoId}/imagens")
     @Operation(summary = "Listar imagens", description = "Lista todas as imagens do produto")
-    List<ImagemProdutoResponse> listarImagens(
+    ResponseEntity<List<ImagemProdutoResponse>> listarImagens(
         @PathVariable Long restauranteId,
         @PathVariable Long produtoId
     );
     
     @PatchMapping("/{produtoId}/imagens/{imagemId}/principal")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Definir imagem principal", description = "Define uma imagem como principal")
-    void definirImagemPrincipal(
+    ResponseEntity<Void> definirImagemPrincipal(
         @PathVariable Long restauranteId,
         @PathVariable Long produtoId,
         @PathVariable Long imagemId
     );
     
     @DeleteMapping("/{produtoId}/imagens/{imagemId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Remover imagem", description = "Remove uma imagem do produto")
-    void removerImagem(
+    ResponseEntity<Void> removerImagem(
         @PathVariable Long restauranteId,
         @PathVariable Long produtoId,
         @PathVariable Long imagemId
@@ -152,9 +142,8 @@ public interface ProdutoAPI {
     // Grupos de Opções
     
     @PostMapping("/{produtoId}/grupos-opcoes")
-    @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Adicionar grupo de opções", description = "Adiciona um grupo de opções ao produto")
-    GrupoOpcaoResponse adicionarGrupoOpcao(
+    ResponseEntity<GrupoOpcaoResponse> adicionarGrupoOpcao(
         @PathVariable Long restauranteId,
         @PathVariable Long produtoId,
         @Valid @RequestBody GrupoOpcaoRequest request
@@ -162,14 +151,14 @@ public interface ProdutoAPI {
     
     @GetMapping("/{produtoId}/grupos-opcoes")
     @Operation(summary = "Listar grupos de opções", description = "Lista todos os grupos de opções do produto")
-    List<GrupoOpcaoResponse> listarGruposOpcoes(
+    ResponseEntity<List<GrupoOpcaoResponse>> listarGruposOpcoes(
         @PathVariable Long restauranteId,
         @PathVariable Long produtoId
     );
     
     @PutMapping("/{produtoId}/grupos-opcoes/{grupoId}")
     @Operation(summary = "Atualizar grupo de opções", description = "Atualiza um grupo de opções")
-    GrupoOpcaoResponse atualizarGrupoOpcao(
+    ResponseEntity<GrupoOpcaoResponse> atualizarGrupoOpcao(
         @PathVariable Long restauranteId,
         @PathVariable Long produtoId,
         @PathVariable Long grupoId,
@@ -177,9 +166,8 @@ public interface ProdutoAPI {
     );
     
     @DeleteMapping("/{produtoId}/grupos-opcoes/{grupoId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Remover grupo de opções", description = "Remove um grupo de opções")
-    void removerGrupoOpcao(
+    ResponseEntity<Void> removerGrupoOpcao(
         @PathVariable Long restauranteId,
         @PathVariable Long produtoId,
         @PathVariable Long grupoId
@@ -188,9 +176,8 @@ public interface ProdutoAPI {
     // Opções
     
     @PostMapping("/{produtoId}/grupos-opcoes/{grupoId}/opcoes")
-    @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Adicionar opção", description = "Adiciona uma opção ao grupo")
-    OpcaoResponse adicionarOpcao(
+    ResponseEntity<OpcaoResponse> adicionarOpcao(
         @PathVariable Long restauranteId,
         @PathVariable Long produtoId,
         @PathVariable Long grupoId,
@@ -198,8 +185,8 @@ public interface ProdutoAPI {
     );
     
     @GetMapping("/{produtoId}/grupos-opcoes/{grupoId}/opcoes")
-    @Operation(summary = "Listar opções", description = "Lista todas as opções do grupo")
-    List<OpcaoResponse> listarOpcoes(
+    @Operation(summary = "Listar opções", description = "Lista todas as opções de um grupo")
+    ResponseEntity<List<OpcaoResponse>> listarOpcoes(
         @PathVariable Long restauranteId,
         @PathVariable Long produtoId,
         @PathVariable Long grupoId,
@@ -208,7 +195,7 @@ public interface ProdutoAPI {
     
     @PutMapping("/{produtoId}/grupos-opcoes/{grupoId}/opcoes/{opcaoId}")
     @Operation(summary = "Atualizar opção", description = "Atualiza uma opção")
-    OpcaoResponse atualizarOpcao(
+    ResponseEntity<OpcaoResponse> atualizarOpcao(
         @PathVariable Long restauranteId,
         @PathVariable Long produtoId,
         @PathVariable Long grupoId,
@@ -217,9 +204,8 @@ public interface ProdutoAPI {
     );
     
     @PatchMapping("/{produtoId}/grupos-opcoes/{grupoId}/opcoes/{opcaoId}/disponibilizar")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Disponibilizar opção", description = "Marca opção como disponível")
-    void disponibilizarOpcao(
+    ResponseEntity<Void> disponibilizarOpcao(
         @PathVariable Long restauranteId,
         @PathVariable Long produtoId,
         @PathVariable Long grupoId,
@@ -227,9 +213,8 @@ public interface ProdutoAPI {
     );
     
     @PatchMapping("/{produtoId}/grupos-opcoes/{grupoId}/opcoes/{opcaoId}/indisponibilizar")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Indisponibilizar opção", description = "Marca opção como indisponível")
-    void indisponibilizarOpcao(
+    ResponseEntity<Void> indisponibilizarOpcao(
         @PathVariable Long restauranteId,
         @PathVariable Long produtoId,
         @PathVariable Long grupoId,
@@ -237,9 +222,8 @@ public interface ProdutoAPI {
     );
     
     @DeleteMapping("/{produtoId}/grupos-opcoes/{grupoId}/opcoes/{opcaoId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "Remover opção", description = "Remove uma opção")
-    void removerOpcao(
+    @Operation(summary = "Remover opção", description = "Remove uma opção do grupo")
+    ResponseEntity<Void> removerOpcao(
         @PathVariable Long restauranteId,
         @PathVariable Long produtoId,
         @PathVariable Long grupoId,

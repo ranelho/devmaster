@@ -5,8 +5,11 @@ import com.devmaster.application.api.response.PedidoResponse;
 import com.devmaster.application.api.response.PedidoResumoResponse;
 import com.devmaster.application.service.PedidoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 /**
@@ -22,27 +25,36 @@ public class PublicPedidoRestController implements PublicPedidoAPI {
     private final PedidoService pedidoService;
     
     @Override
-    public PedidoResponse criarPedido(PedidoRequest request) {
-        return pedidoService.criarPedido(null, request);
+    public ResponseEntity<PedidoResponse> criarPedido(PedidoRequest request) {
+        PedidoResponse response = pedidoService.criarPedido(null, request);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(response.id())
+                .toUri();
+        return ResponseEntity.created(location).body(response);
     }
     
     @Override
-    public PedidoResponse buscarPedido(Long id) {
-        return pedidoService.buscarPedido(null, id);
+    public ResponseEntity<PedidoResponse> buscarPedido(Long id) {
+        PedidoResponse response = pedidoService.buscarPedido(null, id);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public PedidoResponse buscarPorNumero(String numero) {
-        return pedidoService.buscarPedidoPorNumero(null, numero);
+    public ResponseEntity<PedidoResponse> buscarPorNumero(String numero) {
+        PedidoResponse response = pedidoService.buscarPedidoPorNumero(null, numero);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public List<PedidoResumoResponse> listarPedidosCliente(Long clienteId) {
-        return pedidoService.listarPedidosCliente(null, clienteId, null);
+    public ResponseEntity<List<PedidoResumoResponse>> listarPedidosCliente(Long clienteId) {
+        List<PedidoResumoResponse> response = pedidoService.listarPedidosCliente(null, clienteId, null);
+        return ResponseEntity.ok(response);
     }
 
     @Override
-    public List<PedidoResumoResponse> listarPedidosPorTelefone(String telefone) {
-        return pedidoService.listarPedidosPorTelefone(null, telefone);
+    public ResponseEntity<List<PedidoResumoResponse>> listarPedidosPorTelefone(String telefone) {
+        List<PedidoResumoResponse> response = pedidoService.listarPedidosPorTelefone(null, telefone);
+        return ResponseEntity.ok(response);
     }
 }

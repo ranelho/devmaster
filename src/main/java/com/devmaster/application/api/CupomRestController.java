@@ -9,8 +9,11 @@ import com.devmaster.application.service.CupomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 /**
@@ -26,52 +29,66 @@ public class CupomRestController implements CupomAPI {
     private final CupomService cupomService;
     
     @Override
-    public CupomResponse criarCupom(CupomRequest request) {
-        return cupomService.criarCupom(null, request);
+    public ResponseEntity<CupomResponse> criarCupom(CupomRequest request) {
+        CupomResponse response = cupomService.criarCupom(null, request);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(response.id())
+                .toUri();
+        return ResponseEntity.created(location).body(response);
     }
     
     @Override
-    public CupomResponse buscarCupom(Long cupomId) {
-        return cupomService.buscarCupom(null, cupomId);
+    public ResponseEntity<CupomResponse> buscarCupom(Long cupomId) {
+        CupomResponse response = cupomService.buscarCupom(null, cupomId);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public CupomResponse buscarCupomPorCodigo(String codigo) {
-        return cupomService.buscarCupomPorCodigo(null, codigo);
+    public ResponseEntity<CupomResponse> buscarCupomPorCodigo(String codigo) {
+        CupomResponse response = cupomService.buscarCupomPorCodigo(null, codigo);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public Page<CupomResponse> listarCupons(Boolean ativo, Boolean validos, Pageable pageable) {
-        return cupomService.listarCupons(null, ativo, validos, pageable);
+    public ResponseEntity<Page<CupomResponse>> listarCupons(Boolean ativo, Boolean validos, Pageable pageable) {
+        Page<CupomResponse> response = cupomService.listarCupons(null, ativo, validos, pageable);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public List<CupomResponse> listarCuponsValidos() {
-        return cupomService.listarCuponsValidos(null);
+    public ResponseEntity<List<CupomResponse>> listarCuponsValidos() {
+        List<CupomResponse> response = cupomService.listarCuponsValidos(null);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public CupomResponse atualizarCupom(Long cupomId, AtualizarCupomRequest request) {
-        return cupomService.atualizarCupom(null, cupomId, request);
+    public ResponseEntity<CupomResponse> atualizarCupom(Long cupomId, AtualizarCupomRequest request) {
+        CupomResponse response = cupomService.atualizarCupom(null, cupomId, request);
+        return ResponseEntity.ok(response);
     }
     
     @Override
-    public void ativarCupom(Long cupomId) {
+    public ResponseEntity<Void> ativarCupom(Long cupomId) {
         cupomService.ativarCupom(null, cupomId);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public void desativarCupom(Long cupomId) {
+    public ResponseEntity<Void> desativarCupom(Long cupomId) {
         cupomService.desativarCupom(null, cupomId);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public void removerCupom(Long cupomId) {
+    public ResponseEntity<Void> removerCupom(Long cupomId) {
         cupomService.removerCupom(null, cupomId);
+        return ResponseEntity.noContent().build();
     }
     
     @Override
-    public ValidacaoCupomResponse validarCupomPublico(ValidarCupomRequest request) {
-        return cupomService.validarCupom(null, request);
+    public ResponseEntity<ValidacaoCupomResponse> validarCupomPublico(ValidarCupomRequest request) {
+        ValidacaoCupomResponse response = cupomService.validarCupom(null, request);
+        return ResponseEntity.ok(response);
     }
 }

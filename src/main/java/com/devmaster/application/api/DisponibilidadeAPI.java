@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +34,7 @@ public interface DisponibilidadeAPI {
         @ApiResponse(responseCode = "403", description = "Sem permissão"),
         @ApiResponse(responseCode = "404", description = "Entregador não encontrado")
     })
-    Page<HistoricoDisponibilidadeResponse> listarHistorico(
+    ResponseEntity<Page<HistoricoDisponibilidadeResponse>> listarHistorico(
         Authentication authentication,
         @Parameter(description = "ID do entregador") @PathVariable Long entregadorId,
         @Parameter(description = "Data inicial (opcional)") @RequestParam(required = false) 
@@ -53,7 +54,7 @@ public interface DisponibilidadeAPI {
         @ApiResponse(responseCode = "403", description = "Sem permissão"),
         @ApiResponse(responseCode = "404", description = "Nenhum registro encontrado")
     })
-    HistoricoDisponibilidadeResponse buscarUltimoRegistro(
+    ResponseEntity<HistoricoDisponibilidadeResponse> buscarUltimoRegistro(
         Authentication authentication,
         @Parameter(description = "ID do entregador") @PathVariable Long entregadorId
     );
@@ -67,7 +68,7 @@ public interface DisponibilidadeAPI {
         @ApiResponse(responseCode = "403", description = "Sem permissão"),
         @ApiResponse(responseCode = "404", description = "Nenhuma localização registrada")
     })
-    HistoricoDisponibilidadeResponse buscarUltimaLocalizacao(
+    ResponseEntity<HistoricoDisponibilidadeResponse> buscarUltimaLocalizacao(
         Authentication authentication,
         @Parameter(description = "ID do entregador") @PathVariable Long entregadorId
     );
@@ -81,7 +82,7 @@ public interface DisponibilidadeAPI {
         @ApiResponse(responseCode = "403", description = "Sem permissão"),
         @ApiResponse(responseCode = "404", description = "Entregador não encontrado")
     })
-    Page<HistoricoDisponibilidadeResponse> listarRegistrosComLocalizacao(
+    ResponseEntity<Page<HistoricoDisponibilidadeResponse>> listarRegistrosComLocalizacao(
         Authentication authentication,
         @Parameter(description = "ID do entregador") @PathVariable Long entregadorId,
         @Parameter(description = "Número da página") @RequestParam(defaultValue = "0") int page,

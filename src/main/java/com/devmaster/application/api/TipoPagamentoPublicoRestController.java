@@ -6,6 +6,7 @@ import com.devmaster.handler.APIException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class TipoPagamentoPublicoRestController implements TipoPagamentoPublicoA
     private final RestauranteTipoPagamentoRepository restauranteTipoPagamentoRepository;
     
     @Override
-    public List<RestauranteTipoPagamentoResponse> listarTiposPagamentoRestaurante(Long restauranteId) {
+    public ResponseEntity<List<RestauranteTipoPagamentoResponse>> listarTiposPagamentoRestaurante(Long restauranteId) {
         log.info("💳 [TIPOS-PAGAMENTO] Listando tipos de pagamento - RestauranteId: {}", restauranteId);
         
         List<RestauranteTipoPagamentoResponse> tiposPagamento = restauranteTipoPagamentoRepository
@@ -33,6 +34,6 @@ public class TipoPagamentoPublicoRestController implements TipoPagamentoPublicoA
             log.info("✅ [TIPOS-PAGAMENTO] {} tipos de pagamento encontrados", tiposPagamento.size());
         }
         
-        return tiposPagamento;
+        return ResponseEntity.ok(tiposPagamento);
     }
 }

@@ -42,12 +42,15 @@ public class Produto {
     @Column(name = "tempo_preparo")
     private Integer tempoPreparo;
     
+    @Builder.Default
     @Column(nullable = false)
     private Boolean disponivel = true;
     
+    @Builder.Default
     @Column(nullable = false)
     private Boolean destaque = false;
     
+    @Builder.Default
     @Column(name = "ordem_exibicao")
     private Integer ordemExibicao = 0;
     

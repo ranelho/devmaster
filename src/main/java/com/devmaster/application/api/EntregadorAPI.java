@@ -16,7 +16,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,7 +32,6 @@ import java.util.List;
 public interface EntregadorAPI {
     
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "bearerAuth")
     @Operation(
         summary = "Criar novo entregador",
@@ -45,7 +44,7 @@ public interface EntregadorAPI {
         @ApiResponse(responseCode = "403", description = "Sem permissão"),
         @ApiResponse(responseCode = "409", description = "CPF, telefone, email ou CNH já cadastrado")
     })
-    EntregadorResponse criarEntregador(@Valid @RequestBody EntregadorRequest request);
+    ResponseEntity<EntregadorResponse> criarEntregador(@Valid @RequestBody EntregadorRequest request);
     
     @GetMapping
     @SecurityRequirement(name = "bearerAuth")
@@ -58,7 +57,7 @@ public interface EntregadorAPI {
         @ApiResponse(responseCode = "401", description = "Não autenticado"),
         @ApiResponse(responseCode = "403", description = "Sem permissão")
     })
-    Page<EntregadorResumoResponse> listarEntregadores(
+    ResponseEntity<Page<EntregadorResumoResponse>> listarEntregadores(
         @Parameter(description = "Filtrar por status ativo") @RequestParam(required = false) Boolean ativo,
         @Parameter(description = "Filtrar por disponibilidade") @RequestParam(required = false) Boolean disponivel,
         @Parameter(description = "Filtrar por tipo de veículo") @RequestParam(required = false) TipoVeiculo tipoVeiculo,
@@ -78,7 +77,7 @@ public interface EntregadorAPI {
         @ApiResponse(responseCode = "403", description = "Sem permissão"),
         @ApiResponse(responseCode = "404", description = "Entregador não encontrado")
     })
-    EntregadorResponse buscarEntregador(@Parameter(description = "ID do entregador") @PathVariable Long id);
+    ResponseEntity<EntregadorResponse> buscarEntregador(@Parameter(description = "ID do entregador") @PathVariable Long id);
     
     @PutMapping("/{id}")
     @SecurityRequirement(name = "bearerAuth")
@@ -94,7 +93,7 @@ public interface EntregadorAPI {
         @ApiResponse(responseCode = "404", description = "Entregador não encontrado"),
         @ApiResponse(responseCode = "409", description = "Telefone, email ou CNH já cadastrado")
     })
-    EntregadorResponse atualizarEntregador(
+    ResponseEntity<EntregadorResponse> atualizarEntregador(
         @Parameter(description = "ID do entregador") @PathVariable Long id,
         @Valid @RequestBody AtualizarEntregadorRequest request
     );
@@ -106,12 +105,12 @@ public interface EntregadorAPI {
         description = "Desativa um entregador no sistema. Qualquer usuário autenticado pode desativar."
     )
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Entregador desativado com sucesso"),
+        @ApiResponse(responseCode = "204", description = "Entregador desativado com sucesso"),
         @ApiResponse(responseCode = "401", description = "Não autenticado"),
         @ApiResponse(responseCode = "403", description = "Sem permissão"),
         @ApiResponse(responseCode = "404", description = "Entregador não encontrado")
     })
-    MessageResponse desativarEntregador(@Parameter(description = "ID do entregador") @PathVariable Long id);
+    ResponseEntity<Void> desativarEntregador(@Parameter(description = "ID do entregador") @PathVariable Long id);
     
     @PatchMapping("/{id}/reativar")
     @SecurityRequirement(name = "bearerAuth")
@@ -125,7 +124,7 @@ public interface EntregadorAPI {
         @ApiResponse(responseCode = "403", description = "Sem permissão"),
         @ApiResponse(responseCode = "404", description = "Entregador não encontrado")
     })
-    MessageResponse reativarEntregador(@Parameter(description = "ID do entregador") @PathVariable Long id);
+    ResponseEntity<MessageResponse> reativarEntregador(@Parameter(description = "ID do entregador") @PathVariable Long id);
     
     @PatchMapping("/{id}/disponibilidade")
     @SecurityRequirement(name = "bearerAuth")
@@ -140,7 +139,7 @@ public interface EntregadorAPI {
         @ApiResponse(responseCode = "403", description = "Sem permissão"),
         @ApiResponse(responseCode = "404", description = "Entregador não encontrado")
     })
-    MessageResponse alterarDisponibilidade(
+    ResponseEntity<MessageResponse> alterarDisponibilidade(
         @Parameter(description = "ID do entregador") @PathVariable Long id,
         @Valid @RequestBody AlterarDisponibilidadeRequest request
     );
@@ -157,7 +156,7 @@ public interface EntregadorAPI {
         @ApiResponse(responseCode = "401", description = "Não autenticado"),
         @ApiResponse(responseCode = "403", description = "Sem permissão")
     })
-    List<EntregadorResumoResponse> buscarEntregadoresDisponiveisProximos(
+    ResponseEntity<List<EntregadorResumoResponse>> buscarEntregadoresDisponiveisProximos(
         @Parameter(description = "Latitude de referência", required = true) @RequestParam Double latitude,
         @Parameter(description = "Longitude de referência", required = true) @RequestParam Double longitude,
         @Parameter(description = "Raio de busca em km") @RequestParam(defaultValue = "10.0") Double raioKm
@@ -175,7 +174,7 @@ public interface EntregadorAPI {
         @ApiResponse(responseCode = "403", description = "Sem permissão"),
         @ApiResponse(responseCode = "404", description = "Entregador não encontrado")
     })
-    EstatisticasEntregadorResponse obterEstatisticas(@Parameter(description = "ID do entregador") @PathVariable Long id);
+    ResponseEntity<EstatisticasEntregadorResponse> obterEstatisticas(@Parameter(description = "ID do entregador") @PathVariable Long id);
     
     @GetMapping("/{id}/validar")
     @Operation(
@@ -186,5 +185,5 @@ public interface EntregadorAPI {
         @ApiResponse(responseCode = "200", description = "Entregador validado"),
         @ApiResponse(responseCode = "404", description = "Entregador não encontrado")
     })
-    EntregadorResumoResponse validarEntregador(@Parameter(description = "ID do entregador") @PathVariable Long id);
+    ResponseEntity<EntregadorResumoResponse> validarEntregador(@Parameter(description = "ID do entregador") @PathVariable Long id);
 }
