@@ -34,16 +34,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         
-        // Pula validação para endpoints públicos
+        String token = extractToken(request);
         String requestPath = request.getRequestURI();
-        if (isPublicEndpoint(requestPath)) {
+        
+        // Pula validação para endpoints públicos APENAS se não houver token
+        // Se houver token, tenta validar mesmo sendo rota pública (para suportar autenticação opcional ou mista)
+        if (token == null && isPublicEndpoint(requestPath)) {
             filterChain.doFilter(request, response);
             return;
         }
 
         try {
-            String token = extractToken(request);
-            
             if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 Map<String, Object> claims = jwtTokenValidator.validateToken(token);
                 

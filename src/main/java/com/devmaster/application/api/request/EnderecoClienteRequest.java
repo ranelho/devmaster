@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 
 public record EnderecoClienteRequest(
     
+    Long id,
+    
     @Size(max = 50, message = "Rótulo não pode exceder 50 caracteres")
     String rotulo,
     

@@ -17,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Clientes", description = "Gestão de clientes do sistema")
-@RequestMapping({"/public/v1/clientes", "/public/v2/clientes"})
+@RequestMapping("/public/v1/clientes")
 public interface ClienteAPI {
 
     @PostMapping

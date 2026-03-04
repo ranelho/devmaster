@@ -7,6 +7,7 @@ import com.devmaster.application.api.response.ClienteResponse;
 import com.devmaster.application.api.response.EnderecoClienteResponse;
 import com.devmaster.application.service.ClienteService;
 import com.devmaster.domain.Cliente;
+import com.devmaster.domain.EnderecoCliente;
 import com.devmaster.handler.APIException;
 import com.devmaster.infrastructure.repository.ClienteRepository;
 import com.devmaster.infrastructure.repository.EnderecoClienteRepository;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -44,7 +46,7 @@ public class ClienteApplicationService implements ClienteService {
             clienteRepository.save(cliente);
         }
         Optional.ofNullable(request.endereco())
-                .ifPresent(endereco -> criarEnderecoParaCliente(cliente, endereco));
+                .ifPresent(endereco -> criarEnderecoInicial(cliente, endereco));
         return mapToResponse(cliente);
     }
 
@@ -65,27 +67,16 @@ public class ClienteApplicationService implements ClienteService {
                 .build());
 
         Optional.ofNullable(request.endereco())
-                .ifPresent(endereco -> criarEnderecoParaCliente(cliente, endereco));
+                .ifPresent(endereco -> criarEnderecoInicial(cliente, endereco));
 
         return mapToResponse(cliente);
     }
 
-    private void criarEnderecoParaCliente(Cliente cliente, EnderecoClienteRequest enderecoRequest) {
-        com.devmaster.domain.EnderecoCliente endereco = com.devmaster.domain.EnderecoCliente.builder()
-                .cliente(cliente)
-                .rotulo(enderecoRequest.rotulo())
-                .logradouro(enderecoRequest.logradouro())
-                .numero(enderecoRequest.numero())
-                .complemento(enderecoRequest.complemento())
-                .bairro(enderecoRequest.bairro())
-                .cidade(enderecoRequest.cidade())
-                .estado(enderecoRequest.estado())
-                .cep(enderecoRequest.cep())
-                .latitude(enderecoRequest.latitude())
-                .longitude(enderecoRequest.longitude())
-                .padrao(true)
-                .build();
-
+    private void criarEnderecoInicial(Cliente cliente, EnderecoClienteRequest dto) {
+        EnderecoCliente endereco = new EnderecoCliente();
+        endereco.setCliente(cliente);
+        mapDtoToEndereco(endereco, dto);
+        endereco.setPadrao(true); // Endereço inicial sempre é padrão
         enderecoRepository.save(endereco);
     }
 
@@ -137,9 +128,86 @@ public class ClienteApplicationService implements ClienteService {
 
         Optional.ofNullable(request.dataNascimento()).ifPresent(cliente::setDataNascimento);
 
+        processEnderecos(cliente, request.enderecos());
+
         cliente = saveCliente(cliente);
 
         return mapToResponse(cliente);
+    }
+
+    private void processEnderecos(Cliente cliente, List<EnderecoClienteRequest> novosEnderecos) {
+        if (novosEnderecos == null) {
+            return;
+        }
+
+        // Busca endereços atuais
+        List<EnderecoCliente> enderecosAtuais = enderecoRepository.findByClienteId(cliente.getId());
+        
+        // Mapeia IDs dos novos endereços para identificar quais manter/atualizar
+        List<Long> idsParaManter = novosEnderecos.stream()
+                .map(EnderecoClienteRequest::id)
+                .filter(Objects::nonNull)
+                .toList();
+
+        // 1. Remove endereços que não estão na nova lista
+        List<EnderecoCliente> paraRemover = enderecosAtuais.stream()
+                .filter(end -> !idsParaManter.contains(end.getId()))
+                .toList();
+
+        if (!paraRemover.isEmpty()) {
+            enderecoRepository.deleteAll(paraRemover);
+            enderecosAtuais.removeAll(paraRemover);
+        }
+
+        // 2. Atualiza existentes ou Cria novos
+        for (EnderecoClienteRequest dto : novosEnderecos) {
+            if (dto.id() != null) {
+                // Atualizar existente
+                enderecosAtuais.stream()
+                    .filter(end -> end.getId().equals(dto.id()))
+                    .findFirst()
+                    .ifPresent(endereco -> atualizarEnderecoExistente(endereco, dto));
+            } else {
+                // Criar novo
+                criarEnderecoParaCliente(cliente, dto);
+            }
+        }
+    }
+
+    private void atualizarEnderecoExistente(EnderecoCliente endereco, EnderecoClienteRequest dto) {
+        mapDtoToEndereco(endereco, dto);
+        enderecoRepository.save(endereco);
+    }
+
+    private void criarEnderecoParaCliente(Cliente cliente, EnderecoClienteRequest dto) {
+        EnderecoCliente endereco = new EnderecoCliente();
+        endereco.setCliente(cliente);
+        mapDtoToEndereco(endereco, dto);
+        
+        // Se for criação via atualização (padrao pode ser null), define como false se não informado
+        // Se for criação inicial (via criarCliente), padrao era true fixo no método antigo, 
+        // mas agora o DTO controla. Vamos manter a lógica do DTO ou false padrão.
+        if (dto.padrao() == null) {
+            endereco.setPadrao(false); 
+        }
+        
+        enderecoRepository.save(endereco);
+    }
+    
+    private void mapDtoToEndereco(EnderecoCliente endereco, EnderecoClienteRequest dto) {
+        endereco.setRotulo(dto.rotulo());
+        endereco.setLogradouro(dto.logradouro());
+        endereco.setNumero(dto.numero());
+        endereco.setComplemento(dto.complemento());
+        endereco.setBairro(dto.bairro());
+        endereco.setCidade(dto.cidade());
+        endereco.setEstado(dto.estado());
+        endereco.setCep(dto.cep());
+        endereco.setLatitude(dto.latitude());
+        endereco.setLongitude(dto.longitude());
+        if (dto.padrao() != null) {
+            endereco.setPadrao(dto.padrao());
+        }
     }
 
     private Cliente findClienteOrThrow(Long clienteId) {

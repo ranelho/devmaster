@@ -44,6 +44,52 @@ public record PedidoResponse(
 ) {
     public static PedidoResponse from(
         Pedido pedido,
+        String clienteTelefone,
+        String restauranteNome,
+        String tipoPagamento,
+        Boolean tipoPagamentoRequerTroco,
+        String codigoCupom,
+        List<ItemPedidoResponse> itens,
+        List<HistoricoStatusPedidoResponse> historico
+    ) {
+        return new PedidoResponse(
+            pedido.getId(),
+            pedido.getNumeroPedido(),
+            pedido.getCliente().getId(),
+            pedido.getClienteNome(),
+            clienteTelefone,
+            pedido.getRestauranteId(),
+            restauranteNome,
+            EnderecoClienteResponse.from(pedido.getEnderecoEntrega()),
+            tipoPagamento,
+            tipoPagamentoRequerTroco,
+            pedido.getValorTroco(),
+            pedido.getStatus(),
+            pedido.getStatus().getDescricao(),
+            pedido.getStatusPagamento(),
+            pedido.getStatusPagamento().getDescricao(),
+            pedido.getSubtotal(),
+            pedido.getTaxaEntrega(),
+            pedido.getDesconto(),
+            pedido.getValorTotal(),
+            pedido.getObservacoes(),
+            pedido.getPrevisaoEntrega(),
+            pedido.getCriadoEm(),
+            pedido.getConfirmadoEm(),
+            pedido.getPreparandoEm(),
+            pedido.getProntoEm(),
+            pedido.getDespachadoEm(),
+            pedido.getEntregueEm(),
+            pedido.getCanceladoEm(),
+            pedido.getMotivoCancelamento(),
+            codigoCupom,
+            itens,
+            historico
+        );
+    }
+
+    public static PedidoResponse from(
+        Pedido pedido,
         Long clienteId,
         String clienteTelefone,
         String restauranteNome,

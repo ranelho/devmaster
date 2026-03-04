@@ -27,7 +27,7 @@ import java.util.UUID;
  * @since 1.0.0
  */
 @Tag(name = "Cupons", description = "Endpoints para gerenciamento de cupons de desconto")
-@RequestMapping({"/v1/cupons", "/v2/cupons"})
+@RequestMapping("/v1/cupons")
 public interface CupomAPI {
     
     // ========================================

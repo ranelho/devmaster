@@ -19,7 +19,7 @@ import java.util.List;
  * @since 1.0.0
  */
 @Tag(name = "Produtos Públicos", description = "Endpoints públicos para consulta de produtos")
-@RequestMapping({"/public/v1/restaurantes/{restauranteId}/produtos", "/public/v2/restaurantes/{restauranteId}/produtos"})
+@RequestMapping("/public/v1/restaurantes/{restauranteId}/produtos")
 public interface PublicProdutoAPI {
     
     @Operation(summary = "Listar produtos do restaurante", description = "Lista produtos disponíveis do restaurante (acesso público)")

@@ -29,7 +29,7 @@ import java.util.List;
  * @since 1.0.0
  */
 @Tag(name = "Restaurantes", description = "Endpoints para gerenciamento de restaurantes")
-@RequestMapping({"/v1/restaurantes", "/v2/restaurantes"})
+@RequestMapping("/v1/restaurantes")
 public interface RestauranteAPI {
     
     // ========================================

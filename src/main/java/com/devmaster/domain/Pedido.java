@@ -33,9 +33,8 @@ public class Pedido {
     @JoinColumn(name = "restaurante_id", nullable = false)
     private Restaurante restaurante;
     
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "endereco_entrega_id", nullable = false)
-    private EnderecoCliente enderecoEntrega;
+    @Embedded
+    private EnderecoPedido enderecoEntrega;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tipo_pagamento_id", nullable = false)

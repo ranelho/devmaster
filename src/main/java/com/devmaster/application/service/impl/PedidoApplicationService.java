@@ -4,6 +4,7 @@ import com.devmaster.application.api.request.*;
 import com.devmaster.application.api.response.*;
 import com.devmaster.application.service.PedidoService;
 import com.devmaster.domain.*;
+import com.devmaster.domain.EnderecoPedido;
 import com.devmaster.domain.enums.StatusPagamento;
 import com.devmaster.domain.enums.StatusPedido;
 import com.devmaster.handler.APIException;
@@ -62,7 +63,7 @@ public class PedidoApplicationService implements PedidoService {
                 .numeroPedido(numeroPedido)
                 .cliente(cliente)
                 .restaurante(restaurante)
-                .enderecoEntrega(endereco)
+                .enderecoEntrega(EnderecoPedido.from(endereco))
                 .tipoPagamento(tipoPagamento)
                 .status(StatusPedido.AGUARDANDO_CONFIRMACAO)
                 .statusPagamento(StatusPagamento.PENDENTE)
@@ -517,10 +518,8 @@ public class PedidoApplicationService implements PedidoService {
 
         return PedidoResponse.from(
             pedido,
-            pedido.getCliente().getId(),
             pedido.getCliente().getTelefone(),
             pedido.getRestaurante().getNome(),
-            EnderecoClienteResponse.from(pedido.getEnderecoEntrega()),
             pedido.getTipoPagamento().getNome(),
             pedido.getTipoPagamento().getRequerTroco(),
             codigoCupom,

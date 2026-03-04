@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public record AtualizarClienteRequest(
     
@@ -29,5 +30,7 @@ public record AtualizarClienteRequest(
     String cpf,
     
     @Past(message = "Data de nascimento deve ser no passado")
-    LocalDate dataNascimento
+    LocalDate dataNascimento,
+
+    List<EnderecoClienteRequest> enderecos
 ) {}

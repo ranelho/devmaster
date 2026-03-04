@@ -36,6 +36,15 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Endpoints públicos - não requerem autenticação
                 // Inclui: /public/auth/login, /public/auth/logout, /public/health, etc.
+                // EXCEÇÃO: Endpoints de clientes que requerem autenticação
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/public/v1/clientes", "/public/v2/clientes").authenticated()
+                .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/public/v1/clientes/*", "/public/v2/clientes/*").authenticated()
+                .requestMatchers(org.springframework.http.HttpMethod.PATCH, "/public/v1/clientes/*/reativar", "/public/v2/clientes/*/reativar").authenticated()
+                
+                // Endereços: POST (adicionar) é permitido sem login, mas outras operações requerem autenticação
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/public/v1/clientes/*/enderecos", "/public/v2/clientes/*/enderecos").permitAll()
+                .requestMatchers("/public/v1/clientes/*/enderecos/**", "/public/v2/clientes/*/enderecos/**").authenticated()
+                
                 .requestMatchers("/public/**").permitAll()
                 
                 // Endpoints públicos de cupons

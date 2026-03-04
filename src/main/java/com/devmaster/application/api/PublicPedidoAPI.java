@@ -16,7 +16,7 @@ import java.util.List;
 
 
 @Tag(name = "Pedidos Público", description = "APIs públicas para pedidos (checkout - sem autenticação)")
-@RequestMapping({"/public/v1/pedidos", "/public/v2/pedidos"})
+@RequestMapping("/public/v1/pedidos")
 public interface PublicPedidoAPI {
     
     @PostMapping
