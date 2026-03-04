@@ -29,7 +29,7 @@ public class SwaggerConfig {
     @Value("${server.servlet.context-path:/api}")
     private String contextPath;
 
-    private static final String SECURITY_SCHEME_NAME = "Bearer Authentication";
+    private static final String SECURITY_SCHEME_NAME = "bearerAuth";
 
     @Bean
     public OpenAPI customOpenAPI() {
@@ -60,6 +60,7 @@ public class SwaggerConfig {
                 .type(SecurityScheme.Type.HTTP)
                 .scheme("bearer")
                 .bearerFormat("JWT")
+                .in(SecurityScheme.In.HEADER)
                 .description("Insira o token JWT no formato: seu-token-aqui (sem 'Bearer')");
     }
 }
