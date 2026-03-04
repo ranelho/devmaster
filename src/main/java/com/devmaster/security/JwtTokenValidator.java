@@ -36,11 +36,11 @@ public class JwtTokenValidator {
         }
 
         try {
-            String validationUrl = authServiceUrl + "/auth/validate";
+            String validationUrl = authServiceUrl + "/api/auth/validate-token";
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.setBearerAuth(token);
+            headers.set("Authorization", "Bearer " + token);  // Usar set em vez de setBearerAuth
             
             HttpEntity<Void> request = new HttpEntity<>(headers);
             
@@ -49,14 +49,26 @@ public class JwtTokenValidator {
             @SuppressWarnings("rawtypes")
             ResponseEntity<Map> response = restTemplate.exchange(
                     validationUrl,
-                    HttpMethod.GET,
+                    HttpMethod.POST,  // Mudado de GET para POST
                     request,
                     Map.class
             );
             
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                log.debug("Token validado com sucesso");
-                return response.getBody();
+                Map<String, Object> body = response.getBody();
+                Boolean valid = (Boolean) body.get("valid");
+                
+                log.debug("Resposta da validação - valid: {}, body: {}", valid, body);
+                
+                // Se o token é válido, retorna os claims
+                if (Boolean.TRUE.equals(valid)) {
+                    log.debug("Token validado com sucesso");
+                    return body;
+                }
+                
+                // Token inválido ou expirado
+                log.warn("Token inválido ou expirado - valid: false");
+                return null;
             }
             
             throw APIException.build(HttpStatus.UNAUTHORIZED, "Token inválido ou expirado");

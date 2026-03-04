@@ -10,6 +10,7 @@ import org.springframework.util.StopWatch;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Set;
 
 @Aspect
 @Component
@@ -18,25 +19,28 @@ public class LoggingAspect {
 
     private static final String CONTROLLER_EXECUTION_MESSAGE = "Controller method: {} executed in {} ms";
     private static final String SERVICE_EXECUTION_MESSAGE = "Service method: {} executed in {} ms";
+    private static final Set<String> SENSITIVE_FIELDS = Set.of(
+        "password", "senha", "cpf", "cnpj", "cnh", "token", 
+        "accessToken", "refreshToken", "authorization"
+    );
 
-    @Pointcut("execution(* com.devmaster.exemplo..*(..))")
-    public void exemploMethods() {
+    @Pointcut("execution(* com.devmaster.application.api..*(..))")
+    public void controllerMethods() {
     }
 
-    @Pointcut("execution(* com.devmaster.cliente..*(..))")
-    public void clienteMethods() {
+    @Pointcut("execution(* com.devmaster.application.service.impl..*(..))")
+    public void serviceMethods() {
     }
 
-
-    @Before("exemploMethods()")
+    @Before("controllerMethods()")
     public void logControllerEntry(JoinPoint joinPoint) {
         var methodName = joinPoint.getSignature().toShortString();
-        var args = Arrays.toString(joinPoint.getArgs());
+        var args = sanitizeArgs(joinPoint.getArgs());
 
         log.info("🎯 Entering controller method: {} with arguments: {}", methodName, args);
     }
 
-    @Around("exemploMethods()")
+    @Around("controllerMethods()")
     public Object logControllerExecution(ProceedingJoinPoint joinPoint) throws Throwable {
         var startTime = Instant.now();
         var methodName = joinPoint.getSignature().toShortString();
@@ -56,15 +60,15 @@ public class LoggingAspect {
         }
     }
 
-    @Before("clienteMethods()")
+    @Before("serviceMethods()")
     public void logServiceEntry(JoinPoint joinPoint) {
         var methodName = joinPoint.getSignature().toShortString();
-        var args = Arrays.toString(joinPoint.getArgs());
+        var args = sanitizeArgs(joinPoint.getArgs());
 
         log.debug("🔧 Entering service method: {} with arguments: {}", methodName, args);
     }
 
-    @Around("clienteMethods()")
+    @Around("serviceMethods()")
     public Object logServiceExecution(ProceedingJoinPoint joinPoint) throws Throwable {
         var stopWatch = new StopWatch(joinPoint.getSignature().toShortString());
         stopWatch.start();
@@ -88,7 +92,7 @@ public class LoggingAspect {
         }
     }
 
-    @AfterThrowing(pointcut = "exemploMethods() || clienteMethods()", throwing = "exception")
+    @AfterThrowing(pointcut = "controllerMethods() || serviceMethods()", throwing = "exception")
     public void logException(JoinPoint joinPoint, Throwable exception) {
         var methodName = joinPoint.getSignature().toShortString();
         var exceptionType = exception.getClass().getSimpleName();
@@ -98,5 +102,35 @@ public class LoggingAspect {
                 methodName, exceptionType, message);
 
         log.debug("Stack trace for method: {}", methodName, exception);
+    }
+
+    private String sanitizeArgs(Object[] args) {
+        if (args == null || args.length == 0) {
+            return "[]";
+        }
+
+        return Arrays.stream(args)
+            .map(this::sanitizeObject)
+            .toList()
+            .toString();
+    }
+
+    private Object sanitizeObject(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+
+        String objStr = obj.toString();
+        
+        for (String field : SENSITIVE_FIELDS) {
+            if (objStr.toLowerCase().contains(field.toLowerCase())) {
+                objStr = objStr.replaceAll(
+                    "(?i)(" + field + "[=:]\\s*)([^,\\s}]+)",
+                    "$1***"
+                );
+            }
+        }
+        
+        return objStr;
     }
 }
