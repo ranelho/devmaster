@@ -1,6 +1,8 @@
 package com.devmaster.service;
 
 import com.devmaster.application.api.request.TipoPagamentoRequest;
+import com.devmaster.application.api.request.TipoPagamentoUpdateRequest;
+import com.devmaster.application.api.response.TipoPagamentoResponse;
 import com.devmaster.domain.TipoPagamento;
 import org.springframework.data.domain.Page;
 
@@ -15,4 +17,6 @@ public interface TipoPagamentoService {
     List<TipoPagamento> findAll();
 
     Page<TipoPagamento> findAllPageable(Pageable pageable);
+
+    TipoPagamento update(Long id, TipoPagamentoUpdateRequest request);
 }

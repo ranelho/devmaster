@@ -1,6 +1,7 @@
 package com.devmaster.application.api;
 
 import com.devmaster.application.api.request.TipoPagamentoRequest;
+import com.devmaster.application.api.request.TipoPagamentoUpdateRequest;
 import com.devmaster.application.api.response.TipoPagamentoResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,4 +33,8 @@ interface TipoPagamentoApi {
     @GetMapping("/all-paginado")
     @Operation(summary = "Busca todos os tipos de pagamento paginados", description = "Busca todos os tipos de pagamento paginados")
     ResponseEntity<Page<TipoPagamentoResponse>> buscarTodosPaginado(Pageable pageable);
+
+    @PatchMapping("/{id}")
+    @Operation(summary = "Atualiza um tipo de pagamento por ID", description = "Atualiza um tipo de pagamento por ID")
+    ResponseEntity<TipoPagamentoResponse> atualizar(@PathVariable Long id, @Valid @RequestBody TipoPagamentoUpdateRequest request);
 }

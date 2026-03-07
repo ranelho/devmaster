@@ -1,6 +1,7 @@
 package com.devmaster.domain;
 
 import com.devmaster.application.api.request.TipoPagamentoRequest;
+import com.devmaster.application.api.request.TipoPagamentoUpdateRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -51,6 +52,15 @@ public class TipoPagamento {
         this.ordemExibicao = request.ordemExibicao();
         this.requerTroco = request.requerTroco();
         this.criadoEm = LocalDateTime.now();
+    }
+
+    public void update(TipoPagamentoUpdateRequest request) {
+        this.ativo = request.ativo();
+        this.nome = request.nome();
+        this.descricao = request.descricao();
+        this.iconeUrl = request.iconeUrl();
+        this.ordemExibicao = request.ordemExibicao();
+        this.requerTroco = request.requerTroco();
     }
 }
 

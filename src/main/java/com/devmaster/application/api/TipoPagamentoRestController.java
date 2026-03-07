@@ -1,7 +1,9 @@
 package com.devmaster.application.api;
 
 import com.devmaster.application.api.request.TipoPagamentoRequest;
+import com.devmaster.application.api.request.TipoPagamentoUpdateRequest;
 import com.devmaster.application.api.response.TipoPagamentoResponse;
+import com.devmaster.domain.TipoPagamento;
 import com.devmaster.service.TipoPagamentoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,9 +23,7 @@ public class TipoPagamentoRestController implements TipoPagamentoApi {
 
     @Override
     public ResponseEntity<TipoPagamentoResponse> criar(TipoPagamentoRequest request) {
-
         TipoPagamentoResponse response = new TipoPagamentoResponse(tipoPagamentoService.criar(request));
-
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(response.id())
@@ -49,6 +49,13 @@ public class TipoPagamentoRestController implements TipoPagamentoApi {
     public ResponseEntity<Page<TipoPagamentoResponse>> buscarTodosPaginado(Pageable pageable) {
         Page<TipoPagamentoResponse> response = tipoPagamentoService.findAllPageable(pageable)
                 .map(TipoPagamentoResponse::new);
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
+    public ResponseEntity<TipoPagamentoResponse> atualizar(Long id, TipoPagamentoUpdateRequest request) {
+        TipoPagamento tipoPagamento = tipoPagamentoService.update(id, request);
+        TipoPagamentoResponse response = new TipoPagamentoResponse(tipoPagamento);
         return ResponseEntity.ok(response);
     }
 }
