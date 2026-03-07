@@ -39,23 +39,20 @@ public class TipoPagamentoRestController implements TipoPagamentoApi {
 
     @Override
     public ResponseEntity<List<TipoPagamentoResponse>> buscarTodos() {
-        List<TipoPagamentoResponse> response = tipoPagamentoService.findAll().stream()
-                .map(TipoPagamentoResponse::new)
-                .toList();
-        return ResponseEntity.ok(response);
+        var response = tipoPagamentoService.findAll();
+        return ResponseEntity.ok(TipoPagamentoResponse.convert(response));
     }
 
     @Override
     public ResponseEntity<Page<TipoPagamentoResponse>> buscarTodosPaginado(Pageable pageable) {
-        Page<TipoPagamentoResponse> response = tipoPagamentoService.findAllPageable(pageable)
-                .map(TipoPagamentoResponse::new);
-        return ResponseEntity.ok(response);
+        var response = tipoPagamentoService.findAllPageable(pageable);
+        return ResponseEntity.ok(TipoPagamentoResponse.convertPageble(response));
     }
 
     @Override
     public ResponseEntity<TipoPagamentoResponse> atualizar(Long id, TipoPagamentoUpdateRequest request) {
-        TipoPagamento tipoPagamento = tipoPagamentoService.update(id, request);
-        TipoPagamentoResponse response = new TipoPagamentoResponse(tipoPagamento);
+        TipoPagamentoResponse response =
+                new TipoPagamentoResponse(tipoPagamentoService.update(id, request));
         return ResponseEntity.ok(response);
     }
 }

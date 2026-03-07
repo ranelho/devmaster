@@ -1,6 +1,9 @@
 package com.devmaster.application.api.response;
 
 import com.devmaster.domain.TipoPagamento;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 public record TipoPagamentoResponse(
         Long id,
@@ -23,5 +26,13 @@ public record TipoPagamentoResponse(
                 tipoPagamento.getOrdemExibicao(),
                 tipoPagamento.getRequerTroco()
         );
+    }
+
+    public static List<TipoPagamentoResponse> convert(List<TipoPagamento> response) {
+        return response.stream().map(TipoPagamentoResponse::new).toList();
+    }
+
+    public static Page<TipoPagamentoResponse> convertPageble(Page<TipoPagamento> response) {
+        return response.map(TipoPagamentoResponse::new);
     }
 }
