@@ -2,17 +2,16 @@ package com.devmaster.service.impl;
 
 import com.devmaster.application.api.request.TipoPagamentoRequest;
 import com.devmaster.application.api.request.TipoPagamentoUpdateRequest;
-import com.devmaster.application.api.response.TipoPagamentoResponse;
 import com.devmaster.domain.TipoPagamento;
 import com.devmaster.handler.APIException;
 import com.devmaster.infra.TipoPagamentoRepository;
 import com.devmaster.service.TipoPagamentoService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -23,6 +22,7 @@ public class TipoPagamentoServiceImpl implements TipoPagamentoService {
 
     private final TipoPagamentoRepository repository;
 
+    @Transactional
     @Override
     public TipoPagamento criar(TipoPagamentoRequest request) {
 
@@ -30,9 +30,7 @@ public class TipoPagamentoServiceImpl implements TipoPagamentoService {
             throw APIException.build(HttpStatus.CONFLICT, "Já existe um tipo de pagamento com este código");
         }
 
-        TipoPagamento tipoPagamento = new TipoPagamento(request);
-
-        return repository.save(tipoPagamento);
+        return repository.save(new TipoPagamento(request));
     }
 
     @Override
@@ -51,7 +49,7 @@ public class TipoPagamentoServiceImpl implements TipoPagamentoService {
         return repository.findAll(pageable);
     }
 
-
+    @Transactional
     @Override
     public TipoPagamento update(Long id, TipoPagamentoUpdateRequest request) {
         TipoPagamento tipoPagamento = findById(id);
@@ -59,8 +57,22 @@ public class TipoPagamentoServiceImpl implements TipoPagamentoService {
         return repository.save(tipoPagamento);
     }
 
+    @Override
+    public TipoPagamento ativar(Long id) {
+        TipoPagamento tipoPagamento = findById(id);
+        tipoPagamento.ativoInativo(true);
+        return repository.save(tipoPagamento);
+    }
+
+    @Override
+    public TipoPagamento inativar(Long id) {
+        TipoPagamento tipoPagamento = findById(id);
+        tipoPagamento.ativoInativo(false);
+        return repository.save(tipoPagamento);
+    }
+
     //com lambda
-/*    @Override
+/*  @Override
     public TipoPagamento update(Long id, TipoPagamentoUpdateRequest request) {
         return repository.findById(id)
                 .map(tipoPagamento -> {

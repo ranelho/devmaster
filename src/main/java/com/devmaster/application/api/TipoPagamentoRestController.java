@@ -55,4 +55,14 @@ public class TipoPagamentoRestController implements TipoPagamentoApi {
                 new TipoPagamentoResponse(tipoPagamentoService.update(id, request));
         return ResponseEntity.ok(response);
     }
+
+    @Override
+    public ResponseEntity<TipoPagamentoResponse> ativar(Long id) {
+        return ResponseEntity.ok( new TipoPagamentoResponse(tipoPagamentoService.ativar(id)));
+    }
+
+    @Override
+    public ResponseEntity<TipoPagamentoResponse> inativar(Long id) {
+        return ResponseEntity.ok( new TipoPagamentoResponse(tipoPagamentoService.inativar(id)));
+    }
 }

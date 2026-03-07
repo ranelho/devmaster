@@ -8,7 +8,10 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tipos_pagamento")
+@Table(
+        name = "tipos_pagamento",
+        uniqueConstraints = @UniqueConstraint(columnNames = "codigo")
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -28,7 +31,7 @@ public class TipoPagamento {
     @Column(columnDefinition = "TEXT")
     private String descricao;
 
-    @Column(name = "icone_url", length = 500)
+    @Column(name = "ícone_url", length = 500)
     private String iconeUrl;
 
     @Column(nullable = false)
@@ -61,6 +64,10 @@ public class TipoPagamento {
         this.iconeUrl = request.iconeUrl();
         this.ordemExibicao = request.ordemExibicao();
         this.requerTroco = request.requerTroco();
+    }
+
+    public void ativoInativo(boolean ativoInativo) {
+        this.ativo = ativoInativo;
     }
 }
 

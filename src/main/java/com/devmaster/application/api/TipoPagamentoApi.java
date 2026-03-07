@@ -37,4 +37,12 @@ interface TipoPagamentoApi {
     @PatchMapping("/{id}")
     @Operation(summary = "Atualiza um tipo de pagamento por ID", description = "Atualiza um tipo de pagamento por ID")
     ResponseEntity<TipoPagamentoResponse> atualizar(@PathVariable Long id, @Valid @RequestBody TipoPagamentoUpdateRequest request);
+
+    @PatchMapping("/{id}/ativo")
+    @Operation(summary = "Ativa um tipo de pagamento por ID", description = "Ativa um tipo de pagamento por ID")
+    ResponseEntity<TipoPagamentoResponse> ativar(@PathVariable Long id);
+
+    @PatchMapping("/{id}/inativo")
+    @Operation(summary = "Inativa um tipo de pagamento por ID", description = "Inativa um tipo de pagamento por ID")
+    ResponseEntity<TipoPagamentoResponse> inativar(@PathVariable Long id);
 }
