@@ -1,4 +1,4 @@
-package com.devmaster.restaurante.security;
+package com.devmaster.security;
 
 import com.devmaster.restaurante.modules.store.service.UsuarioRestauranteService;
 import lombok.RequiredArgsConstructor;

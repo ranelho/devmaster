@@ -3,14 +3,13 @@ package com.devmaster.application.api;
 import com.devmaster.application.api.request.TipoPagamentoRequest;
 import com.devmaster.application.api.request.TipoPagamentoUpdateRequest;
 import com.devmaster.application.api.response.TipoPagamentoResponse;
-import com.devmaster.domain.TipoPagamento;
 import com.devmaster.service.TipoPagamentoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.data.domain.Pageable;
 
 import java.net.URI;
 import java.util.List;
@@ -46,7 +45,7 @@ public class TipoPagamentoRestController implements TipoPagamentoApi {
     @Override
     public ResponseEntity<Page<TipoPagamentoResponse>> buscarTodosPaginado(Pageable pageable) {
         var response = tipoPagamentoService.findAllPageable(pageable);
-        return ResponseEntity.ok(TipoPagamentoResponse.convertPageble(response));
+        return ResponseEntity.ok(TipoPagamentoResponse.convertPageable(response));
     }
 
     @Override

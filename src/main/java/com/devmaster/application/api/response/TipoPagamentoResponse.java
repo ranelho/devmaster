@@ -32,7 +32,7 @@ public record TipoPagamentoResponse(
         return response.stream().map(TipoPagamentoResponse::new).toList();
     }
 
-    public static Page<TipoPagamentoResponse> convertPageble(Page<TipoPagamento> response) {
+    public static Page<TipoPagamentoResponse> convertPageable(Page<TipoPagamento> response) {
         return response.map(TipoPagamentoResponse::new);
     }
 }

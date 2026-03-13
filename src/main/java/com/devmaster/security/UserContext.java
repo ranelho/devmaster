@@ -6,12 +6,7 @@ import lombok.Getter;
 import java.util.Set;
 import java.util.UUID;
 
-/**
- * Contexto do usuário autenticado.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
+
 @Getter
 @Builder
 public class UserContext {

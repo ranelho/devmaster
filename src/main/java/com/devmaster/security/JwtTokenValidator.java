@@ -1,6 +1,6 @@
 package com.devmaster.security;
 
-import com.devmaster.handler.APIException;
+import com.devmaster.restaurante.handler.APIException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -25,7 +25,7 @@ public class JwtTokenValidator {
         this.restTemplate = restTemplate;
         this.authServiceUrl = authServiceUrl;
         this.interceptorEnabled = interceptorEnabled;
-        log.info("JwtTokenValidator inicializado - URL: {}, Enabled: {}", authServiceUrl, interceptorEnabled);
+        //   log.info("JwtTokenValidator inicializado - URL: {}, Enabled: {}", authServiceUrl, interceptorEnabled);
     }
 
     @SuppressWarnings("unchecked")
@@ -37,42 +37,42 @@ public class JwtTokenValidator {
 
         try {
             String validationUrl = authServiceUrl + "/api/auth/validate-token";
-            
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.set("Authorization", "Bearer " + token);  // Usar set em vez de setBearerAuth
-            
+
             HttpEntity<Void> request = new HttpEntity<>(headers);
-            
-            log.debug("Validando token no serviço: {}", validationUrl);
-            
+
+            //    log.debug("Validando token no serviço: {}", validationUrl);
+
             @SuppressWarnings("rawtypes")
             ResponseEntity<Map> response = restTemplate.exchange(
                     validationUrl,
-                    HttpMethod.POST,  // Mudado de GET para POST
+                    HttpMethod.POST,
                     request,
                     Map.class
             );
-            
+
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 Map<String, Object> body = response.getBody();
                 Boolean valid = (Boolean) body.get("valid");
-                
-                log.debug("Resposta da validação - valid: {}, body: {}", valid, body);
-                
+
+                //     log.debug("Resposta da validação - valid: {}, body: {}", valid, body);
+
                 // Se o token é válido, retorna os claims
                 if (Boolean.TRUE.equals(valid)) {
                     log.debug("Token validado com sucesso");
                     return body;
                 }
-                
+
                 // Token inválido ou expirado
-                log.warn("Token inválido ou expirado - valid: false");
+                //        log.warn("Token inválido ou expirado - valid: false");
                 return null;
             }
-            
+
             throw APIException.build(HttpStatus.UNAUTHORIZED, "Token inválido ou expirado");
-            
+
         } catch (APIException e) {
             throw e;
         } catch (Exception e) {
@@ -88,16 +88,16 @@ public class JwtTokenValidator {
             if (parts.length != 3) {
                 throw new IllegalArgumentException("Token JWT inválido");
             }
-            
+
             String payload = new String(java.util.Base64.getUrlDecoder().decode(parts[1]));
-            
+
             // Converte JSON para Map (simplificado)
-            log.debug("Token payload extraído: {}", payload);
-            
+            //       log.debug("Token payload extraído: {}", payload);
+
             return Map.of("payload", payload);
-            
+
         } catch (Exception e) {
-            log.error("Erro ao extrair informações do token: {}", e.getMessage());
+            //         log.error("Erro ao extrair informações do token: {}", e.getMessage());
             return Map.of();
         }
     }

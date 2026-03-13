@@ -6,6 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TipoPagamentoRepository extends JpaRepository<TipoPagamento, Long> {
-
     boolean existsByCodigo(String codigo);
 }

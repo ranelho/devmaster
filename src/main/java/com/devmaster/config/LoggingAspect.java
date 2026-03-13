@@ -17,18 +17,18 @@ import java.util.Set;
 @Slf4j
 public class LoggingAspect {
 
-    private static final String CONTROLLER_EXECUTION_MESSAGE = "Controller method: {} executed in {} ms";
-    private static final String SERVICE_EXECUTION_MESSAGE = "Service method: {} executed in {} ms";
+    private static final String CONTROLLER_EXECUTION_MESSAGE = "Método do controller: {} finalizado em {} ms";
+    private static final String SERVICE_EXECUTION_MESSAGE = "Método do service: {} finalizado em {} ms";
     private static final Set<String> SENSITIVE_FIELDS = Set.of(
         "password", "senha", "cpf", "cnpj", "cnh", "token", 
         "accessToken", "refreshToken", "authorization"
     );
 
-    @Pointcut("execution(* com.devmaster.application.api..*(..))")
+    @Pointcut("execution(* com.devmaster..api..*(..))")
     public void controllerMethods() {
     }
 
-    @Pointcut("execution(* com.devmaster.application.service.impl..*(..))")
+    @Pointcut("within(@org.springframework.stereotype.Service *) || execution(* com.devmaster..service..*(..))")
     public void serviceMethods() {
     }
 
@@ -37,7 +37,7 @@ public class LoggingAspect {
         var methodName = joinPoint.getSignature().toShortString();
         var args = sanitizeArgs(joinPoint.getArgs());
 
-        log.info("🎯 Entering controller method: {} with arguments: {}", methodName, args);
+        log.info("🎯 Iniciando método do controller: {} com argumentos: {}", methodName, args);
     }
 
     @Around("controllerMethods()")
@@ -54,7 +54,7 @@ public class LoggingAspect {
             return result;
         } catch (Exception ex) {
             var duration = Duration.between(startTime, Instant.now());
-            log.error("❌ Controller method: {} failed after {} ms with error: {}",
+            log.error("❌ Método do controller: {} falhou após {} ms com erro: {}",
                     methodName, duration.toMillis(), ex.getMessage());
             throw ex;
         }
@@ -65,7 +65,7 @@ public class LoggingAspect {
         var methodName = joinPoint.getSignature().toShortString();
         var args = sanitizeArgs(joinPoint.getArgs());
 
-        log.debug("🔧 Entering service method: {} with arguments: {}", methodName, args);
+        log.info("🔧 Iniciando método do service: {} com argumentos: {}", methodName, args);
     }
 
     @Around("serviceMethods()")
@@ -77,14 +77,14 @@ public class LoggingAspect {
             var result = joinPoint.proceed();
             stopWatch.stop();
 
-            log.debug("⚙️ " + SERVICE_EXECUTION_MESSAGE,
+            log.info("⚙️ " + SERVICE_EXECUTION_MESSAGE,
                     joinPoint.getSignature().toShortString(),
                     stopWatch.getTotalTimeMillis());
 
             return result;
         } catch (Exception ex) {
             stopWatch.stop();
-            log.error("💥 Service method: {} failed after {} ms with error: {}",
+            log.error("💥 Método do service: {} falhou após {} ms com erro: {}",
                     joinPoint.getSignature().toShortString(),
                     stopWatch.getTotalTimeMillis(),
                     ex.getMessage());
@@ -98,10 +98,16 @@ public class LoggingAspect {
         var exceptionType = exception.getClass().getSimpleName();
         var message = exception.getMessage();
 
-        log.error("🚨 Exception in method: {} - Type: {} - Message: {}",
+        if (exception instanceof NullPointerException) {
+            log.error("🚨 Exceção no método: {} - Tipo: {} - Mensagem: {} - Trecho: {}",
+                    methodName, exceptionType, message, formatStackSnippet(exception, 3));
+            return;
+        }
+
+        log.error("🚨 Exceção no método: {} - Tipo: {} - Mensagem: {}",
                 methodName, exceptionType, message);
 
-        log.debug("Stack trace for method: {}", methodName, exception);
+        log.debug("Stack trace do método: {}", methodName, exception);
     }
 
     private String sanitizeArgs(Object[] args) {
@@ -132,5 +138,28 @@ public class LoggingAspect {
         }
         
         return objStr;
+    }
+
+    private String formatStackSnippet(Throwable exception, int maxFrames) {
+        var stackTrace = exception.getStackTrace();
+        if (stackTrace == null || stackTrace.length == 0) {
+            return "sem stack trace";
+        }
+
+        var limit = Math.min(maxFrames, stackTrace.length);
+        var builder = new StringBuilder();
+
+        for (int i = 0; i < limit; i++) {
+            if (i > 0) {
+                builder.append(" | ");
+            }
+            builder.append(stackTrace[i]);
+        }
+
+        if (stackTrace.length > limit) {
+            builder.append(" | ...");
+        }
+
+        return builder.toString();
     }
 }

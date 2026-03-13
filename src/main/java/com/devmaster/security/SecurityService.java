@@ -1,6 +1,6 @@
 package com.devmaster.security;
 
-import com.devmaster.handler.APIException;
+import com.devmaster.restaurante.handler.APIException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -12,12 +12,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-/**
- * Serviço centralizado para operações de segurança.
- * 
- * @author DevMaster Team
- * @since 1.0.0
- */
+
 @Slf4j
 @Service
 public class SecurityService {
