@@ -163,15 +163,15 @@ mvn spring-boot:run -Dspring-boot.run.profiles=develop
 ```
 
 ### 4. Acesse as URLs
-- **🏠 Aplicação**: http://localhost:8081/api
-- **📖 Swagger UI**: http://localhost:8081/api/swagger
+- **🏠 Aplicação**: http://localhost:8080/api
+- **📖 Swagger UI**: http://localhost:8080/api/swagger
   - **🔒 Clique em "Authorize"** para configurar seu token JWT
   - Insira o token (sem "Bearer") e teste os endpoints protegidos
-- **📋 API Docs**: http://localhost:8081/api/api-docs
-- **📊 Actuator**: http://localhost:8081/api/actuator
-- **🔧 Circuit Breaker Status**: http://localhost:8081/api/resilience/status
-- **🧪 Teste de Resiliência**: http://localhost:8081/api/resilience/test/success
-- **🛡️ Teste de Exception Handler**: http://localhost:8081/api/demo/exceptions/error-types
+- **📋 API Docs**: http://localhost:8080/api/api-docs
+- **📊 Actuator**: http://localhost:8080/api/actuator
+- **🔧 Circuit Breaker Status**: http://localhost:8080/api/resilience/status
+- **🧪 Teste de Resiliência**: http://localhost:8080/api/resilience/test/success
+- **🛡️ Teste de Exception Handler**: http://localhost:8080/api/demo/exceptions/error-types
 
 ## 📚 Conceitos Abordados
 

@@ -1,11 +1,13 @@
 package com.devmaster.application.api.request;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record TipoPagamentoRequest(
         Boolean ativo,
+        @NotBlank(message = "código é obrigatório")
         String codigo,
-        @NotNull(message = "descrição é obrigatório")
+        @NotBlank(message = "descrição é obrigatório")
         String descricao,
         String iconeUrl,
         @NotNull(message = "Nome é obrigatório")
