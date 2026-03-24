@@ -1,5 +1,6 @@
 package com.devmaster.domain;
 
+import com.devmaster.application.api.request.EnderecoClienteRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -64,8 +65,31 @@ public class EnderecoCliente {
     private LocalDateTime atualizadoEm;
 
 
-    public EnderecoCliente update() {
-        return null;
+    public EnderecoCliente(EnderecoClienteRequest enderecoClienteRequest) {
+        this.bairro = enderecoClienteRequest.bairro();
+        this.cep = enderecoClienteRequest.cep();
+        this.cidade = enderecoClienteRequest.cidade();
+        this.estado = enderecoClienteRequest.estado();
+        this.logradouro = enderecoClienteRequest.logradouro();
+        this.numero = enderecoClienteRequest.numero();
+        this.complemento = enderecoClienteRequest.complemento();
+        this.rotulo = enderecoClienteRequest.rotulo();
+        this.latitude = enderecoClienteRequest.latitude();
+        this.longitude = enderecoClienteRequest.longitude();
+    }
+
+    public void update(EnderecoClienteRequest request) {
+        this.bairro = request.bairro();
+        this.cep = request.cep();
+        this.cidade = request.cidade();
+        this.estado = request.estado();
+        this.logradouro = request.logradouro();
+        this.numero = request.numero();
+        this.complemento = request.complemento();
+        this.rotulo = request.rotulo();
+        this.latitude = request.latitude();
+        this.longitude = request.longitude();
+        this.atualizadoEm = LocalDateTime.now();
     }
 
 }
