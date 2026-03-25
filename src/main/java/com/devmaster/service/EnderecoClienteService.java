@@ -17,9 +17,9 @@ public interface EnderecoClienteService {
 
     EnderecoCliente findById(Long id);
 
-    EnderecoCliente create(EnderecoClienteRequest enderecoClienteRequest);
+    EnderecoCliente criar(EnderecoClienteRequest enderecoClienteRequest);
 
-    EnderecoCliente update(Long id, EnderecoClienteRequest enderecoClienteRequest);
+    EnderecoCliente atualizar(Long id, EnderecoClienteRequest enderecoClienteRequest);
 
-    void delete(Long id);
+    void deletar(Long id);
 }

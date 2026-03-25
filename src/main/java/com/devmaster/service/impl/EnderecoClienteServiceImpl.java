@@ -36,19 +36,19 @@ public class EnderecoClienteServiceImpl implements EnderecoClienteService {
     }
 
     @Override
-    public EnderecoCliente create(EnderecoClienteRequest enderecoClienteRequest) {
+    public EnderecoCliente criar(EnderecoClienteRequest enderecoClienteRequest) {
         return this.enderecoClienteRepository.save(new EnderecoCliente(enderecoClienteRequest));
     }
 
     @Override
-    public EnderecoCliente update(Long id, EnderecoClienteRequest enderecoClienteRequest) {
+    public EnderecoCliente atualizar(Long id, EnderecoClienteRequest enderecoClienteRequest) {
         final var enderecoCliente = this.findById(id);
         enderecoCliente.update(enderecoClienteRequest);
         return this.enderecoClienteRepository.save(enderecoCliente);
     }
 
     @Override
-    public void delete(Long id) {
+    public void deletar(Long id) {
         if(!this.enderecoClienteRepository.existsById(id)) {
             throw APIException.build(HttpStatus.NOT_FOUND, "Endereço de Cliente com id: " + id + " não encontrado");
         }
