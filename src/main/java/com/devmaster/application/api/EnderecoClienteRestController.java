@@ -3,12 +3,8 @@ package com.devmaster.application.api;
 
 import com.devmaster.application.api.request.EnderecoClienteRequest;
 import com.devmaster.application.api.response.EnderecoClienteResponse;
-import com.devmaster.handler.APIException;
 import com.devmaster.service.EnderecoClienteService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -28,12 +24,6 @@ public class EnderecoClienteRestController implements EnderecoClienteApi {
     }
 
     @Override
-    public ResponseEntity<Page<EnderecoClienteResponse>> findAllPageable(Pageable pageable) {
-        final var enderecos = this.enderecoClienteService.findAllPageable(pageable);
-        return ResponseEntity.ok(EnderecoClienteResponse.convertPageable(enderecos));
-    }
-
-    @Override
     public ResponseEntity<EnderecoClienteResponse> findById(Long id) {
         final var response = new EnderecoClienteResponse(this.enderecoClienteService.findById(id));
         return ResponseEntity.ok(response);
@@ -41,7 +31,8 @@ public class EnderecoClienteRestController implements EnderecoClienteApi {
 
     @Override
     public ResponseEntity<List<EnderecoClienteResponse>> findAllByClienteId(Long id) {
-        throw APIException.build(HttpStatus.NOT_IMPLEMENTED, "Rota não implementada");
+        final var response = EnderecoClienteResponse.convert(this.enderecoClienteService.findAllByClienteId(id));
+        return ResponseEntity.ok(response);
     }
 
     @Override
@@ -62,7 +53,8 @@ public class EnderecoClienteRestController implements EnderecoClienteApi {
 
     @Override
     public ResponseEntity<EnderecoClienteResponse> alterarPadrao(Long id) {
-        return null;
+        final var response = new EnderecoClienteResponse(this.enderecoClienteService.alterarPadrao(id));
+        return ResponseEntity.ok(response);
     }
 
     @Override

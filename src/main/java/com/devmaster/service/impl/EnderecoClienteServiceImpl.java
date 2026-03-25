@@ -5,9 +5,8 @@ import com.devmaster.domain.EnderecoCliente;
 import com.devmaster.handler.APIException;
 import com.devmaster.infra.EnderecoClienteRepository;
 import com.devmaster.service.EnderecoClienteService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -25,25 +24,55 @@ public class EnderecoClienteServiceImpl implements EnderecoClienteService {
     }
 
     @Override
-    public Page<EnderecoCliente> findAllPageable(Pageable pageable) {
-        return this.enderecoClienteRepository.findAll(pageable);
-    }
-
-    @Override
     public EnderecoCliente findById(Long id) {
         return this.enderecoClienteRepository.findById(id)
                 .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Endereço de Cliente com id: " + id + " não encontrado"));
     }
 
     @Override
-    public EnderecoCliente criar(EnderecoClienteRequest enderecoClienteRequest) {
-        return this.enderecoClienteRepository.save(new EnderecoCliente(enderecoClienteRequest));
+    public List<EnderecoCliente> findAllByClienteId(Long clienteId) {
+        if (!enderecoClienteRepository.clienteExiste(clienteId)) {
+            throw APIException.build(HttpStatus.NOT_FOUND, "Cliente com id: " + clienteId + " não encontrado");
+        }
+        return this.enderecoClienteRepository.findAllByClienteId(clienteId);
     }
 
     @Override
-    public EnderecoCliente atualizar(Long id, EnderecoClienteRequest enderecoClienteRequest) {
+    public EnderecoCliente criar(EnderecoClienteRequest request) {
+        if (!enderecoClienteRepository.clienteExiste(request.clienteId())) {
+            throw APIException.build(HttpStatus.NOT_FOUND, "Cliente com id: " + request.clienteId() + " não encontrado");
+        }
+        final var response = this.enderecoClienteRepository.save(new EnderecoCliente(request));
+
+        return request.padrao() ? this.alterarPadrao(response.getId()) : response;
+    }
+
+    @Override
+    public EnderecoCliente atualizar(Long id, EnderecoClienteRequest request) {
         final var enderecoCliente = this.findById(id);
-        enderecoCliente.update(enderecoClienteRequest);
+        enderecoCliente.update(request);
+        if(request.padrao()) {
+            this.alterarPadrao(id);
+        }
+        return this.enderecoClienteRepository.save(enderecoCliente);
+    }
+
+    @Override
+    @Transactional
+    public EnderecoCliente alterarPadrao(Long id) {
+        final var enderecoCliente = this.findById(id);
+        if(enderecoCliente.getPadrao()) {
+            throw APIException.build(HttpStatus.BAD_REQUEST, "Endereço já é o padrão");
+        }
+        final var enderecos = this.findAllByClienteId(enderecoCliente.getClienteId())
+                .stream()
+                .map(endereco -> {
+                    endereco.setPadrao(false);
+                    return endereco;
+                })
+                .toList();
+        this.enderecoClienteRepository.saveAll(enderecos);
+        enderecoCliente.setPadrao(true);
         return this.enderecoClienteRepository.save(enderecoCliente);
     }
 

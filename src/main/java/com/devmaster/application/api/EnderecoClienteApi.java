@@ -7,8 +7,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,14 +23,6 @@ public interface EnderecoClienteApi {
             @ApiResponse(responseCode = "500", description = "Um erro interno ocorreu")
     })
     ResponseEntity<List<EnderecoClienteResponse>> findAll();
-
-    @GetMapping("/all-paginado")
-    @Operation(summary = "Busca todos os endereços de cliente paginado", description = "Busca todos os endereços de cliente paginado")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Listado com sucesso"),
-            @ApiResponse(responseCode = "500", description = "Um erro interno ocorreu")
-    })
-    ResponseEntity<Page<EnderecoClienteResponse>> findAllPageable(Pageable pageable);
 
     @GetMapping("/{id}")
     @Operation(summary = "Busca um endereço do cliente por ID", description = "Busca um endereço do cliente por ID")
@@ -71,10 +61,11 @@ public interface EnderecoClienteApi {
     })
     ResponseEntity<EnderecoClienteResponse> atualizar(@PathVariable Long id, @RequestBody @Valid EnderecoClienteRequest request);
 
-    @PatchMapping("/{id}/padrao")
+    @PatchMapping("/{id}")
     @Operation(summary = "Atribui um endereço como padrão para o cliente", description = "Atribui um endereço como padrão para o cliente")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Atualizado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Endereço já é padrão"),
             @ApiResponse(responseCode = "404", description = "Endereço não encontrado"),
             @ApiResponse(responseCode = "500", description = "Um erro interno ocorreu")
     })

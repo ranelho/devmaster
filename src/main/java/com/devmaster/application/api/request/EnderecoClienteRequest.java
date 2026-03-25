@@ -1,8 +1,8 @@
 package com.devmaster.application.api.request;
 
-
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
@@ -28,8 +28,11 @@ public record EnderecoClienteRequest(
         String numero,
         @Size(max = 255, message = "Complemento deve conter até 255 caracteres")
         String complemento,
+        @NotNull(message = "Cliente é obrigatório")
+        Long clienteId,
         @Size(max = 50, message = "Rotulo deve conter até 50 caracteres")
         String rotulo,
+        Boolean padrao,
         @Digits(integer = 10, fraction = 8, message = "Latitude inválida")
         BigDecimal latitude,
         @Digits(integer = 11, fraction = 8, message = "Longitude inválida")

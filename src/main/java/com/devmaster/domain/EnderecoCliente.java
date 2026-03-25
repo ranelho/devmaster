@@ -55,8 +55,8 @@ public class EnderecoCliente {
     @Column(name = "longitude", precision = 11, scale = 8)
     private BigDecimal longitude;
 
-    //@Column
-    //private Cliente cliente;
+    @Column(name = "cliente_id", nullable = false)
+    private Long clienteId;
 
     @Column(name = "criado_em", nullable = false, updatable = false)
     private LocalDateTime criadoEm;
@@ -74,8 +74,11 @@ public class EnderecoCliente {
         this.numero = enderecoClienteRequest.numero();
         this.complemento = enderecoClienteRequest.complemento();
         this.rotulo = enderecoClienteRequest.rotulo();
+        this.padrao = enderecoClienteRequest.padrao();
+        this.clienteId = enderecoClienteRequest.clienteId();
         this.latitude = enderecoClienteRequest.latitude();
         this.longitude = enderecoClienteRequest.longitude();
+        this.criadoEm = LocalDateTime.now();
     }
 
     public void update(EnderecoClienteRequest request) {
@@ -87,6 +90,7 @@ public class EnderecoCliente {
         this.numero = request.numero();
         this.complemento = request.complemento();
         this.rotulo = request.rotulo();
+        this.padrao = request.padrao();
         this.latitude = request.latitude();
         this.longitude = request.longitude();
         this.atualizadoEm = LocalDateTime.now();
