@@ -71,4 +71,8 @@ public class Restaurante {
 
     @Column(name = "empresa_id")
     private Long empresaId;
+
+    public void ativoInativo(boolean ativoInativo) {
+        this.ativo = ativoInativo;
+    }
 }
