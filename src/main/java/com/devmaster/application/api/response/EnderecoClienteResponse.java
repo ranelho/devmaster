@@ -16,6 +16,7 @@ public record EnderecoClienteResponse(
         String numero,
         String complemento,
         String rotulo,
+        Boolean padrao,
         Long clienteId,
         BigDecimal latitude,
         BigDecimal longitude
@@ -31,6 +32,7 @@ public record EnderecoClienteResponse(
                 enderecoCliente.getNumero(),
                 enderecoCliente.getComplemento(),
                 enderecoCliente.getRotulo(),
+                enderecoCliente.getPadrao(),
                 enderecoCliente.getClienteId(),
                 enderecoCliente.getLatitude(),
                 enderecoCliente.getLongitude()
