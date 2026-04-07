@@ -1,5 +1,6 @@
 package com.devmaster.domain;
 
+import com.devmaster.application.api.request.RestauranteRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -74,5 +75,20 @@ public class Restaurante {
 
     public void ativoInativo(boolean ativoInativo) {
         this.ativo = ativoInativo;
+    }
+
+    public Restaurante(RestauranteRequest restauranteRequest) {
+        this.cnpj = restauranteRequest.cnpj();
+        this.nome = restauranteRequest.nome();
+        this.descricao = restauranteRequest.descricao();
+        this.bannerUrl = restauranteRequest.bannerUrl();
+        this.aberto = restauranteRequest.aberto();
+        this.ativo = true;
+        this.avaliacao = restauranteRequest.avaliacao();
+        this.logoUrl = restauranteRequest.logoUrl();
+        this.slug = restauranteRequest.slug();
+        this.taxaEntrega = restauranteRequest.taxaEntrega();
+        this.telefone = restauranteRequest.telefone();
+        this.empresaId = restauranteRequest.empresaId();
     }
 }
