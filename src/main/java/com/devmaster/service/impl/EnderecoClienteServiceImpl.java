@@ -3,6 +3,7 @@ package com.devmaster.service.impl;
 import com.devmaster.application.api.request.EnderecoClienteRequest;
 import com.devmaster.domain.EnderecoCliente;
 import com.devmaster.handler.APIException;
+import com.devmaster.infra.ClienteRepository;
 import com.devmaster.infra.EnderecoClienteRepository;
 import com.devmaster.service.EnderecoClienteService;
 import jakarta.transaction.Transactional;
@@ -17,6 +18,7 @@ import java.util.List;
 public class EnderecoClienteServiceImpl implements EnderecoClienteService {
 
     private final EnderecoClienteRepository enderecoClienteRepository;
+    private final ClienteRepository clienteRepository;
 
     @Override
     public List<EnderecoCliente> findAll() {
@@ -31,7 +33,7 @@ public class EnderecoClienteServiceImpl implements EnderecoClienteService {
 
     @Override
     public List<EnderecoCliente> findAllByClienteId(Long clienteId) {
-        if (!enderecoClienteRepository.clienteExiste(clienteId)) {
+        if (!this.clienteRepository.existsById(clienteId)) {
             throw APIException.build(HttpStatus.NOT_FOUND, "Cliente não existe");
         }
         return this.enderecoClienteRepository.findAllByClienteId(clienteId);
@@ -40,7 +42,7 @@ public class EnderecoClienteServiceImpl implements EnderecoClienteService {
     @Override
     @Transactional
     public EnderecoCliente criar(EnderecoClienteRequest request) {
-        if (!enderecoClienteRepository.clienteExiste(request.clienteId())) {
+        if (!this.clienteRepository.existsById(request.clienteId())) {
             throw APIException.build(HttpStatus.NOT_FOUND, "Cliente não existe");
         }
         final var response = this.enderecoClienteRepository.save(new EnderecoCliente(request));
@@ -67,7 +69,7 @@ public class EnderecoClienteServiceImpl implements EnderecoClienteService {
             throw APIException.build(HttpStatus.BAD_REQUEST, "Endereço já é o padrão");
         }
 
-        final var enderecos = this.findAllByClienteId(enderecoCliente.getClienteId());
+        final var enderecos = this.findAllByClienteId(enderecoCliente.getCliente().getId());
         enderecos.forEach(endereco -> endereco.setPadrao(endereco.getId().equals(id)));
         this.enderecoClienteRepository.saveAll(enderecos);
         return enderecoCliente;

@@ -52,7 +52,7 @@ public interface EnderecoClienteApi {
     ResponseEntity<EnderecoClienteResponse> criar(@RequestBody @Valid EnderecoClienteRequest request);
 
     @PutMapping("/{id}")
-    @Operation(summary = "Atualiza o endereço de um cliente por ID", description = "Cria um endereço de cliente")
+    @Operation(summary = "Atualiza o endereço de um cliente por ID", description = "Atualiza um endereço de cliente")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Atualizado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Erro de validação"),

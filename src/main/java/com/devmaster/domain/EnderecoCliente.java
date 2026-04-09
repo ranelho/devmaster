@@ -55,8 +55,9 @@ public class EnderecoCliente {
     @Column(name = "longitude", precision = 11, scale = 8)
     private BigDecimal longitude;
 
-    @Column(name = "cliente_id", nullable = false)
-    private Long clienteId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cliente_id", referencedColumnName = "id", nullable = false)
+    private Cliente cliente;
 
     @Column(name = "criado_em", nullable = false, updatable = false)
     private LocalDateTime criadoEm;
@@ -75,7 +76,8 @@ public class EnderecoCliente {
         this.complemento = enderecoClienteRequest.complemento();
         this.rotulo = enderecoClienteRequest.rotulo();
         this.padrao = enderecoClienteRequest.padrao();
-        this.clienteId = enderecoClienteRequest.clienteId();
+        this.cliente = new Cliente();
+        this.cliente.setId(enderecoClienteRequest.clienteId());
         this.latitude = enderecoClienteRequest.latitude();
         this.longitude = enderecoClienteRequest.longitude();
         this.criadoEm = LocalDateTime.now();

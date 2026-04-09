@@ -33,7 +33,7 @@ public record EnderecoClienteResponse(
                 enderecoCliente.getComplemento(),
                 enderecoCliente.getRotulo(),
                 enderecoCliente.getPadrao(),
-                enderecoCliente.getClienteId(),
+                enderecoCliente.getCliente().getId(),
                 enderecoCliente.getLatitude(),
                 enderecoCliente.getLongitude()
         );
