@@ -1,5 +1,6 @@
 package com.devmaster.service;
 
+import com.devmaster.application.api.request.RestauranteRequest;
 import com.devmaster.domain.Restaurante;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,4 +18,6 @@ public interface RestauranteService {
     Restaurante ativar(Long id);
 
     Restaurante inativar(Long id);
+
+    Restaurante atualizar(Long id, RestauranteRequest request);
 }

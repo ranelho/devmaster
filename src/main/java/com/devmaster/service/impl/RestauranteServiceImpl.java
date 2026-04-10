@@ -1,9 +1,11 @@
 package com.devmaster.service.impl;
 
+import com.devmaster.application.api.request.RestauranteRequest;
 import com.devmaster.domain.Restaurante;
 import com.devmaster.handler.APIException;
 import com.devmaster.infra.RestauranteRepository;
 import com.devmaster.service.RestauranteService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,6 +47,14 @@ public class RestauranteServiceImpl implements RestauranteService {
     public Restaurante inativar(Long id) {
         Restaurante restaurante = this.findById(id);
         restaurante.ativoInativo(false);
+        return this.restauranteRepository.save(restaurante);
+    }
+
+    @Override
+    @Transactional
+    public Restaurante atualizar(Long id, RestauranteRequest request) {
+        final var restaurante = this.findById(id);
+        restaurante.update(request);
         return this.restauranteRepository.save(restaurante);
     }
 

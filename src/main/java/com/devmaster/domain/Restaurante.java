@@ -90,5 +90,24 @@ public class Restaurante {
         this.taxaEntrega = restauranteRequest.taxaEntrega();
         this.telefone = restauranteRequest.telefone();
         this.empresaId = restauranteRequest.empresaId();
+        this.atualizadoEm = LocalDateTime.now();
+        this.criadoEm = LocalDateTime.now();
+    }
+
+    public void update(RestauranteRequest resquest) {
+        this.cnpj = resquest.cnpj();
+        this.nome = resquest.nome();
+        this.descricao = resquest.descricao();
+        this.bannerUrl = resquest.bannerUrl();
+        this.aberto = resquest.aberto();
+        this.telefone = resquest.telefone();
+        this.email = resquest.email();
+        this.slug = resquest.slug();
+        this.empresaId = resquest.empresaId();
+        this.logoUrl = resquest.logoUrl();
+        this.avaliacao = resquest.avaliacao();
+        this.taxaEntrega = resquest.taxaEntrega();
+        this.criadoEm = LocalDateTime.now();
+        this.atualizadoEm = LocalDateTime.now();
     }
 }

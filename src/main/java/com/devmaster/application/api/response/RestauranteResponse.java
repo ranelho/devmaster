@@ -1,11 +1,9 @@
 package com.devmaster.application.api.response;
 
 import com.devmaster.domain.Restaurante;
-import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public record RestauranteResponse(
         Long id,
@@ -38,15 +36,14 @@ public record RestauranteResponse(
                 restaurante.getTaxaEntrega(),
                 restaurante.getTelefone(),
                 restaurante.getEmail(),
-                restaurante.getEmpresaId()
-        );
+                restaurante.getEmpresaId());
     }
 
     public static List<RestauranteResponse> convert(List<Restaurante> list) {
-        return list.stream().map(RestauranteResponse::new).collect(Collectors.toList());
+        return list.stream().map(RestauranteResponse::new).toList();
     }
 
-    public static Page<RestauranteResponse> convertPageable(Page<Restaurante> list) {
-        return list.map(RestauranteResponse::new);
-    }
+//    public static Page<RestauranteResponse> convertPageable(Page<Restaurante> list) {
+//        return list.map(RestauranteResponse::new);
+//    }
 }
