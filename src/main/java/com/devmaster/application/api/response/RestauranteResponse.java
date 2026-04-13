@@ -1,6 +1,7 @@
 package com.devmaster.application.api.response;
 
 import com.devmaster.domain.Restaurante;
+import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -43,7 +44,7 @@ public record RestauranteResponse(
         return list.stream().map(RestauranteResponse::new).toList();
     }
 
-//    public static Page<RestauranteResponse> convertPageable(Page<Restaurante> list) {
-//        return list.map(RestauranteResponse::new);
-//    }
+    public static Page<RestauranteResponse> convertPageable(Page<Restaurante> list) {
+        return list.map(RestauranteResponse::new);
+    }
 }

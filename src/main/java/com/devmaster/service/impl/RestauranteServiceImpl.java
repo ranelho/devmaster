@@ -37,6 +37,23 @@ public class RestauranteServiceImpl implements RestauranteService {
     }
 
     @Override
+    @Transactional
+    public Restaurante criar(RestauranteRequest request) {
+        if (request.cnpj() != null) {
+            if (restauranteRepository.existsByCnpj(request.cnpj())) {
+                throw APIException.build(HttpStatus.NOT_FOUND, "CNPJ já cadastrado");
+            }
+        }
+        if (request.slug() != null) {
+            if (restauranteRepository.existsBySlug(request.slug())) {
+                throw APIException.build(HttpStatus.NOT_FOUND, "Slug já cadastrado");
+            }
+        }
+
+        return this.restauranteRepository.save(new Restaurante(request));
+    }
+
+    @Override
     public Restaurante ativar(Long id) {
         Restaurante restaurante = this.findById(id);
         restaurante.ativoInativo(true);

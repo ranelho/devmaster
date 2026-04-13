@@ -15,6 +15,8 @@ public interface RestauranteService {
 
     Page<Restaurante> findAllPageable(Pageable pageable);
 
+    Restaurante criar(RestauranteRequest request);
+
     Restaurante ativar(Long id);
 
     Restaurante inativar(Long id);
