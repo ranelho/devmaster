@@ -46,20 +46,20 @@ public class Cliente {
     private LocalDateTime criadoEm;
 
     public Cliente(ClienteRequest request) {
-        this.email = request.email();
+        this.email = request.email().orElse(null);
         this.nomeCompleto = request.nomeCompleto();
         this.telefone = request.telefone();
-        this.cpf = request.cpf();
+        this.cpf = request.cpf().orElse(null);
         this.ativo = true;
         this.dataNascimento = request.dataNascimento();
         this.criadoEm = LocalDateTime.now();
     }
 
     public void update(ClienteRequest request) {
-        this.email = request.email();
+        this.email = request.email().orElse(null);
         this.nomeCompleto = request.nomeCompleto();
         this.telefone = request.telefone();
-        this.cpf = request.cpf();
+        this.cpf = request.cpf().orElse(null);
         this.ativo = true;
         this.dataNascimento = request.dataNascimento();
         this.criadoEm = LocalDateTime.now();

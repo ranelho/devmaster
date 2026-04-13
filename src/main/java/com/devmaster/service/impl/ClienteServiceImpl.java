@@ -32,16 +32,17 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     @Transactional
     public Cliente criar(ClienteRequest request) {
-        if(request.email() != null) {
-            if(clienteRepository.existsByEmail(request.email())) {
+
+        request.email().ifPresent(email -> {
+            if(clienteRepository.existsByEmail(email)) {
                 throw APIException.build(HttpStatus.NOT_FOUND, "Email já cadastrado");
             }
-        }
-        if(request.cpf() != null) {
-            if(clienteRepository.existsByCpf(request.cpf())) {
+        });
+        request.cpf().ifPresent(cpf -> {
+            if(clienteRepository.existsByCpf(cpf)) {
                 throw APIException.build(HttpStatus.NOT_FOUND, "CPF já cadastrado");
             }
-        }
+        });
 
         if(clienteRepository.existsByTelefone(request.telefone())) {
             throw APIException.build(HttpStatus.NOT_FOUND, "Telefone já cadastrado");
