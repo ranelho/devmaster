@@ -5,8 +5,6 @@ import com.devmaster.application.api.response.RestauranteApi;
 import com.devmaster.application.api.response.RestauranteResponse;
 import com.devmaster.service.RestauranteService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -15,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public abstract class RestauranteRestController implements RestauranteApi {
+public class RestauranteRestController implements RestauranteApi {
 
     private final RestauranteService restauranteService;
 
@@ -42,26 +40,14 @@ public abstract class RestauranteRestController implements RestauranteApi {
     }
 
     @Override
-    public ResponseEntity<Page<RestauranteResponse>> findAllPageable(Pageable pageable) {
-        final var response = restauranteService.findAllPageable(pageable);
-        return ResponseEntity.ok(RestauranteResponse.convertPageable(response));
-    }
-
-    @Override
     public ResponseEntity<RestauranteResponse> atualizar(Long id, RestauranteRequest request) {
         final var response = new RestauranteResponse(this.restauranteService.atualizar(id,request));
         return ResponseEntity.ok(response);
     }
 
     @Override
-    public ResponseEntity<RestauranteResponse> ativar(Long id) {
-        final var response = new RestauranteResponse(this.restauranteService.ativar(id));
-        return ResponseEntity.ok(response);
-    }
-
-    @Override
-    public ResponseEntity<RestauranteResponse> inativar(Long id) {
-        final var response = new RestauranteResponse(this.restauranteService.inativar(id));
+    public ResponseEntity<RestauranteResponse> alternarAtivo(Long id) {
+        final var response = new RestauranteResponse(this.restauranteService.alternarAtivo(id));
         return ResponseEntity.ok(response);
     }
 

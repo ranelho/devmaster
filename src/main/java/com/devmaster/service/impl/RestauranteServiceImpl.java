@@ -7,8 +7,6 @@ import com.devmaster.infra.RestauranteRepository;
 import com.devmaster.service.RestauranteService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -32,38 +30,21 @@ public class RestauranteServiceImpl implements RestauranteService {
     }
 
     @Override
-    public Page<Restaurante> findAllPageable(Pageable pageable) {
-        return this.restauranteRepository.findAll(pageable);
-    }
-
-    @Override
     @Transactional
     public Restaurante criar(RestauranteRequest request) {
-        if (request.cnpj() != null) {
-            if (restauranteRepository.existsByCnpj(request.cnpj())) {
-                throw APIException.build(HttpStatus.NOT_FOUND, "CNPJ já cadastrado");
-            }
+        if (restauranteRepository.existsByCnpj(request.cnpj())) {
+            throw APIException.build(HttpStatus.NOT_FOUND, "CNPJ já cadastrado");
         }
-        if (request.slug() != null) {
-            if (restauranteRepository.existsBySlug(request.slug())) {
-                throw APIException.build(HttpStatus.NOT_FOUND, "Slug já cadastrado");
-            }
+        if (restauranteRepository.existsBySlug(request.slug())) {
+            throw APIException.build(HttpStatus.NOT_FOUND, "Slug já cadastrado");
         }
-
         return this.restauranteRepository.save(new Restaurante(request));
     }
 
     @Override
-    public Restaurante ativar(Long id) {
+    public Restaurante alternarAtivo(Long id) {
         Restaurante restaurante = this.findById(id);
-        restaurante.ativoInativo(true);
-        return this.restauranteRepository.save(restaurante);
-    }
-
-    @Override
-    public Restaurante inativar(Long id) {
-        Restaurante restaurante = this.findById(id);
-        restaurante.ativoInativo(false);
+        restaurante.alternarAtivo();
         return this.restauranteRepository.save(restaurante);
     }
 

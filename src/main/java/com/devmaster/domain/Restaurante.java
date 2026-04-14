@@ -31,7 +31,7 @@ public class Restaurante {
     @Column(name = "atualizado_em")
     private LocalDateTime atualizadoEm;
 
-    @Column(name = "avaliacao")
+    @Column(name = "avaliacao", precision = 3, scale = 2)
     private BigDecimal avaliacao;
 
     @Column(name = "banner_url", length = 500)
@@ -58,7 +58,7 @@ public class Restaurante {
     @Column(name = "slug", length = 255, nullable = false)
     private String slug;
 
-    @Column(name = "taxa_entrega")
+    @Column(name = "taxa_entrega", precision = 10, scale = 2)
     private BigDecimal taxaEntrega;
 
     @Column(name = "telefone", length = 20)
@@ -67,14 +67,14 @@ public class Restaurante {
     @Column(name = "tempo_medio_entrega")
     private Integer tempoMedioEntrega;
 
-    @Column(name = "valor_minimo_perdido")
+    @Column(name = "valor_minimo_perdido", precision = 10, scale = 2)
     private BigDecimal valorMinimoPerdido;
 
     @Column(name = "empresa_id")
     private Long empresaId;
 
-    public void ativoInativo(boolean ativoInativo) {
-        this.ativo = ativoInativo;
+    public void alternarAtivo() {
+        this.ativo = !this.ativo;
     }
 
     public Restaurante(RestauranteRequest restauranteRequest) {
@@ -90,7 +90,6 @@ public class Restaurante {
         this.taxaEntrega = restauranteRequest.taxaEntrega();
         this.telefone = restauranteRequest.telefone();
         this.empresaId = restauranteRequest.empresaId();
-        this.atualizadoEm = LocalDateTime.now();
         this.criadoEm = LocalDateTime.now();
     }
 
@@ -107,7 +106,6 @@ public class Restaurante {
         this.logoUrl = resquest.logoUrl();
         this.avaliacao = resquest.avaliacao();
         this.taxaEntrega = resquest.taxaEntrega();
-        this.criadoEm = LocalDateTime.now();
         this.atualizadoEm = LocalDateTime.now();
     }
 }

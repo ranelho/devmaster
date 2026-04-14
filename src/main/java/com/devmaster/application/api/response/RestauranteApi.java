@@ -6,8 +6,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +30,7 @@ public interface RestauranteApi {
             @ApiResponse(responseCode = "400", description = "Restaurante não encontrado"),
             @ApiResponse(responseCode = "500", description = "Um erro interno ocorreu")
     })
-    ResponseEntity<RestauranteResponse> finById(@PathVariable int id);
+    ResponseEntity<RestauranteResponse> findById(@PathVariable Long id);
 
     @PostMapping
     @Operation(summary = "Cria um restaurante", description = "Cria um restaurante")
@@ -60,18 +58,5 @@ public interface RestauranteApi {
             @ApiResponse(responseCode = "404", description = "Restaurante não encontrado"),
             @ApiResponse(responseCode = "500", description = "Um erro interno ocorreu")
     })
-    ResponseEntity<RestauranteResponse> ativar(@PathVariable Long id);
-
-    @PatchMapping("/{id}/inativo")
-    @Operation(summary = "Inativa um restaurante por ID", description = "Inativa um restaurante por ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Atualizado com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Restaurante não encontrado"),
-            @ApiResponse(responseCode = "500", description = "Um erro interno ocorreu")
-    })
-    ResponseEntity<RestauranteResponse> inativar(@PathVariable Long id);
-
-    ResponseEntity<RestauranteResponse> findById(Long id);
-
-    ResponseEntity<Page<RestauranteResponse>> findAllPageable(Pageable pageable);
+    ResponseEntity<RestauranteResponse> alternarAtivo(@PathVariable Long id);
 }
