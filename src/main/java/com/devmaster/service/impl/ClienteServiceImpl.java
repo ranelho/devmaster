@@ -33,16 +33,17 @@ public class ClienteServiceImpl implements ClienteService {
     @Transactional
     public Cliente criar(ClienteRequest request) {
 
-        request.email().ifPresent(email -> {
-            if(clienteRepository.existsByEmail(email)) {
+        if(request.email() != null) {
+            if(clienteRepository.existsByEmail(request.email())) {
                 throw APIException.build(HttpStatus.NOT_FOUND, "Email já cadastrado");
             }
-        });
-        request.cpf().ifPresent(cpf -> {
-            if(clienteRepository.existsByCpf(cpf)) {
+        }
+
+        if(request.cpf() != null) {
+            if(clienteRepository.existsByCpf(request.cpf())) {
                 throw APIException.build(HttpStatus.NOT_FOUND, "CPF já cadastrado");
             }
-        });
+        }
 
         if(clienteRepository.existsByTelefone(request.telefone())) {
             throw APIException.build(HttpStatus.NOT_FOUND, "Telefone já cadastrado");
