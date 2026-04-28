@@ -1,6 +1,7 @@
 package com.devmaster.application.api.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
@@ -13,7 +14,7 @@ public record RestauranteRequest(
     @Size(max = 255, message = "Nome deve conter até 255 caracteres")
     String nome,
     String descricao,
-    @NotBlank(message = "Aberto é obrigatório")
+    @NotNull(message = "Aberto é obrigatório")
     Boolean aberto,
     @Size(max = 20, message = "Telefone deve conter até 20 caracteres")
     String telefone,
