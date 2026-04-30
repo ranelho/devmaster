@@ -19,6 +19,7 @@ public record RestauranteRequest(
     @Size(max = 20, message = "Telefone deve conter até 20 caracteres")
     String telefone,
     @Size(max = 255, message = "Email deve conter até 255 caracteres")
+    @NotNull(message = "Email é obrigatório")
     String email,
     @NotBlank(message = "Slug é obrigatório")
     @Size(max = 255, message = "Slug deve conter até 255 caracteres")

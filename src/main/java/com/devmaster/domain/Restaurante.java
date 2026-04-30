@@ -83,6 +83,7 @@ public class Restaurante {
         this.descricao = restauranteRequest.descricao();
         this.bannerUrl = restauranteRequest.bannerUrl();
         this.aberto = restauranteRequest.aberto();
+        this.email = restauranteRequest.email();
         this.ativo = true;
         this.avaliacao = restauranteRequest.avaliacao();
         this.logoUrl = restauranteRequest.logoUrl();
