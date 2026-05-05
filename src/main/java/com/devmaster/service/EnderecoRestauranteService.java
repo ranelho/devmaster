@@ -12,8 +12,6 @@ public interface EnderecoRestauranteService {
 
     List<EnderecoRestaurante> findAllByRestauranteId(Long restauranteId);
 
-//    EnderecoRestaurante alterarPadrao(Long id);
-//
-//    void deletar(Long id);
+    void deletar(Long id);
 
 }

@@ -35,8 +35,7 @@ public record EnderecoRestauranteResponse (
         );
     }
 
-    public static List<EnderecoRestaurante> convert(List<EnderecoRestauranteResponse> list) {
+    public static List<EnderecoRestauranteResponse> convert(List<EnderecoRestaurante> list) {
         return list.stream().map(EnderecoRestauranteResponse::new).toList();
     }
-
 }

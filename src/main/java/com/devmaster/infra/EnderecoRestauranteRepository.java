@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface EnderecoRestauranteRepository extends JpaRepository<EnderecoRestaurante, Long> {
 
-    List<EnderecoRestaurante> findAllRestauranteId(Long restauranteId);
+    List<EnderecoRestaurante> findAllByRestauranteId(Long restauranteId);
 
 }

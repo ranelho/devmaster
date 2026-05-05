@@ -35,13 +35,13 @@ public class EnderecoRestaurante {
     @Column(name = "estado", nullable = false, length = 2)
     private String estado;
 
-    @Column(name = "latitude", precision = 10, scale = 8)
+    @Column(name = "latitude", precision = 11, scale = 8)
     private BigDecimal latitude;
 
     @Column(name = "logradouro", nullable = false, length = 255)
     private String logradouro;
 
-    @Column(name = "longitude", precision = 10, scale = 8)
+    @Column(name = "longitude", precision = 11, scale = 8)
     private BigDecimal longitude;
 
     @Column(name = "numero", nullable = false, length = 20)

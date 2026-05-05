@@ -5,7 +5,6 @@ import com.devmaster.handler.APIException;
 import com.devmaster.infra.EnderecoRestauranteRepository;
 import com.devmaster.infra.RestauranteRepository;
 import com.devmaster.service.EnderecoRestauranteService;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -36,7 +35,15 @@ public class EnderecoRestauranteServiceImpl implements EnderecoRestauranteServic
         if (!this.restauranteRepository.existsById(restauranteId)) {
             throw APIException.build(HttpStatus.NOT_FOUND, "Restaurante não existe");
         }
-        return this.enderecoRestauranteRepository.findAllRestauranteId(restauranteId);
+        return this.enderecoRestauranteRepository.findAllByRestauranteId(restauranteId);
+    }
+
+    @Override
+    public void deletar(Long id) {
+        if(!this.enderecoRestauranteRepository.existsById(id)) {
+            throw APIException.build(HttpStatus.NOT_FOUND, "Endereço de Restaurante com id: " + id + " não encontrado");
+        }
+        this.enderecoRestauranteRepository.deleteById(id);
     }
 
 }
