@@ -1,10 +1,12 @@
 package com.devmaster.service.impl;
 
+import com.devmaster.application.api.request.EnderecoRestauranteRequest;
 import com.devmaster.domain.EnderecoRestaurante;
 import com.devmaster.handler.APIException;
 import com.devmaster.infra.EnderecoRestauranteRepository;
 import com.devmaster.infra.RestauranteRepository;
 import com.devmaster.service.EnderecoRestauranteService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -36,6 +38,23 @@ public class EnderecoRestauranteServiceImpl implements EnderecoRestauranteServic
             throw APIException.build(HttpStatus.NOT_FOUND, "Restaurante não existe");
         }
         return this.enderecoRestauranteRepository.findAllByRestauranteId(restauranteId);
+    }
+
+    @Override
+    @Transactional
+    public EnderecoRestaurante criar(EnderecoRestauranteRequest request) {
+        if(!this.enderecoRestauranteRepository.existsById(request.restauranteId())) {
+            throw APIException.build(HttpStatus.NOT_FOUND, "Restaurante obrigatório");
+        }
+        return this.enderecoRestauranteRepository.save(new EnderecoRestaurante());
+    }
+
+    @Override
+    @Transactional
+    public EnderecoRestaurante atualizar(Long id, EnderecoRestauranteRequest request) {
+        final var enderecoRestaurante = this.findById(id);
+        enderecoRestaurante.update(request);
+        return this.enderecoRestauranteRepository.save(enderecoRestaurante);
     }
 
     @Override

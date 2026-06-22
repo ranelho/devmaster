@@ -1,5 +1,6 @@
 package com.devmaster.domain;
 
+import com.devmaster.application.api.request.EnderecoRestauranteRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -51,4 +52,29 @@ public class EnderecoRestaurante {
     @JoinColumn(name = "restaurante_id", referencedColumnName = "id", nullable = false)
     private Restaurante restaurante;
 
+    public EnderecoRestaurante(EnderecoRestauranteRequest enderecoRestauranteRequest) {
+        this.bairro = enderecoRestauranteRequest.bairro();
+        this.cep = enderecoRestauranteRequest.cep();
+        this.cidade = enderecoRestauranteRequest.cidade();
+        this.complemento = enderecoRestauranteRequest.complemento();
+        this.estado = enderecoRestauranteRequest.estado();
+        this.latitude = enderecoRestauranteRequest.latitude();
+        this.logradouro = enderecoRestauranteRequest.logradouro();
+        this.longitude = enderecoRestauranteRequest.longitude();
+        this.numero = enderecoRestauranteRequest.numero();
+        this.restaurante = new Restaurante();
+        this.restaurante.setId(enderecoRestauranteRequest.restauranteId());
+    }
+
+    public void update(EnderecoRestauranteRequest request) {
+        this.bairro = request.bairro();
+        this.cep = request.cep();
+        this.cidade = request.cidade();
+        this.complemento = request.complemento();
+        this.estado = request.estado();
+        this.latitude = request.latitude();
+        this.logradouro = request.logradouro();
+        this.longitude = request.longitude();
+        this.numero = request.numero();
+    }
 }
