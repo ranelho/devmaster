@@ -52,9 +52,9 @@ public interface EnderecoRestauranteApi {
     ResponseEntity<EnderecoRestauranteResponse> criar(@RequestBody EnderecoRestauranteRequest request);
 
     @PutMapping("/{id}")
-    @Operation(summary = "Cria o endereço do restaurante", description = "Cria o endereço do restaurante")
+    @Operation(summary = "Atualiza o endereço do restaurante", description = "Atualiza o endereço do restaurante")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Criado com sucesso"),
+            @ApiResponse(responseCode = "200", description = "Atualizado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Erro de validação"),
             @ApiResponse(responseCode = "404", description = "Restaurante não encontrado"),
             @ApiResponse(responseCode = "500", description = "Um erro interno ocorreu")
