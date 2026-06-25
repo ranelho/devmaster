@@ -35,7 +35,7 @@ public class EnderecoRestauranteServiceImpl implements EnderecoRestauranteServic
     @Override
     public List<EnderecoRestaurante> findAllByRestauranteId(Long restauranteId) {
         if (!this.restauranteRepository.existsById(restauranteId)) {
-            throw APIException.build(HttpStatus.NOT_FOUND, "Restaurante não existe");
+            throw APIException.build(HttpStatus.NOT_FOUND, "Não existe um restaurante com id " + restauranteId);
         }
         return this.enderecoRestauranteRepository.findAllByRestauranteId(restauranteId);
     }
@@ -43,10 +43,10 @@ public class EnderecoRestauranteServiceImpl implements EnderecoRestauranteServic
     @Override
     @Transactional
     public EnderecoRestaurante criar(EnderecoRestauranteRequest request) {
-        if(!this.enderecoRestauranteRepository.existsById(request.restauranteId())) {
-            throw APIException.build(HttpStatus.NOT_FOUND, "Restaurante obrigatório");
+        if(!this.restauranteRepository.existsById(request.restauranteId())) {
+            throw APIException.build(HttpStatus.NOT_FOUND, "O restaurante não existe");
         }
-        return this.enderecoRestauranteRepository.save(new EnderecoRestaurante());
+        return this.enderecoRestauranteRepository.save(new EnderecoRestaurante(request));
     }
 
     @Override
