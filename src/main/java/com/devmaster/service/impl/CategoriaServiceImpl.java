@@ -26,7 +26,7 @@ public class CategoriaServiceImpl implements CategoriaService {
 
     @Override
     public List<Categoria> findAllAtivoFalseByRestauranteId(Long id) {
-        return List.of();
+        return categoriaRepository.findAllAtivoFalseByRestauranteId(id);
     }
 
     @Override

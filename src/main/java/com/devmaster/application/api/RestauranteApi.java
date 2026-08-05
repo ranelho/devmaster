@@ -1,6 +1,7 @@
-package com.devmaster.application.api.response;
+package com.devmaster.application.api;
 
 import com.devmaster.application.api.request.RestauranteRequest;
+import com.devmaster.application.api.response.RestauranteResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

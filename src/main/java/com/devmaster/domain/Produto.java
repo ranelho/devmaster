@@ -42,6 +42,9 @@ public class Produto {
     @Column(name = "preco_promocional", precision = 10, scale = 2, nullable = true)
     private BigDecimal precoPromocional;
 
+    @Column(name = "tempo_preparo", nullable = true)
+    private Integer tempoPreparo;
+
     @Column(name = "tipo", nullable = false)
     @Enumerated(EnumType.STRING)
     private Tipo tipo;
@@ -51,6 +54,9 @@ public class Produto {
 
     @Column(name = "destaque", nullable = false)
     private Boolean destaque;
+
+    @Column(name = "ordem_exibicao")
+    private Integer ordemExibicao;
 
     @Column(name = "criado_em", nullable = false, updatable = false)
     private LocalDateTime criadoEm;
@@ -73,9 +79,11 @@ public class Produto {
         this.descricao = request.descricao();
         this.preco = request.preco();
         this.precoPromocional = request.precoPromocional();
-        this.tipo = Tipo.valueOf(request.tipo());
-        this.disponivel = true;
+        this.tempoPreparo = request.tempoPreparo();
+        this.tipo = request.tipo() == null ? Tipo.SIMPLES : Tipo.valueOf(request.tipo());
+        this.disponivel = request.preco().equals(new BigDecimal("0.0"));
         this.destaque = false;
+        this.ordemExibicao = request.ordemExibicao() == null ? 0 : request.ordemExibicao();
         this.categoria = new Categoria();
         this.categoria.setId(request.categoriaId());
         this.restaurante = new Restaurante();
@@ -83,6 +91,22 @@ public class Produto {
     }
 
     public void update(ProdutoRequest request) {
+        this.nome = request.nome();
+        this.descricao = request.descricao();
+        this.preco = request.preco();
+        this.precoPromocional = request.precoPromocional();
+        this.tempoPreparo = request.tempoPreparo();
+        this.tipo = request.tipo() == null ? Tipo.SIMPLES : Tipo.valueOf(request.tipo());
+        this.disponivel = request.preco().equals(new BigDecimal("0.0"));
+        this.destaque = false;
+        this.ordemExibicao = request.ordemExibicao() == null ? 0 : request.ordemExibicao();
+        this.categoria = new Categoria();
+        this.categoria.setId(request.categoriaId());
+        this.restaurante = new Restaurante();
+        this.restaurante.setId(request.restauranteId());
+    }
 
+    public void alternarDisponibilidade() {
+        this.disponivel = !this.disponivel;
     }
 }
