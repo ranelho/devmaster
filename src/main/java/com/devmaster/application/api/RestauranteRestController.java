@@ -1,7 +1,6 @@
 package com.devmaster.application.api;
 
 import com.devmaster.application.api.request.RestauranteRequest;
-import com.devmaster.application.api.response.RestauranteApi;
 import com.devmaster.application.api.response.RestauranteResponse;
 import com.devmaster.service.RestauranteService;
 import lombok.RequiredArgsConstructor;
