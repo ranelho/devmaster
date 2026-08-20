@@ -1,6 +1,7 @@
 package com.devmaster.application.api;
 
 import com.devmaster.application.api.request.ProdutoRequest;
+import com.devmaster.application.api.response.ImagemProdutoResponse;
 import com.devmaster.application.api.response.ProdutoResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -10,6 +11,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @Tag(name = "Produto", description = "API para gerenciamento de produtos dos restaurantes")
@@ -43,6 +45,16 @@ public interface ProdutoApi {
             @ApiResponse(responseCode = "409", description = "Produto duplicado"),
     })
     ResponseEntity<ProdutoResponse> criar(@RequestBody @Valid ProdutoRequest request);
+
+    @PostMapping("/{id}/imagem")
+    @Operation(summary = "Realiza o upload de uma imagem", description = "Realiza o upload de uma imagem pelo id de um produto")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Atualizado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro de validação"),
+            @ApiResponse(responseCode = "401", description = "Acesso não autorizado"),
+            @ApiResponse(responseCode = "404", description = "Produto não encontrado"),
+    })
+    ResponseEntity<ImagemProdutoResponse> uploadImage(@RequestParam("file") MultipartFile file, @PathVariable Long id);
 
     @PutMapping("/{id}")
     @Operation(summary = "Atualiza um produto", description = "Atualiza um produto por id")
